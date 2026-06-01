@@ -410,12 +410,46 @@ function Game() {
           </div>
         )}
 
-        {(currentTask.type === 'attention-letter' || currentTask.type === 'attention-color') && (
+        {currentTask.type === 'logic' && (
+          <div className="text-center">
+            <h2 className="text-2xl font-bold mb-2">Padrão Numérico</h2>
+            <p className="text-gray-500 mb-8">Qual o próximo número da sequência?</p>
+            <div className="flex justify-center items-center gap-2 mb-10 overflow-x-auto pb-2">
+              {currentTask.sequence.map((num: number, i: number) => (
+                <div key={i} className="flex items-center">
+                  <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-xl font-bold border-2 border-blue-100">
+                    {num}
+                  </div>
+                  {i < currentTask.sequence.length - 1 && <span className="mx-1 text-gray-300">→</span>}
+                </div>
+              ))}
+              <span className="mx-1 text-gray-300">→</span>
+              <div className="w-14 h-14 bg-blue-600 text-white rounded-xl flex items-center justify-center text-2xl font-bold animate-pulse">
+                ?
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              {currentTask.options.map((opt: number) => (
+                <Button 
+                  key={opt}
+                  onClick={() => {
+                    if (opt === currentTask.answer) handleCorrect();
+                    else handleRetry("Quase! Observe bem como os números estão crescendo.");
+                  }}
+                  className="py-8 text-2xl font-bold rounded-2xl bg-white border-2 border-gray-100 text-gray-700 hover:bg-blue-50 transition-all"
+                >
+                  {opt}
+                </Button>
+              ))}
+            </div>
+          </div>
+        )}
 
+        {(currentTask.type === 'attention-letter' || currentTask.type === 'attention-color') && (
           <div className="text-center">
             <h2 className="text-2xl font-bold mb-2">Atenção Visual</h2>
             <p className="text-gray-500 mb-8">Toque no elemento diferente</p>
-            <div className="grid grid-cols-4 gap-4">
+            <div className={`grid gap-3 mx-auto max-w-[320px]`} style={{ gridTemplateColumns: `repeat(${currentTask.cols || 4}, 1fr)` }}>
               {currentTask.grid.map((item: string, i: number) => (
                 <Button 
                   key={i} 
@@ -423,7 +457,17 @@ function Game() {
                     if (item === currentTask.intruder) handleCorrect();
                     else handleRetry("Quase lá! Olhe com um pouquinho mais de carinho...");
                   }}
-                  className={`h-16 rounded-2xl shadow-sm border-2 border-gray-50 transition-transform active:scale-90 ${
+                  className={`p-0 rounded-xl shadow-sm border-2 border-gray-50 transition-transform active:scale-90 flex items-center justify-center ${
+                    currentTask.type === 'attention-color' ? 'h-12' : 'h-12 text-xl font-bold text-gray-700'
+                  }`}
+                  style={currentTask.type === 'attention-color' ? { backgroundColor: item } : {}}
+                >
+                  {currentTask.type === 'attention-letter' ? item : ''}
+                </Button>
+              ))}
+            </div>
+          </div>
+        )}
                     currentTask.type === 'attention-letter' ? "bg-gray-50 text-3xl font-bold" : ""
                   }`}
                   style={currentTask.type === 'attention-color' ? { backgroundColor: item } : {}}
