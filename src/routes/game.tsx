@@ -1,34 +1,32 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
+import { generateDailyChallenge } from "@/lib/game-engine";
 
 export const Route = createFileRoute("/game")({
   component: Game,
 });
 
 function Game() {
+  const navigate = useNavigate();
   const [exercise, setExercise] = useState(1);
   const [score, setScore] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
   const [selectedWords, setSelectedWords] = useState<string[]>([]);
   const [showFeedback, setShowFeedback] = useState(false);
   const [startTime] = useState(Date.now());
-  const navigate = useNavigate();
-
-  // EXERCICIO 1: Memória
-  const [memState, setMemState] = useState<'showing' | 'choosing'>('showing');
   const [timeLeft, setTimeLeft] = useState(10);
-  const words = ["Amizade", "Natureza", "Saúde", "Tempo", "Família"];
-  const options = ["Amizade", "Natureza", "Saúde", "Tempo", "Família", "Cidade", "Viagem", "Festa"];
+  const [memState, setMemState] = useState<'showing' | 'choosing'>('showing');
 
-  // EXERCICIO 2: Atenção
-  const letters = "AAAAAAAAABAAAAAAAA".split("");
-  
-  // EXERCICIO 3: Lógica
-  const sequence = [2, 4, 6, 8];
-  const logicOptions = [9, 10, 11, 12];
+  // Gera o desafio único do dia baseado na data atual
+  const today = new Date().toISOString().split('T')[0];
+  const challengeData = useMemo(() => generateDailyChallenge(today), [today]);
+
+  const { words, options } = challengeData.memory;
+  const { grid, intruder } = challengeData.attention;
+  const { sequence, options: logicOptions, answer } = challengeData.logic;
 
   useEffect(() => {
     if (exercise === 1 && memState === 'showing') {
@@ -47,25 +45,24 @@ function Game() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    const finalScore = score;
+    const finalScore = Math.min(100, Math.round(score));
     const totalTime = Math.floor((Date.now() - startTime) / 1000);
 
-    const { data: challenge } = await supabase.from("daily_challenges").insert({
+    await supabase.from("daily_challenges").insert({
       user_id: user.id,
       score: finalScore,
       total_questions: 3,
       correct_answers: correctCount,
       total_time: totalTime,
-    }).select().maybeSingle();
+    });
 
-    // Update streak 
     const { data: existingStreak } = await supabase.from("streaks").select("*").eq("user_id", user.id).maybeSingle();
     
     await supabase.from("streaks").upsert({
       user_id: user.id,
       current_streak: (existingStreak?.current_streak || 0) + 1,
       best_streak: Math.max((existingStreak?.best_streak || 0), (existingStreak?.current_streak || 0) + 1),
-      last_completed_date: new Date().toISOString().split('T')[0]
+      last_completed_date: today
     });
 
     navigate({ to: "/conclusao", search: { score: finalScore, time: totalTime }, replace: true });
@@ -81,24 +78,10 @@ function Game() {
               <div className="flex justify-center mb-6">
                 <div className="relative w-20 h-20 flex items-center justify-center">
                   <svg className="absolute w-full h-full -rotate-90">
+                    <circle cx="40" cy="40" r="36" stroke="currentColor" strokeWidth="4" fill="transparent" className="text-gray-100" />
                     <circle
-                      cx="40"
-                      cy="40"
-                      r="36"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                      fill="transparent"
-                      className="text-gray-100"
-                    />
-                    <circle
-                      cx="40"
-                      cy="40"
-                      r="36"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                      fill="transparent"
-                      strokeDasharray="226.2"
-                      strokeDashoffset={226.2 * (1 - timeLeft / 10)}
+                      cx="40" cy="40" r="36" stroke="currentColor" strokeWidth="4" fill="transparent"
+                      strokeDasharray="226.2" strokeDashoffset={226.2 * (1 - timeLeft / 10)}
                       className="text-[#D97706] transition-all duration-1000"
                     />
                   </svg>
@@ -117,18 +100,12 @@ function Game() {
                   return (
                     <Button 
                       key={opt} 
-                      variant={isSelected ? "default" : "outline"}
                       onClick={() => { 
-                        if (isSelected) {
-                          setSelectedWords(prev => prev.filter(w => w !== opt));
-                        } else if (selectedWords.length < 5) {
-                          setSelectedWords(prev => [...prev, opt]);
-                        }
+                        if (isSelected) setSelectedWords(prev => prev.filter(w => w !== opt));
+                        else if (selectedWords.length < 5) setSelectedWords(prev => [...prev, opt]);
                       }} 
                       className={`py-8 text-lg rounded-2xl shadow-sm transition-all border-2 ${
-                        isSelected 
-                          ? "bg-primary text-white border-primary" 
-                          : "bg-white border-gray-100 text-[#1F2937] hover:border-primary/50"
+                        isSelected ? "bg-primary text-white border-primary" : "bg-white border-gray-100 text-[#1F2937]"
                       }`}
                     >
                       {opt}
@@ -136,30 +113,21 @@ function Game() {
                   );
                 })}
               </div>
-              
               {selectedWords.length === 5 && !showFeedback && (
                 <Button 
                   onClick={() => {
                     const matches = selectedWords.filter(w => words.includes(w)).length;
                     setCorrectCount(prev => prev + (matches === 5 ? 1 : 0));
-                    setScore(prev => prev + (matches * 6.6)); // Pontuação proporcional
+                    setScore(prev => prev + (matches * 6.6));
                     setShowFeedback(true);
-                    setTimeout(() => {
-                      setExercise(2);
-                      setShowFeedback(false);
-                    }, 1500);
+                    setTimeout(() => { setExercise(2); setShowFeedback(false); }, 1500);
                   }}
-                  className="w-full py-8 text-xl font-bold bg-[#D97706] hover:bg-[#b46205] rounded-2xl animate-in zoom-in"
+                  className="w-full py-8 text-xl font-bold bg-[#D97706] hover:bg-[#b46205] rounded-2xl"
                 >
                   CONFERIR RESPOSTAS
                 </Button>
               )}
-
-              {showFeedback && (
-                <div className="py-4 text-2xl font-bold text-primary animate-in fade-in bounce-in">
-                  Muito bem! Vamos ao próximo.
-                </div>
-              )}
+              {showFeedback && <div className="py-4 text-2xl font-bold text-primary animate-in fade-in">Muito bem! Vamos ao próximo.</div>}
             </div>
           )}
         </Card>
@@ -170,9 +138,9 @@ function Game() {
           <h2 className="text-2xl font-bold mb-2">Atenção Visual</h2>
           <p className="text-gray-600 mb-6">Clique na letra diferente entre as demais:</p>
           <div className="grid grid-cols-4 gap-4 mb-8">
-            {letters.map((l, i) => (
+            {grid.map((l, i) => (
               <Button key={i} onClick={() => {
-                if (l === 'B') {
+                if (l === intruder) {
                   setScore(s => s + 33);
                   setCorrectCount(c => c + 1);
                 }
@@ -192,18 +160,13 @@ function Game() {
           <div className="text-5xl font-bold mb-10 text-[#4A7C59] tracking-wider">{sequence.join(", ")} , ?</div>
           <div className="grid grid-cols-2 gap-4">
             {logicOptions.map(num => (
-              <Button 
-                key={num} 
-                onClick={async () => {
-                  if (num === 10) {
-                    setScore(prev => prev + 34);
-                    setCorrectCount(prev => prev + 1);
-                  }
-                  // Chama diretamente a função sem setTimeout para evitar desync
-                  await finishChallenge();
-                }} 
-                className="py-6 text-xl bg-background text-foreground hover:bg-secondary"
-              >
+              <Button key={num} onClick={async () => {
+                if (num === answer) {
+                  setScore(prev => prev + 34);
+                  setCorrectCount(prev => prev + 1);
+                }
+                await finishChallenge();
+              }} className="py-6 text-xl bg-background text-foreground hover:bg-secondary">
                 {num}
               </Button>
             ))}
