@@ -1,9 +1,10 @@
 import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Check, Star, Mail } from "lucide-react";
+import { trackEvent } from "@/lib/analytics";
 
 export const Route = createFileRoute("/conclusao")({
   component: Conclusion,
@@ -28,6 +29,11 @@ function Conclusion() {
       ))}
     </div>
   );
+
+  useEffect(() => {
+    if (step === 'report') trackEvent('result_viewed');
+    if (step === 'offer') trackEvent('offer_viewed');
+  }, [step]);
 
   if (step === 'report') {
     return (
@@ -149,6 +155,7 @@ function Conclusion() {
 
         <Button 
           onClick={() => {
+            trackEvent('checkout_clicked');
             const stripeUrl = import.meta.env.VITE_STRIPE_PAYMENT_LINK || "https://buy.stripe.com/test_6oEbMh9708pI5EYeUV";
             window.location.href = stripeUrl; 
           }}

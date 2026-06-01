@@ -1,5 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { trackEvent } from "@/lib/analytics";
 
 export const Route = createFileRoute("/")({
   component: LandingPage,
@@ -7,6 +9,10 @@ export const Route = createFileRoute("/")({
 
 function LandingPage() {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    trackEvent('landing_view');
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#F7F3EA] flex flex-col items-center justify-center p-6 text-center">
