@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuthStore } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/settings")({
   component: Settings,
@@ -22,8 +23,10 @@ function Settings() {
     load();
   }, []);
 
+  const logout = useAuthStore((state) => state.logout);
+
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    logout();
     navigate({ to: "/" });
   };
 
