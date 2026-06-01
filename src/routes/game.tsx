@@ -137,19 +137,29 @@ function Game() {
         <Card className="w-full max-w-md p-8 bg-white rounded-3xl shadow-sm text-center">
           <h2 className="text-2xl font-bold mb-2">Atenção Visual</h2>
           <p className="text-gray-600 mb-6">Clique na letra diferente entre as demais:</p>
-          <div className="grid grid-cols-4 gap-4 mb-8">
-            {grid.map((l, i) => (
-              <Button key={i} onClick={() => {
-                if (l === intruder) {
-                  setScore(s => s + 33);
-                  setCorrectCount(c => c + 1);
-                }
-                setExercise(3);
-              }} className="text-2xl h-16 bg-background text-foreground">
-                {l}
-              </Button>
-            ))}
-          </div>
+          {!showFeedback ? (
+            <div className="grid grid-cols-4 gap-4 mb-8">
+              {grid.map((l, i) => (
+                <Button key={i} onClick={() => {
+                  if (l === intruder) {
+                    setScore(s => s + 33);
+                    setCorrectCount(c => c + 1);
+                  }
+                  setShowFeedback(true);
+                  setTimeout(() => {
+                    setExercise(3);
+                    setShowFeedback(false);
+                  }, 1500);
+                }} className="text-2xl h-16 bg-background text-foreground hover:bg-secondary">
+                  {l}
+                </Button>
+              ))}
+            </div>
+          ) : (
+            <div className="py-12 text-2xl font-bold text-primary animate-in fade-in bounce-in">
+              Muito bem! Vamos ao próximo.
+            </div>
+          )}
         </Card>
       )}
 
@@ -157,20 +167,31 @@ function Game() {
         <Card className="w-full max-w-md p-8 bg-white rounded-3xl shadow-sm text-center">
           <h2 className="text-2xl font-bold mb-2">Qual o próximo número?</h2>
           <p className="text-gray-600 mb-8">Identifique o padrão na sequência:</p>
-          <div className="text-5xl font-bold mb-10 text-[#4A7C59] tracking-wider">{sequence.join(", ")} , ?</div>
-          <div className="grid grid-cols-2 gap-4">
-            {logicOptions.map(num => (
-              <Button key={num} onClick={async () => {
-                if (num === answer) {
-                  setScore(prev => prev + 34);
-                  setCorrectCount(prev => prev + 1);
-                }
-                await finishChallenge();
-              }} className="py-6 text-xl bg-background text-foreground hover:bg-secondary">
-                {num}
-              </Button>
-            ))}
-          </div>
+          {!showFeedback ? (
+            <>
+              <div className="text-5xl font-bold mb-10 text-[#4A7C59] tracking-wider">{sequence.join(", ")} , ?</div>
+              <div className="grid grid-cols-2 gap-4">
+                {logicOptions.map(num => (
+                  <Button key={num} onClick={async () => {
+                    if (num === answer) {
+                      setScore(prev => prev + 34);
+                      setCorrectCount(prev => prev + 1);
+                    }
+                    setShowFeedback(true);
+                    setTimeout(async () => {
+                      await finishChallenge();
+                    }, 1500);
+                  }} className="py-6 text-xl bg-background text-foreground hover:bg-secondary">
+                    {num}
+                  </Button>
+                ))}
+              </div>
+            </>
+          ) : (
+            <div className="py-12 text-2xl font-bold text-primary animate-in fade-in bounce-in">
+              Muito bem! Você finalizou.
+            </div>
+          )}
         </Card>
       )}
     </div>
