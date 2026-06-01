@@ -27,7 +27,7 @@ function Settings() {
 
   const handleLogout = async () => {
     logout();
-    navigate({ to: "/" });
+    navigate({ to: "/", replace: true });
   };
 
   return (
