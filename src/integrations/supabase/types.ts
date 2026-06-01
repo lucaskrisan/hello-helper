@@ -118,6 +118,33 @@ export type Database = {
           },
         ]
       }
+      funnel_events: {
+        Row: {
+          created_at: string
+          event_name: string
+          id: string
+          metadata: Json | null
+          session_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_name: string
+          id?: string
+          metadata?: Json | null
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_name?: string
+          id?: string
+          metadata?: Json | null
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       payment_events: {
         Row: {
           amount_total: number | null
@@ -161,6 +188,7 @@ export type Database = {
           id: string
           is_admin: boolean | null
           is_premium: boolean | null
+          last_sign_in_at: string | null
           main_goal: string | null
           name: string | null
           trial_ends_at: string | null
@@ -173,6 +201,7 @@ export type Database = {
           id?: string
           is_admin?: boolean | null
           is_premium?: boolean | null
+          last_sign_in_at?: string | null
           main_goal?: string | null
           name?: string | null
           trial_ends_at?: string | null
@@ -185,6 +214,7 @@ export type Database = {
           id?: string
           is_admin?: boolean | null
           is_premium?: boolean | null
+          last_sign_in_at?: string | null
           main_goal?: string | null
           name?: string | null
           trial_ends_at?: string | null

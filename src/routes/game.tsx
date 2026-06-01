@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { generateTaskByCategory, generateDailyChallenge, GAME_ASSETS } from "@/lib/game-engine";
 import { toast } from "sonner";
 import { ChevronLeft, Trophy, Brain, Timer, Hourglass, Check, X } from "lucide-react";
+import { trackEvent } from "@/lib/analytics";
 
 export const Route = createFileRoute("/game")({
   component: Game,
@@ -56,6 +57,12 @@ function Game() {
       });
     }
     
+    if (search.mode === 'trial') {
+      trackEvent('test_completed', { score: finalScore, time: totalTime });
+    } else {
+      trackEvent('daily_challenge_completed', { score: finalScore, time: totalTime });
+    }
+    
     navigate({ to: "/conclusao", search: { score: finalScore, time: totalTime }, replace: true });
   }, [startTime, navigate]);
 
@@ -83,6 +90,7 @@ function Game() {
         const usedIds = await getUsedItemIds(user?.id);
 
         if (search.mode === 'trial') {
+          trackEvent('test_started');
           newTasks = [
             await generateTaskByCategory('memory', 10, 'easy', usedIds),
             await generateTaskByCategory('attention', 20, 'easy', usedIds),
