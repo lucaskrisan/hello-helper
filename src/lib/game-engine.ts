@@ -94,16 +94,17 @@ export const generateTaskByCategory = async (
       const roll = random();
       if (roll < 0.5) {
         const categories = Object.keys(CONTENT_POOLS);
-        const cat = categories[Math.floor(random() * categories.length)];
+        const catKey = categories[Math.floor(random() * categories.length)];
         const count = level === 'easy' ? 3 : level === 'medium' ? 5 : 7;
-        const items = await getAvailableItems(cat, count, random, usedIds);
+        const items = await getAvailableItems(catKey, count, random, usedIds);
         const words = items.map(i => i.word);
         const itemIds = items.map(i => i.id);
+        const categoryName = items[0].category;
         
-        const allWords = CONTENT_POOLS[cat].map(i => i.word);
+        const allWords = CONTENT_POOLS[catKey].map(i => i.word);
         const options = [...words, ...allWords.filter(w => !words.includes(w)).sort(() => random() - 0.5).slice(0, 5)].sort(() => random() - 0.5);
         
-        return { type: 'memory-words', words, options, level, categoryName: cat, itemIds };
+        return { type: 'memory-words', words, options, level, categoryName, itemIds };
       } else {
         const items = ["Pão", "Leite", "Café", "Maçã", "Arroz", "Feijão", "Açúcar", "Ovo"];
         const count = level === 'easy' ? 2 : level === 'medium' ? 3 : 5;
@@ -130,14 +131,14 @@ export const generateTaskByCategory = async (
         return { type: 'attention-letter', grid, intruder: letters[intruderIdx], cols: Math.sqrt(size), level };
       } else {
         const categories = Object.keys(CONTENT_POOLS);
-        const cat = categories[Math.floor(random() * categories.length)];
-        const pool = CONTENT_POOLS[cat];
-        const items = await getAvailableItems(cat, 4, random, usedIds);
-        const otherCat = categories.find(c => c !== cat)!;
-        const intruderItems = await getAvailableItems(otherCat, 1, random, usedIds);
+        const catKey = categories[Math.floor(random() * categories.length)];
+        const items = await getAvailableItems(catKey, 4, random, usedIds);
+        const categoryName = items[0].category;
+        const otherCatKey = categories.find(c => c !== catKey)!;
+        const intruderItems = await getAvailableItems(otherCatKey, 1, random, usedIds);
         const intruder = intruderItems[0];
         const options = [...items, intruder].sort(() => random() - 0.5);
-        return { type: 'word-intruder', options, intruder: intruder.word, categoryName: cat, level, itemIds: options.map(o => o.id) };
+        return { type: 'word-intruder', options, intruder: intruder.word, categoryName, level, itemIds: options.map(o => o.id) };
       }
     }
 
@@ -161,12 +162,36 @@ export const generateTaskByCategory = async (
 
     case 'language': {
       const roll = random();
+      const categories = Object.keys(CONTENT_POOLS);
+      const cat = categories[Math.floor(random() * categories.length)];
+      
       if (roll < 0.5) {
-        const categories = Object.keys(CONTENT_POOLS);
-        const cat = categories[Math.floor(random() * categories.length)];
         const items = await getAvailableItems(cat, 1, random, usedIds);
         const item = items[0];
-        return { type: 'true-false', statement: item.word, isTrue: item.isTrue, curiosity: item.curiosity, level, itemId: item.id, category: cat };
+        const isTrue = random() > 0.5;
+        
+        let statement = "";
+        let finalIsTrue = isTrue;
+        
+        if (isTrue) {
+          statement = `"${item.word}" faz parte do grupo: ${item.category}?`;
+        } else {
+          const otherCats = categories.filter(c => c !== cat);
+          const randomOtherCatKey = otherCats[Math.floor(random() * otherCats.length)];
+          const otherCatName = CONTENT_POOLS[randomOtherCatKey][0].category;
+          statement = `"${item.word}" faz parte do grupo: ${otherCatName}?`;
+          finalIsTrue = false;
+        }
+        
+        return { 
+          type: 'true-false', 
+          statement, 
+          isTrue: finalIsTrue, 
+          curiosity: item.curiosity, 
+          level, 
+          itemId: item.id, 
+          category: cat 
+        };
       } else {
         const categories = Object.keys(CONTENT_POOLS);
         const cat = categories[Math.floor(random() * categories.length)];

@@ -145,7 +145,7 @@ function Game() {
     setFeedback({ type: 'success', message: "Muito bem! Sua mente está despertando!" });
     setTimeout(() => {
       loadNextTask();
-    }, 1200);
+    }, 800);
   };
 
   const handleRetry = (msg?: string) => {
@@ -160,7 +160,7 @@ function Game() {
         setMemState('showing');
         setTimeLeft(15);
       }
-    }, 1500);
+    }, 1200);
   };
 
 
@@ -255,7 +255,7 @@ function Game() {
             {memState === 'showing' ? (
               <div className="space-y-4">
                 <div className="text-3xl font-bold text-orange-600 mb-6">{timeLeft}s</div>
-                <div className="bg-orange-50 p-6 rounded-2xl space-y-3">
+                <div className="bg-orange-50 p-6 rounded-2xl space-y-3 mb-6">
                   {currentTask.list.map((item: any, i: number) => (
                     <div key={i} className="flex justify-between items-center text-xl font-bold text-orange-900 border-b border-orange-200 pb-2">
                       <span>{item.item}</span>
@@ -263,6 +263,13 @@ function Game() {
                     </div>
                   ))}
                 </div>
+                <Button 
+                  onClick={() => setMemState('choosing')}
+                  variant="outline"
+                  className="w-full border-orange-200 text-orange-700 hover:bg-orange-50 font-bold py-6 rounded-xl"
+                >
+                  JÁ DECOREI
+                </Button>
               </div>
             ) : (
               <div className="space-y-8">
@@ -290,7 +297,16 @@ function Game() {
             {memState === 'showing' ? (
               <div className="space-y-4">
                 <div className="text-3xl font-bold text-orange-600 mb-6">{timeLeft}s</div>
-                {currentTask.words.map((w: string) => <p key={w} className="text-3xl font-bold text-[#4A7C59]">{w}</p>)}
+                <div className="space-y-3 mb-8">
+                  {currentTask.words.map((w: string) => <p key={w} className="text-3xl font-bold text-[#4A7C59]">{w}</p>)}
+                </div>
+                <Button 
+                  onClick={() => setMemState('choosing')}
+                  variant="outline"
+                  className="w-full border-green-200 text-[#4A7C59] hover:bg-green-50 font-bold py-6 rounded-xl"
+                >
+                  ESTOU PRONTO
+                </Button>
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-3">
