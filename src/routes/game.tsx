@@ -84,6 +84,7 @@ function Game() {
     } else if (search.mode === 'category' && search.categoryId) {
       const task = generateTaskByCategory(search.categoryId, Math.random() * 10000);
       setCurrentTask(task);
+      setTaskIndex(prev => prev + 1);
     }
     
     // Reset states
