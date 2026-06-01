@@ -127,14 +127,14 @@ function RootComponent() {
     
     // Se o usuário está autenticado e tenta acessar a landing page ou login, redireciona para o dashboard
     if (isAuthenticated && (isLoginPage || isLandingPage)) {
-      setTimeout(() => navigate({ to: '/dashboard' }), 0);
+      navigate({ to: '/dashboard', replace: true });
     }
 
     // Se o usuário NÃO está autenticado e tenta acessar áreas internas, redireciona para login
     if (!isAuthenticated && !isLoginPage && !isLandingPage) {
-      setTimeout(() => navigate({ to: '/login' }), 0);
+      navigate({ to: '/login', replace: true });
     }
-  }, [isAuthenticated, router.state.location.pathname]);
+  }, [isAuthenticated, router.state.location.pathname, navigate]);
 
   return (
     <QueryClientProvider client={queryClient}>

@@ -18,10 +18,11 @@ function Onboarding() {
     if (user) {
       await supabase.from("profiles").upsert({
         user_id: user.id,
+        name: user.email?.split('@')[0], // Nome padrão baseado no email
         age_range: data.age_range,
         main_goal: data.main_goal,
       });
-      navigate({ to: "/dashboard" });
+      navigate({ to: "/dashboard", replace: true });
     }
   };
 

@@ -47,16 +47,19 @@ function Game() {
       total_questions: 3,
       correct_answers: correctCount,
       total_time: totalTime,
-    }).select().single();
+    }).select().maybeSingle();
 
-    // Update streak (simplified logic)
+    // Update streak 
+    const { data: existingStreak } = await supabase.from("streaks").select("*").eq("user_id", user.id).maybeSingle();
+    
     await supabase.from("streaks").upsert({
       user_id: user.id,
-      current_streak: 1,
+      current_streak: (existingStreak?.current_streak || 0) + 1,
+      best_streak: Math.max((existingStreak?.best_streak || 0), (existingStreak?.current_streak || 0) + 1),
       last_completed_date: new Date().toISOString().split('T')[0]
     });
 
-    navigate({ to: "/conclusao", search: { score: finalScore, time: totalTime } });
+    navigate({ to: "/conclusao", search: { score: finalScore, time: totalTime }, replace: true });
   };
 
   return (
