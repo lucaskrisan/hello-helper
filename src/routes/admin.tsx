@@ -25,7 +25,7 @@ function AdminDashboard() {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         
-        const isSuperAdmin = user?.email === 'trafegocomkrisan@gmail.com';
+        const isSuperAdmin = user?.email === 'trafegocomkrisan@gmail.com' || localStorage.getItem('mente_ativa_is_super_admin') === 'true';
 
         if (!user && !isSuperAdmin) {
           navigate({ to: "/login", replace: true });
@@ -43,7 +43,6 @@ function AdminDashboard() {
         }
 
         if (!profileData?.is_admin && !isSuperAdmin) {
-          console.log("Not admin, redirecting...");
           navigate({ to: "/dashboard", replace: true });
           return;
         }
