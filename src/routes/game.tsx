@@ -31,6 +31,7 @@ function Game() {
   const { sequence, options: logicOptions, answer } = challengeData.logic;
   const { grid: colorGrid, intruder: intruderColor } = challengeData.colorAttention;
   const { grid: searchGrid, word: wordForSearch } = challengeData.wordSearch;
+  console.log('Daily Challenge Word Search:', wordForSearch);
 
   useEffect(() => {
     if (exerciseOrder.length === 0) {
@@ -57,11 +58,12 @@ function Game() {
 
     const finalScore = Math.min(100, Math.round(score));
     const totalTime = Math.floor((Date.now() - startTime) / 1000);
+    console.log('Finishing challenge with score:', finalScore);
 
     await supabase.from("daily_challenges").insert({
       user_id: user.id,
       score: finalScore,
-      total_questions: 3,
+      total_questions: 4, // Agora são 4 exercícios
       correct_answers: correctCount,
       total_time: totalTime,
     });
