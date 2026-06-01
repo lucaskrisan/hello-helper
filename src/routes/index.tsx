@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useAuthStore } from "@/hooks/use-auth";
+import { useEffect } from "react";
 
 export const Route = createFileRoute("/")({
   component: LandingPage,
@@ -9,23 +9,17 @@ export const Route = createFileRoute("/")({
 
 function LandingPage() {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        navigate({ to: "/dashboard", replace: true });
-      } else {
-        setLoading(false);
-      }
-    });
-  }, [navigate]);
-
-  if (loading) return null;
+    if (isAuthenticated) {
+      navigate({ to: "/dashboard", replace: true });
+    }
+  }, [isAuthenticated, navigate]);
 
   return (
     <div className="min-h-screen bg-[#F7F3EA] flex flex-col items-center justify-center p-6 text-center">
-      <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mb-8 animate-bounce">
+      <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mb-8">
         <span className="text-5xl">🧠</span>
       </div>
       <h1 className="text-4xl md:text-5xl font-bold text-[#1F2937] mb-6 tracking-tight">
@@ -59,5 +53,6 @@ function LandingPage() {
     </div>
   );
 }
+
 
 
