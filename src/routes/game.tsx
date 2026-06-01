@@ -36,6 +36,24 @@ function Game() {
   const [isShowingSequence, setIsShowingSequence] = useState(false);
   const [searchSelection, setSearchSelection] = useState<{r: number, c: number}[]>([]);
   const [totalTimeInApp, setTotalTimeInApp] = useState(0);
+  const [sessionTimeLeft, setSessionTimeLeft] = useState(300); // 5 minutos para categorias
+
+  // Timer de sessão para modo categoria
+  useEffect(() => {
+    if (search.mode === 'category') {
+      const timer = setInterval(() => {
+        setSessionTimeLeft(prev => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            finishChallenge();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [search.mode]);
 
   // 10-minute engagement check
   useEffect(() => {
