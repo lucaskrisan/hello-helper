@@ -125,10 +125,12 @@ function RootComponent() {
     const isLoginPage = router.state.location.pathname === '/login';
     const isLandingPage = router.state.location.pathname === '/';
     
+    console.log('Auth check:', { isAuthenticated, path: router.state.location.pathname });
+
     if (!isAuthenticated && !isLoginPage && !isLandingPage) {
       navigate({ to: '/login' });
     }
-  }, [isAuthenticated, router.state.location.pathname]);
+  }, [isAuthenticated, router.state.location.pathname, navigate, router.state.location]);
 
   return (
     <QueryClientProvider client={queryClient}>
