@@ -1,4 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Check } from "lucide-react";
@@ -9,6 +11,16 @@ export const Route = createFileRoute("/premium")({
 
 function Premium() {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    async function checkAuth() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        navigate({ to: "/login", replace: true });
+      }
+    }
+    checkAuth();
+  }, [navigate]);
 
   const benefits = [
     "Desafios ilimitados",

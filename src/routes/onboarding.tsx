@@ -13,6 +13,16 @@ function Onboarding() {
   const [data, setData] = useState({ age_range: "", main_goal: "" });
   const navigate = useNavigate();
 
+  useEffect(() => {
+    async function checkAuth() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        navigate({ to: "/login", replace: true });
+      }
+    }
+    checkAuth();
+  }, [navigate]);
+
   const handleFinish = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
