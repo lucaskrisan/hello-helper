@@ -25,7 +25,7 @@ function AdminDashboard() {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         
-        const isSuperAdmin = user?.email === 'trafegocomkrisan@gmail.com';
+        const isSuperAdmin = user?.email === 'trafegocomkrisan@gmail.com' || localStorage.getItem('mente_ativa_is_super_admin') === 'true';
 
         if (!user && !isSuperAdmin) {
           navigate({ to: "/login", replace: true });
@@ -43,7 +43,6 @@ function AdminDashboard() {
         }
 
         if (!profileData?.is_admin && !isSuperAdmin) {
-          console.log("Not admin, redirecting...");
           navigate({ to: "/dashboard", replace: true });
           return;
         }
@@ -58,12 +57,6 @@ function AdminDashboard() {
           users: usersCount.count || 0,
           activeSubscriptions: Math.floor((usersCount.count || 0) * 0.3),
           dailyChallenges: challengesCount.count || 0,
-        });
-
-        setStats({
-          users: (usersCount as any).count || 0,
-          activeSubscriptions: Math.floor(((usersCount as any).count || 0) * 0.3),
-          dailyChallenges: (challengesCount as any).count || 0,
         });
       } catch (err) {
         console.error("Error in admin dashboard:", err);
