@@ -128,7 +128,7 @@ function RootComponent() {
     if (!isAuthenticated && !isLoginPage && !isLandingPage) {
       navigate({ to: '/login' });
     }
-  }, [isAuthenticated, router.state.location.pathname]);
+  }, [isAuthenticated, router.state.location.pathname, navigate]);
 
   return (
     <QueryClientProvider client={queryClient}>
