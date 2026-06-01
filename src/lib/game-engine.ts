@@ -45,13 +45,12 @@ const mulberry32 = (a: number) => {
   }
 };
 
-export const generateTaskByCategory = (categoryId: string, seedOffset: number = 0) => {
-  const seed = Date.now() + seedOffset;
+export const generateTaskByCategory = (categoryId: string, seedOffset: number = 0, level: 'easy' | 'medium' | 'hard' = 'easy') => {
+  const seed = Date.now() + seedOffset + (level === 'hard' ? 1000 : level === 'medium' ? 500 : 0);
   const random = mulberry32(seed);
 
   switch (categoryId) {
     case 'memory': {
-      // Alternar entre 4 tipos de memória
       const roll = random();
       let subType = 'words';
       if (roll < 0.25) subType = 'words';
@@ -60,72 +59,74 @@ export const generateTaskByCategory = (categoryId: string, seedOffset: number = 
       else subType = 'shopping';
       
       if (subType === 'words') {
+        const wordCount = level === 'easy' ? 3 : level === 'medium' ? 5 : 7;
         const shuffledWords = [...GAME_ASSETS.words].sort(() => random() - 0.5);
-        const selectedWords = shuffledWords.slice(0, 5);
-        const wordOptions = [...selectedWords, ...shuffledWords.slice(5, 10)].sort(() => random() - 0.5);
-        return { type: 'memory-words', words: selectedWords, options: wordOptions };
+        const selectedWords = shuffledWords.slice(0, wordCount);
+        const wordOptions = [...selectedWords, ...shuffledWords.slice(wordCount, wordCount + 5)].sort(() => random() - 0.5);
+        return { type: 'memory-words', words: selectedWords, options: wordOptions, level };
       } else if (subType === 'sequence') {
-        const sequenceLength = 4;
+        const sequenceLength = level === 'easy' ? 3 : level === 'medium' ? 5 : 7;
         const sequence = [];
         for (let i = 0; i < sequenceLength; i++) {
           sequence.push(Math.floor(random() * 4));
         }
-        return { type: 'memory-sequence', sequence, colors: GAME_ASSETS.colors.slice(0, 4) };
+        return { type: 'memory-sequence', sequence, colors: GAME_ASSETS.colors.slice(0, 4), level };
       } else if (subType === 'association') {
-        const items = ["Flor", "Vaso", "Relógio", "Livro", "Caneta"];
+        const items = ["Flor", "Vaso", "Relógio", "Livro", "Caneta", "Cadeira", "Mesa", "Lâmpada"];
         const selectedItem = items[Math.floor(random() * items.length)];
         const selectedColor = GAME_ASSETS.colors[Math.floor(random() * GAME_ASSETS.colors.length)];
-        const options = GAME_ASSETS.colors.sort(() => random() - 0.5).slice(0, 4);
+        const optionCount = level === 'easy' ? 4 : level === 'medium' ? 6 : 8;
+        const options = GAME_ASSETS.colors.sort(() => random() - 0.5).slice(0, optionCount);
         if (!options.includes(selectedColor)) options[0] = selectedColor;
-        return { type: 'memory-association', item: selectedItem, color: selectedColor, options: options.sort(() => random() - 0.5) };
+        return { type: 'memory-association', item: selectedItem, color: selectedColor, options: options.sort(() => random() - 0.5), level };
       } else {
-        // Lista de Compras
-        const items = ["Pão", "Leite", "Café", "Maçã", "Arroz", "Feijão", "Açúcar"];
+        const itemCount = level === 'easy' ? 2 : level === 'medium' ? 3 : 5;
+        const items = ["Pão", "Leite", "Café", "Maçã", "Arroz", "Feijão", "Açúcar", "Uva", "Mel", "Ovo"];
         const shuffledItems = items.sort(() => random() - 0.5);
-        const list = [
-          { item: shuffledItems[0], qty: Math.floor(random() * 5) + 1 },
-          { item: shuffledItems[1], qty: Math.floor(random() * 5) + 1 },
-          { item: shuffledItems[2], qty: Math.floor(random() * 5) + 1 },
-        ];
-        const correct = list[Math.floor(random() * 3)];
-        const options = [correct.qty, (correct.qty + 1) % 6 || 1, (correct.qty + 2) % 6 || 2, 6].sort(() => random() - 0.5);
-        return { type: 'memory-shopping', list, question: `Quantos(as) ${correct.item} estavam na lista?`, answer: correct.qty, options };
+        const list = [];
+        for(let i=0; i<itemCount; i++) {
+          list.push({ item: shuffledItems[i], qty: Math.floor(random() * 5) + 1 });
+        }
+        const correct = list[Math.floor(random() * list.length)];
+        const options = [correct.qty, (correct.qty + 1) % 10 || 1, (correct.qty + 2) % 10 || 2, (correct.qty + 3) % 10 || 3].sort(() => random() - 0.5);
+        return { type: 'memory-shopping', list, question: `Quantos(as) ${correct.item} estavam na lista?`, answer: correct.qty, options, level };
       }
     }
 
     case 'attention': {
       const isColorMode = random() > 0.5;
+      const gridSize = level === 'easy' ? 9 : level === 'medium' ? 16 : 25;
       if (isColorMode) {
         const baseColorIndex = Math.floor(random() * GAME_ASSETS.colors.length);
         const intruderColorIndex = (baseColorIndex + 1 + Math.floor(random() * (GAME_ASSETS.colors.length - 1))) % GAME_ASSETS.colors.length;
         const baseColor = GAME_ASSETS.colors[baseColorIndex];
         const intruderColor = GAME_ASSETS.colors[intruderColorIndex];
-        const grid = Array(16).fill(baseColor);
-        grid[Math.floor(random() * 16)] = intruderColor;
-        return { type: 'attention-color', grid, intruder: intruderColor };
+        const grid = Array(gridSize).fill(baseColor);
+        grid[Math.floor(random() * gridSize)] = intruderColor;
+        return { type: 'attention-color', grid, intruder: intruderColor, cols: Math.sqrt(gridSize), level };
       } else {
         const baseLetterIndex = Math.floor(random() * GAME_ASSETS.letters.length);
         const intruderLetterIndex = (baseLetterIndex + 1 + Math.floor(random() * (GAME_ASSETS.letters.length - 1))) % GAME_ASSETS.letters.length;
         const baseLetter = GAME_ASSETS.letters[baseLetterIndex];
         const intruderLetter = GAME_ASSETS.letters[intruderLetterIndex];
-        const grid = Array(16).fill(baseLetter);
-        grid[Math.floor(random() * 16)] = intruderLetter;
-        return { type: 'attention-letter', grid, intruder: intruderLetter };
+        const grid = Array(gridSize).fill(baseLetter);
+        grid[Math.floor(random() * gridSize)] = intruderLetter;
+        return { type: 'attention-letter', grid, intruder: intruderLetter, cols: Math.sqrt(gridSize), level };
       }
     }
     case 'logic': {
       const pattern = GAME_ASSETS.logicPatterns[Math.floor(random() * GAME_ASSETS.logicPatterns.length)];
-      const startNum = Math.floor(random() * 10) + 1;
-      const stepNum = Math.floor(random() * 5) + 2;
+      const startNum = Math.floor(random() * (level === 'easy' ? 10 : level === 'medium' ? 50 : 100)) + 1;
+      const stepNum = Math.floor(random() * (level === 'easy' ? 5 : level === 'medium' ? 10 : 20)) + 2;
       const fullSeq = pattern.fn(startNum, stepNum);
       const sequence = fullSeq.slice(0, 4);
       const answer = fullSeq[4];
-      const logicOptions = [answer, answer + Math.floor(random() * 5) + 1, answer - Math.floor(random() * 5) - 1, answer + 10].sort(() => random() - 0.5);
-      return { type: 'logic', sequence, options: logicOptions, answer };
+      const logicOptions = [answer, answer + 5, answer - 5, answer + 10].sort(() => random() - 0.5);
+      return { type: 'logic', sequence, options: logicOptions, answer, level };
     }
     case 'word-search': {
       const word = GAME_ASSETS.words[Math.floor(random() * GAME_ASSETS.words.length)].toUpperCase();
-      const size = 6;
+      const size = level === 'easy' ? 6 : level === 'medium' ? 8 : 10;
       const grid = Array(size).fill(null).map(() => 
         Array(size).fill(null).map(() => GAME_ASSETS.letters[Math.floor(random() * 26)])
       );
@@ -134,26 +135,25 @@ export const generateTaskByCategory = (categoryId: string, seedOffset: number = 
       for (let i = 0; i < word.length; i++) {
         grid[row][colStart + i] = word[i];
       }
-      return { type: 'word-search', grid, word };
+      return { type: 'word-search', grid, word, level };
     }
     default:
       return null;
   }
 };
 
-
-
 export const generateDailyChallenge = (seedStr: string) => {
   const numericSeed = seedStr.split('-').reduce((acc, part) => acc + parseInt(part), 0);
-  const random = mulberry32(numericSeed);
-
-  // Um desafio diário agora tem 24 etapas variadas
   const tasks = [];
   const categories = ['memory', 'attention', 'logic', 'word-search'];
   
   for (let i = 0; i < 24; i++) {
+    let level: 'easy' | 'medium' | 'hard' = 'easy';
+    if (i >= 5 && i < 10) level = 'medium';
+    else if (i >= 10) level = 'hard';
+
     const category = categories[i % categories.length];
-    const task = generateTaskByCategory(category, numericSeed + i);
+    const task = generateTaskByCategory(category, numericSeed + i, level);
     if (task) tasks.push(task);
   }
 
