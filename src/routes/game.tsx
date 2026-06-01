@@ -11,7 +11,7 @@ export const Route = createFileRoute("/game")({
   component: Game,
   validateSearch: (search: Record<string, unknown>) => {
     return {
-      mode: (search.mode as 'daily' | 'category') || 'daily',
+      mode: (search.mode as 'daily' | 'category' | 'trial') || 'daily',
       categoryId: search.categoryId as string | undefined
     };
   }
@@ -96,7 +96,19 @@ function Game() {
   }, []);
 
   const loadNextTask = useCallback(() => {
-    if (search.mode === 'daily') {
+    if (search.mode === 'trial') {
+      const trialTasks = [
+        generateTaskByCategory('memory', 10, 'easy'),
+        generateTaskByCategory('attention', 20, 'easy'),
+        generateTaskByCategory('logic', 30, 'easy'),
+      ];
+      if (taskIndex < 3) {
+        setCurrentTask(trialTasks[taskIndex]);
+        setTaskIndex(prev => prev + 1);
+      } else {
+        finishChallenge();
+      }
+    } else if (search.mode === 'daily') {
       const daily = generateDailyChallenge(new Date().toISOString().split('T')[0]);
       if (taskIndex < daily.tasks.length) {
         setCurrentTask(daily.tasks[taskIndex]);
@@ -145,7 +157,7 @@ function Game() {
   }, [currentTask, playSequence]);
 
   const handleCorrect = () => {
-    const increment = search.mode === 'daily' ? (100 / 24) : 5;
+    const increment = search.mode === 'trial' ? 33.3 : (search.mode === 'daily' ? (100 / 24) : 5);
     setScore(s => s + increment);
     setFeedback({ type: 'success', message: "Muito bem! Você está indo muito bem!" });
     setTimeout(() => {
@@ -205,7 +217,7 @@ function Game() {
               <div className="flex items-center space-x-1.5">
                 <Brain className="w-4 h-4 text-primary shrink-0" />
                 <span className="font-bold text-gray-700 text-sm">
-                  Etapa {taskIndex}/24
+                  Etapa {taskIndex}/{search.mode === 'trial' ? '3' : '24'}
                 </span>
               </div>
               <div className="text-[9px] font-bold uppercase tracking-tighter text-primary truncate w-full text-center">
