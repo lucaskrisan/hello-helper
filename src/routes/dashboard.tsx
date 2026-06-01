@@ -59,13 +59,14 @@ function Dashboard() {
       </header>
 
       <Card className="p-8 bg-white mb-8 text-center rounded-3xl shadow-sm border-0">
-        <p className="text-xl mb-4 font-medium text-[#4A7C59]">Seu desafio de hoje está pronto.</p>
+        <p className="text-xl mb-6 font-medium text-[#4A7C59]">Hoje é um ótimo dia para treinar!</p>
         <Button 
           onClick={() => navigate({ to: "/game" })}
-          className="w-full py-10 text-2xl font-bold bg-[#4A7C59] hover:bg-[#3d694a] rounded-2xl shadow-md"
+          className="w-full py-12 text-2xl font-bold bg-[#4A7C59] hover:bg-[#3d694a] rounded-3xl shadow-xl transition-all hover:scale-[1.02] active:scale-[0.98]"
         >
-          COMEÇAR DESAFIO
+          INICIAR MEU TREINO
         </Button>
+        <p className="mt-4 text-sm text-gray-500">Estimativa: 10 minutos</p>
       </Card>
 
       <div className="grid grid-cols-2 gap-4">
