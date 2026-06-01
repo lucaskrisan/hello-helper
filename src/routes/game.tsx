@@ -31,6 +31,9 @@ function Game() {
   const [selectedWords, setSelectedWords] = useState<string[]>([]);
   const [memState, setMemState] = useState<'showing' | 'choosing'>('showing');
   const [timeLeft, setTimeLeft] = useState(10);
+  const [activeButton, setActiveButton] = useState<number | null>(null);
+  const [userSequence, setUserSequence] = useState<number[]>([]);
+  const [isShowingSequence, setIsShowingSequence] = useState(false);
   const [searchSelection, setSearchSelection] = useState<{r: number, c: number}[]>([]);
   const [totalTimeInApp, setTotalTimeInApp] = useState(0);
 
@@ -67,6 +70,9 @@ function Game() {
     
     // Reset states
     setSelectedWords([]);
+    setUserSequence([]);
+    setActiveButton(null);
+    setIsShowingSequence(false);
     setMemState('showing');
     setTimeLeft(10);
     setSearchSelection([]);
@@ -76,6 +82,25 @@ function Game() {
   useEffect(() => {
     loadNextTask();
   }, []);
+
+  const playSequence = useCallback(async (sequence: number[]) => {
+    setIsShowingSequence(true);
+    for (const buttonIdx of sequence) {
+      setActiveButton(buttonIdx);
+      await new Promise(r => setTimeout(r, 800));
+      setActiveButton(null);
+      await new Promise(r => setTimeout(r, 300));
+    }
+    setIsShowingSequence(false);
+  }, []);
+
+  useEffect(() => {
+    if (currentTask?.type === 'memory-sequence') {
+      setTimeout(() => {
+        playSequence(currentTask.sequence);
+      }, 1000);
+    }
+  }, [currentTask, playSequence]);
 
   const handleCorrect = () => {
     setScore(s => s + 25);
@@ -171,7 +196,7 @@ function Game() {
           </div>
         )}
 
-        {currentTask.type === 'memory' && (
+        {currentTask.type === 'memory-words' && (
           <div className="text-center">
             <h2 className="text-2xl font-bold mb-6">Memorize as palavras</h2>
             {memState === 'showing' ? (
@@ -218,7 +243,137 @@ function Game() {
           </div>
         )}
 
+        {currentTask.type === 'memory-sequence' && (
+          <div className="text-center">
+            <h2 className="text-2xl font-bold mb-2">Sequência de Cores</h2>
+            <p className="text-gray-500 mb-8">{isShowingSequence ? "Observe a sequência..." : "Repita a sequência tocando nas cores"}</p>
+            <div className="grid grid-cols-2 gap-4 max-w-[280px] mx-auto">
+              {currentTask.colors.map((color: string, i: number) => (
+                <button
+                  key={i}
+                  disabled={isShowingSequence}
+                  onClick={() => {
+                    const nextSequence = [...userSequence, i];
+                    setUserSequence(nextSequence);
+                    
+                    // Feedback visual ao clicar
+                    setActiveButton(i);
+                    setTimeout(() => setActiveButton(null), 300);
+
+                    // Verificar acerto
+                    if (currentTask.sequence[nextSequence.length - 1] !== i) {
+                      handleRetry("Ops! A sequência foi um pouco diferente. Vamos tentar de novo?");
+                      setUserSequence([]);
+                      setTimeout(() => playSequence(currentTask.sequence), 3500);
+                    } else if (nextSequence.length === currentTask.sequence.length) {
+                      handleCorrect();
+                    }
+                  }}
+                  className={`h-28 rounded-3xl transition-all transform active:scale-95 ${
+                    activeButton === i ? "brightness-125 scale-105 shadow-xl ring-4 ring-white" : "brightness-100 shadow-md"
+                  }`}
+                  style={{ backgroundColor: color }}
+                />
+              ))}
+            </div>
+            {!isShowingSequence && userSequence.length > 0 && (
+              <p className="mt-6 text-primary font-bold">{userSequence.length} de {currentTask.sequence.length} cores</p>
+            )}
+          </div>
+        )}
+
+
+        {currentTask.type === 'memory-shopping' && (
+          <div className="text-center">
+            <h2 className="text-2xl font-bold mb-6">Lista de Compras</h2>
+            {memState === 'showing' ? (
+              <div className="space-y-6">
+                <div className="flex justify-center mb-6">
+                  <div className="relative w-20 h-20 flex items-center justify-center">
+                    <svg className="absolute w-full h-full -rotate-90">
+                      <circle cx="40" cy="40" r="36" stroke="currentColor" strokeWidth="4" fill="transparent" className="text-gray-100" />
+                      <circle cx="40" cy="40" r="36" stroke="currentColor" strokeWidth="4" fill="transparent" strokeDasharray="226.2" strokeDashoffset={226.2 * (1 - timeLeft / 10)} className="text-orange-500 transition-all duration-1000" />
+                    </svg>
+                    <span className="text-2xl font-bold text-orange-600">{timeLeft}</span>
+                  </div>
+                </div>
+                <div className="bg-orange-50 p-6 rounded-[2rem] border-2 border-orange-100 text-left">
+                  <p className="text-orange-800 font-bold mb-4 flex items-center gap-2">🛒 Memorize as quantidades:</p>
+                  <ul className="space-y-3">
+                    {currentTask.list.map((item: any, i: number) => (
+                      <li key={i} className="text-2xl text-gray-700 flex justify-between border-b border-orange-200/50 pb-2">
+                        <span className="font-medium">{item.item}</span>
+                        <span className="font-bold text-primary">{item.qty}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-8">
+                <p className="text-2xl font-bold text-gray-700">{currentTask.question}</p>
+                <div className="grid grid-cols-2 gap-4">
+                  {currentTask.options.map((qty: number) => (
+                    <Button 
+                      key={qty}
+                      onClick={() => {
+                        if (qty === currentTask.answer) handleCorrect();
+                        else handleRetry("Quase! Essa não era a quantidade certa. Vamos tentar de novo?");
+                      }}
+                      className="py-10 text-4xl font-bold rounded-[1.5rem] bg-white border-2 border-gray-100 text-gray-700 shadow-sm transition-all active:scale-95"
+                    >
+                      {qty}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {currentTask.type === 'memory-association' && (
+
+          <div className="text-center">
+            <h2 className="text-2xl font-bold mb-6">Associação de Cores</h2>
+            {memState === 'showing' ? (
+              <div className="space-y-4">
+                <div className="flex justify-center mb-6">
+                  <div className="relative w-20 h-20 flex items-center justify-center">
+                    <svg className="absolute w-full h-full -rotate-90">
+                      <circle cx="40" cy="40" r="36" stroke="currentColor" strokeWidth="4" fill="transparent" className="text-gray-100" />
+                      <circle cx="40" cy="40" r="36" stroke="currentColor" strokeWidth="4" fill="transparent" strokeDasharray="226.2" strokeDashoffset={226.2 * (1 - timeLeft / 10)} className="text-orange-500 transition-all duration-1000" />
+                    </svg>
+                    <span className="text-2xl font-bold text-orange-600">{timeLeft}</span>
+                  </div>
+                </div>
+                <div className="p-8 rounded-[2rem] border-4 inline-block mb-4" style={{ borderColor: currentTask.color }}>
+                   <span className="text-6xl">{currentTask.item === 'Flor' ? '🌸' : currentTask.item === 'Vaso' ? '🏺' : currentTask.item === 'Relógio' ? '⌚' : currentTask.item === 'Livro' ? '📖' : '🖋️'}</span>
+                </div>
+                <p className="text-2xl font-bold text-gray-700">O {currentTask.item} é desta cor.</p>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                <p className="text-lg text-gray-600">Qual era a cor do <span className="font-bold text-primary">{currentTask.item}</span>?</p>
+                <div className="grid grid-cols-2 gap-4">
+                  {currentTask.options.map((color: string) => (
+                    <Button 
+                      key={color}
+                      onClick={() => {
+                        if (color === currentTask.color) handleCorrect();
+                        else handleRetry("Aquela cor era um pouquinho diferente... tente lembrar!");
+                      }}
+                      className="h-24 rounded-3xl shadow-md border-4 border-white transition-all transform active:scale-95"
+                      style={{ backgroundColor: color }}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         {(currentTask.type === 'attention-letter' || currentTask.type === 'attention-color') && (
+
           <div className="text-center">
             <h2 className="text-2xl font-bold mb-2">Atenção Visual</h2>
             <p className="text-gray-500 mb-8">Toque no elemento diferente</p>
