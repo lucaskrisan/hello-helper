@@ -1,9 +1,11 @@
 {
-  "welcome": "Bem-vindo",
+  "welcome": "Bom dia",
+  "dashboard_subtitle": "Sua mente agradece o treino de hoje.",
+  "daily_training_info": "Treino completo para hoje • 24 etapas",
   "login": "Entrar",
   "dashboard": "Painel",
-  "settings": "Configurações",
-  "start_challenge": "Começar Desafio",
+  "settings": "Ajustes",
+  "start_challenge": "Iniciar Desafio do Dia",
   "premium": "Assinatura Premium",
   "logout": "Sair",
   "language": "Idioma",
@@ -14,4 +16,5 @@
   "progress": "Progresso",
   "admin": "Administrador",
   "back_to_dashboard": "Voltar ao Painel"
+
 }

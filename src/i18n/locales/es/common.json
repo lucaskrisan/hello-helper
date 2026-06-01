@@ -1,9 +1,11 @@
 {
-  "welcome": "Bienvenido",
+  "welcome": "Buen día",
+  "dashboard_subtitle": "Tu mente te agradece el entrenamiento de hoy.",
+  "daily_training_info": "Entrenamiento completo para hoy • 24 etapas",
   "login": "Entrar",
   "dashboard": "Panel",
-  "settings": "Configuración",
-  "start_challenge": "Iniciar Desafío",
+  "settings": "Ajustes",
+  "start_challenge": "Iniciar Desafío del Día",
   "premium": "Suscripción Premium",
   "logout": "Cerrar sesión",
   "language": "Idioma",
@@ -14,4 +16,5 @@
   "progress": "Progreso",
   "admin": "Administrador",
   "back_to_dashboard": "Volver al Panel"
+
 }

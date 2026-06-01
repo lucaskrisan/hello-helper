@@ -1,9 +1,11 @@
 {
-  "welcome": "Welcome",
+  "welcome": "Good morning",
+  "dashboard_subtitle": "Your mind thanks you for today's training.",
+  "daily_training_info": "Complete workout for today • 24 steps",
   "login": "Login",
   "dashboard": "Dashboard",
   "settings": "Settings",
-  "start_challenge": "Start Challenge",
+  "start_challenge": "Start Daily Challenge",
   "premium": "Premium Subscription",
   "logout": "Logout",
   "language": "Language",
@@ -14,4 +16,5 @@
   "progress": "Progress",
   "admin": "Admin",
   "back_to_dashboard": "Back to Dashboard"
+
 }
