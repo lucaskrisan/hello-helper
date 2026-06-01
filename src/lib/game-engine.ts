@@ -1,16 +1,36 @@
-import { CONTENT_POOLS, ContentItem } from './content-pools';
+import { CONTENT_POOLS as PT_POOLS, ContentItem } from './content-pools';
+import { ES_POOLS, EN_POOLS } from './content-pools-i18n';
 import { supabase } from '@/integrations/supabase/client';
+import i18n from '@/i18n/config';
+
+const getActivePools = (): Record<string, ContentItem[]> => {
+  const lang = (typeof window !== 'undefined' && i18n.language) || 'pt';
+  if (lang.startsWith('es')) return ES_POOLS;
+  if (lang.startsWith('en')) return EN_POOLS;
+  return PT_POOLS;
+};
+
+const localizedCategories = () => {
+  const lang = i18n.language || 'pt';
+  const labels: Record<string, { name: string; desc: string }> = {
+    pt: {
+      name: '', desc: '',
+    },
+  };
+  return [
+    { id: "memory", name: i18n.t('category_memory'), icon: "🧠", color: "#4A7C59", description: i18n.t('category_desc_memory') },
+    { id: "attention", name: i18n.t('category_attention'), icon: "👁️", color: "#D97706", description: i18n.t('category_desc_attention') },
+    { id: "logic", name: i18n.t('category_logic'), icon: "🧩", color: "#3B82F6", description: i18n.t('category_desc_logic') },
+    { id: "language", name: i18n.t('category_language'), icon: "✍️", color: "#8B5CF6", description: i18n.t('category_desc_language') }
+  ];
+};
 
 export const GAME_ASSETS = {
   letters: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"],
   colors: ["#EF4444", "#3B82F6", "#10B981", "#F59E0B", "#8B5CF6", "#EC4899", "#06B6D4", "#F43F5E", "#84CC16", "#14B8A6"],
-  categories: [
-    { id: "memory", name: "Memória", icon: "🧠", color: "#4A7C59", description: "Exercícios de fixação" },
-    { id: "attention", name: "Atenção", icon: "👁️", color: "#D97706", description: "Foco e percepção" },
-    { id: "logic", name: "Raciocínio", icon: "🧩", color: "#3B82F6", description: "Lógica e padrões" },
-    { id: "language", name: "Linguagem", icon: "✍️", color: "#8B5CF6", description: "Palavras e ordens" }
-  ]
+  get categories() { return localizedCategories(); }
 };
+
 
 const mulberry32 = (a: number) => {
   return () => {

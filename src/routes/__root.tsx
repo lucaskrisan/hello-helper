@@ -14,7 +14,8 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { useAuthStore } from "../hooks/use-auth";
 import "../i18n/config";
-import { LanguageSwitcher } from "../components/LanguageSwitcher";
+import { initLocale } from "../i18n/detect-country";
+
 
 
 function NotFoundComponent() {
@@ -125,15 +126,17 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
+  useEffect(() => {
+    initLocale();
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <Outlet />
-      <div className="fixed top-4 right-4 z-[100]">
-        <LanguageSwitcher />
-      </div>
     </QueryClientProvider>
   );
 }
+
 
 
 
