@@ -283,7 +283,48 @@ function Game() {
         )}
 
 
+        {currentTask.type === 'memory-association' && (
+          <div className="text-center">
+            <h2 className="text-2xl font-bold mb-6">Associação de Cores</h2>
+            {memState === 'showing' ? (
+              <div className="space-y-4">
+                <div className="flex justify-center mb-6">
+                  <div className="relative w-20 h-20 flex items-center justify-center">
+                    <svg className="absolute w-full h-full -rotate-90">
+                      <circle cx="40" cy="40" r="36" stroke="currentColor" strokeWidth="4" fill="transparent" className="text-gray-100" />
+                      <circle cx="40" cy="40" r="36" stroke="currentColor" strokeWidth="4" fill="transparent" strokeDasharray="226.2" strokeDashoffset={226.2 * (1 - timeLeft / 10)} className="text-orange-500 transition-all duration-1000" />
+                    </svg>
+                    <span className="text-2xl font-bold text-orange-600">{timeLeft}</span>
+                  </div>
+                </div>
+                <div className="p-8 rounded-[2rem] border-4 inline-block mb-4" style={{ borderColor: currentTask.color }}>
+                   <span className="text-6xl">{currentTask.item === 'Flor' ? '🌸' : currentTask.item === 'Vaso' ? '🏺' : currentTask.item === 'Relógio' ? '⌚' : currentTask.item === 'Livro' ? '📖' : '🖋️'}</span>
+                </div>
+                <p className="text-2xl font-bold text-gray-700">O {currentTask.item} é desta cor.</p>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                <p className="text-lg text-gray-600">Qual era a cor do <span className="font-bold text-primary">{currentTask.item}</span>?</p>
+                <div className="grid grid-cols-2 gap-4">
+                  {currentTask.options.map((color: string) => (
+                    <Button 
+                      key={color}
+                      onClick={() => {
+                        if (color === currentTask.color) handleCorrect();
+                        else handleRetry("Aquela cor era um pouquinho diferente... tente lembrar!");
+                      }}
+                      className="h-24 rounded-3xl shadow-md border-4 border-white transition-all transform active:scale-95"
+                      style={{ backgroundColor: color }}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         {(currentTask.type === 'attention-letter' || currentTask.type === 'attention-color') && (
+
           <div className="text-center">
             <h2 className="text-2xl font-bold mb-2">Atenção Visual</h2>
             <p className="text-gray-500 mb-8">Toque no elemento diferente</p>
