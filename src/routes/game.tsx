@@ -191,10 +191,21 @@ function Game() {
           <ChevronLeft className="w-6 h-6" />
         </Button>
         <div className="bg-white px-4 py-2 rounded-full shadow-sm flex items-center space-x-2">
-          <Brain className="w-5 h-5 text-primary" />
-          <span className="font-bold text-gray-700">
-            {search.mode === 'daily' ? `Etapa ${taskIndex}/4` : categoryInfo?.name}
-          </span>
+          {search.mode === 'daily' ? (
+            <>
+              <Brain className="w-5 h-5 text-primary" />
+              <span className="font-bold text-gray-700">
+                Etapa {taskIndex}/24
+              </span>
+            </>
+          ) : (
+            <>
+              <Hourglass className="w-5 h-5 text-orange-500 animate-pulse" />
+              <span className="font-bold text-gray-700">
+                {Math.floor(sessionTimeLeft / 60)}:{(sessionTimeLeft % 60).toString().padStart(2, '0')}
+              </span>
+            </>
+          )}
         </div>
         <div className="bg-white px-4 py-2 rounded-full shadow-sm flex items-center space-x-2">
           <Trophy className="w-5 h-5 text-yellow-500" />
