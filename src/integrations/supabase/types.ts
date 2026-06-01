@@ -91,14 +91,52 @@ export type Database = {
           },
         ]
       }
+      payment_events: {
+        Row: {
+          amount_total: number | null
+          created_at: string
+          currency: string | null
+          event_type: string
+          external_id: string | null
+          id: string
+          raw_payload: Json | null
+          status: string | null
+          user_id: string | null
+        }
+        Insert: {
+          amount_total?: number | null
+          created_at?: string
+          currency?: string | null
+          event_type: string
+          external_id?: string | null
+          id?: string
+          raw_payload?: Json | null
+          status?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          amount_total?: number | null
+          created_at?: string
+          currency?: string | null
+          event_type?: string
+          external_id?: string | null
+          id?: string
+          raw_payload?: Json | null
+          status?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           age_range: string | null
           created_at: string
           id: string
           is_admin: boolean | null
+          is_premium: boolean | null
           main_goal: string | null
           name: string | null
+          trial_ends_at: string | null
           updated_at: string
           user_id: string
         }
@@ -107,8 +145,10 @@ export type Database = {
           created_at?: string
           id?: string
           is_admin?: boolean | null
+          is_premium?: boolean | null
           main_goal?: string | null
           name?: string | null
+          trial_ends_at?: string | null
           updated_at?: string
           user_id: string
         }
@@ -117,8 +157,10 @@ export type Database = {
           created_at?: string
           id?: string
           is_admin?: boolean | null
+          is_premium?: boolean | null
           main_goal?: string | null
           name?: string | null
+          trial_ends_at?: string | null
           updated_at?: string
           user_id?: string
         }
