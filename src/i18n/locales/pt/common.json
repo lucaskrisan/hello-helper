@@ -1,0 +1,17 @@
+{
+  "welcome": "Bem-vindo",
+  "login": "Entrar",
+  "dashboard": "Painel",
+  "settings": "Configurações",
+  "start_challenge": "Começar Desafio",
+  "premium": "Assinatura Premium",
+  "logout": "Sair",
+  "language": "Idioma",
+  "portuguese": "Português",
+  "spanish": "Espanhol",
+  "english": "Inglês",
+  "home": "Início",
+  "progress": "Progresso",
+  "admin": "Administrador",
+  "back_to_dashboard": "Voltar ao Painel"
+}

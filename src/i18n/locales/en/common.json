@@ -1,0 +1,17 @@
+{
+  "welcome": "Welcome",
+  "login": "Login",
+  "dashboard": "Dashboard",
+  "settings": "Settings",
+  "start_challenge": "Start Challenge",
+  "premium": "Premium Subscription",
+  "logout": "Logout",
+  "language": "Language",
+  "portuguese": "Portuguese",
+  "spanish": "Spanish",
+  "english": "English",
+  "home": "Home",
+  "progress": "Progress",
+  "admin": "Admin",
+  "back_to_dashboard": "Back to Dashboard"
+}
