@@ -145,6 +145,16 @@ function Dashboard() {
         ))}
       </div>
 
+      {profile?.email === 'trafegocomkrisan@gmail.com' && (
+        <Button 
+          onClick={() => navigate({ to: "/admin" })}
+          className="w-full mt-4 bg-gray-900 hover:bg-gray-800 text-white rounded-2xl py-4 flex items-center justify-center gap-2"
+        >
+          <Settings className="w-5 h-5" />
+          ACESSAR PAINEL SUPER ADMIN
+        </Button>
+      )}
+
       <div className="fixed bottom-0 left-0 right-0 p-6 z-50 pointer-events-none">
         <nav className="max-w-md mx-auto bg-white/90 backdrop-blur-lg p-3 rounded-[2.5rem] shadow-2xl flex justify-around items-center border border-white/50 pointer-events-auto">
           <button 
