@@ -29,9 +29,9 @@ function Dashboard() {
         return;
       }
 
-      let currentProfile = null;
-      let currentStreak = { current_streak: 0 };
-      let currentChallenges = [];
+      let currentProfile: any = null;
+      let currentStreak: any = { current_streak: 0 };
+      let currentChallengesList: any[] = [];
 
       if (user) {
         const { data: prof } = await supabase.from("profiles").select("*").eq("user_id", user.id).maybeSingle();
@@ -46,15 +46,14 @@ function Dashboard() {
           supabase.from("daily_challenges").select("*").eq("user_id", user.id).order('created_at', { ascending: false })
         ]);
         currentStreak = str || currentStreak;
-        currentChallenges = challs || [];
+        currentChallengesList = challs || [];
       } else {
-        // Fallback para login mock
         currentProfile = { name: "Mente Ativa", display_name: "Explorador" };
       }
 
       setProfile(currentProfile);
       setStreak(currentStreak);
-      setChallenges(currentChallenges);
+      setChallenges(currentChallengesList);
       setLoading(false);
     }
     loadData();
