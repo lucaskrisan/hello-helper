@@ -57,26 +57,40 @@ function Game() {
   }, [startTime, navigate]);
 
 
-  const loadNextTask = useCallback(async (currentTasks?: any[]) => {
-    const activeTasks = currentTasks || tasks;
-    
-    if (activeTasks.length > 0) {
-      if (taskIndex < activeTasks.length) {
-        setCurrentTask(activeTasks[taskIndex]);
-        setTaskIndex(prev => prev + 1);
-      } else {
-        finishChallenge(score, correctCount, tasks.length);
-      }
-    } else {
-      // Carregamento inicial
+  const loadNextTask = useCallback(async (forceTasks?: any[]) => {
+    setTasks(prevTasks => {
+      const activeTasks = forceTasks || prevTasks;
+      
+      setTaskIndex(prevIndex => {
+        if (activeTasks.length > 0) {
+          if (prevIndex < activeTasks.length) {
+            setCurrentTask(activeTasks[prevIndex]);
+            return prevIndex + 1;
+          } else {
+            // Se chegamos ao fim, finalizamos
+            // Como estamos dentro de um setState, usamos um setTimeout para chamar finishChallenge
+            setTimeout(() => {
+              finishChallenge(score, correctCount, activeTasks.length);
+            }, 0);
+            return prevIndex;
+          }
+        }
+        return prevIndex;
+      });
+      
+      return activeTasks;
+    });
+
+    if (!forceTasks && tasks.length === 0) {
+      // Carregamento inicial (apenas se não houver tasks)
       setIsLoading(true);
-      let newTasks: any[] = [];
       try {
+        let newTasks: any[] = [];
+        const { data: { user } } = await supabase.auth.getUser();
+        const { getUsedItemIds } = await import("@/lib/game-engine");
+        const usedIds = await getUsedItemIds(user?.id);
+
         if (search.mode === 'trial') {
-          const { data: { user } } = await supabase.auth.getUser();
-          const { getUsedItemIds } = await import("@/lib/game-engine");
-          const usedIds = await getUsedItemIds(user?.id);
-          
           newTasks = [
             await generateTaskByCategory('memory', 10, 'easy', usedIds),
             await generateTaskByCategory('attention', 20, 'easy', usedIds),
@@ -105,7 +119,7 @@ function Game() {
     setTimeLeft(15);
     setUserSequence([]);
     setFeedback({ type: null, message: "" });
-  }, [search.mode, taskIndex, finishChallenge, tasks]);
+  }, [search.mode, finishChallenge, score, correctCount, tasks.length]);
 
 
   useEffect(() => {
