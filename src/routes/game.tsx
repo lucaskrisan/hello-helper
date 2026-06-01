@@ -17,22 +17,22 @@ function Game() {
 
   // EXERCICIO 1: Memória
   const [memState, setMemState] = useState<'showing' | 'choosing'>('showing');
+  const [timeLeft, setTimeLeft] = useState(10);
   const words = ["Amizade", "Natureza", "Saúde", "Tempo", "Família"];
   const options = ["Amizade", "Natureza", "Saúde", "Tempo", "Família", "Cidade", "Viagem", "Festa"];
 
-  // EXERCICIO 2: Atenção
-  const letters = "AAAAAAAAABAAAAAAAA".split("");
-  
-  // EXERCICIO 3: Lógica
-  const sequence = [2, 4, 6, 8];
-  const logicOptions = [9, 10, 11, 12];
-
   useEffect(() => {
-    if (exercise === 1) {
-      const timer = setTimeout(() => setMemState('choosing'), 10000);
-      return () => clearTimeout(timer);
+    if (exercise === 1 && memState === 'showing') {
+      if (timeLeft <= 0) {
+        setMemState('choosing');
+        return;
+      }
+      const timer = setInterval(() => {
+        setTimeLeft((prev) => prev - 1);
+      }, 1000);
+      return () => clearInterval(timer);
     }
-  }, [exercise]);
+  }, [exercise, memState, timeLeft]);
 
   const finishChallenge = async () => {
     const { data: { user } } = await supabase.auth.getUser();
