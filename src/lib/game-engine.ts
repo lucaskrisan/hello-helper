@@ -121,27 +121,58 @@ export const generateTaskByCategory = (categoryId: string, seedOffset: number = 
     }
     case 'logic': {
       const patterns = [
-        { name: "Soma Constante", fn: (s: number, d: number) => [s, s + d, s + d*2, s + d*3, s + d*4], desc: "Cada número aumenta o mesmo tanto." },
-        { name: "Subtração Constante", fn: (s: number, d: number) => [s, s - d, s - d*2, s - d*3, s - d*4], desc: "Cada número diminui o mesmo tanto." },
-        { name: "Dobro", fn: (s: number) => [s, s * 2, s * 4, s * 8, s * 16], desc: "Cada número é o dobro do anterior." }
+        { 
+          name: "Soma Constante", 
+          fn: (s: number, d: number) => [s, s + d, s + d*2, s + d*3, s + d*4], 
+          desc: (d: number) => `Os números aumentam de ${d} em ${d}.` 
+        },
+        { 
+          name: "Subtração Constante", 
+          fn: (s: number, d: number) => [s, s - d, s - d*2, s - d*3, s - d*4], 
+          desc: (d: number) => `Os números diminuem de ${d} em ${d}.` 
+        },
+        { 
+          name: "Dobro", 
+          fn: (s: number) => [s, s * 2, s * 4, s * 8, s * 16], 
+          desc: () => "Cada número é o dobro (vezes 2) do anterior." 
+        }
       ];
       
-      const pattern = patterns[Math.floor(random() * patterns.length)];
-      const startNum = level === 'easy' ? Math.floor(random() * 10) + 1 : Math.floor(random() * 50) + 1;
+      const patternIdx = Math.floor(random() * patterns.length);
+      const pattern = patterns[patternIdx];
+      
+      // Ajuste de valores iniciais para não ficar muito difícil
+      const startNum = pattern.name === "Dobro" 
+        ? Math.floor(random() * 5) + 2 
+        : Math.floor(random() * 20) + 1;
+      
       const stepNum = Math.floor(random() * 5) + 2;
       
       const fullSeq = pattern.fn(startNum, stepNum);
       const sequence = fullSeq.slice(0, 4);
       const answer = fullSeq[4];
-      const logicOptions = [answer, answer + 2, answer - 2, answer + 5].sort(() => random() - 0.5);
+      
+      // Gerar opções erradas mais próximas da resposta para evitar confusão
+      const logicOptions = [
+        answer, 
+        answer + 1, 
+        answer - 1, 
+        answer + (pattern.name === "Dobro" ? 2 : stepNum + 1)
+      ].sort(() => random() - 0.5);
+      
+      // Garantir que não existam duplicatas nas opções
+      const uniqueOptions = Array.from(new Set(logicOptions));
+      while(uniqueOptions.length < 4) {
+        uniqueOptions.push(answer + uniqueOptions.length + 10);
+      }
       
       return { 
         type: 'logic', 
         sequence, 
-        options: logicOptions, 
+        options: uniqueOptions.sort(() => random() - 0.5), 
         answer, 
         level,
-        patternDesc: (pattern as any).desc 
+        patternDesc: pattern.desc(stepNum) 
       };
     }
     case 'word-search': {
