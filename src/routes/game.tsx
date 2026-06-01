@@ -434,7 +434,7 @@ function Game() {
         {currentTask.type === 'logic' && (
           <div className="text-center">
             <h2 className="text-2xl font-bold mb-2">Padrão Numérico</h2>
-            <p className="text-gray-500 mb-6 px-4">Observe a regra entre os números e descubra qual deles completa a sequência lógica abaixo.</p>
+            <p className="text-gray-500 mb-6 px-4">{currentTask.patternDesc || "Descubra qual número completa a lógica abaixo."}</p>
             <div className="flex justify-center items-center gap-2 mb-10 overflow-x-auto pb-2">
               {currentTask.sequence.map((num: number, i: number) => (
                 <div key={i} className="flex items-center">
