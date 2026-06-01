@@ -410,11 +410,11 @@ function Game() {
                 </p>
               </div>
             ) : (
-              <div className="space-y-6">
-                <p className="text-lg text-gray-600">
+              <div className="space-y-4 sm:space-y-6">
+                <p className="text-sm sm:text-lg text-gray-600">
                   Qual era a cor {['Flor', 'Caneta', 'Cadeira', 'Mesa', 'Lâmpada'].includes(currentTask.item) ? 'da' : 'do'} <span className="font-bold text-primary">{currentTask.item}</span>?
                 </p>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-3 sm:gap-4">
                   {currentTask.options.map((color: string) => (
                     <Button 
                       key={color}
@@ -422,7 +422,7 @@ function Game() {
                         if (color === currentTask.color) handleCorrect();
                         else handleRetry("Aquela cor era um pouquinho diferente... tente lembrar!");
                       }}
-                      className="h-24 rounded-3xl shadow-md border-4 border-white transition-all transform active:scale-95"
+                      className="h-20 sm:h-24 rounded-2xl sm:rounded-3xl shadow-md border-4 border-white transition-all transform active:scale-95"
                       style={{ backgroundColor: color }}
                     />
                   ))}
