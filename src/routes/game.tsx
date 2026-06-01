@@ -164,7 +164,7 @@ function Game() {
   }, [finishChallenge]);
 
   useEffect(() => {
-    if (currentTask?.type?.startsWith('memory') && memState === 'showing') {
+    if (currentTask?.type?.includes('memory') && memState === 'showing') {
       if (timeLeft <= 0) {
         setMemState('choosing');
         return;
@@ -225,6 +225,40 @@ function Game() {
             </div>
           </div>
         )}
+        
+        {currentTask.type === 'memory-shopping' && (
+          <div className="text-center">
+            <h2 className="text-2xl font-bold mb-2">Lista de Compras</h2>
+            <p className="text-gray-500 mb-6">Memorize os itens e as quantidades.</p>
+            {memState === 'showing' ? (
+              <div className="space-y-4">
+                <div className="text-3xl font-bold text-orange-600 mb-6">{timeLeft}s</div>
+                <div className="bg-orange-50 p-6 rounded-2xl space-y-3">
+                  {currentTask.list.map((item: any, i: number) => (
+                    <div key={i} className="flex justify-between items-center text-xl font-bold text-orange-900 border-b border-orange-200 pb-2">
+                      <span>{item.item}</span>
+                      <span className="bg-orange-200 px-3 py-1 rounded-lg">{item.qty}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-8">
+                <p className="text-2xl font-bold text-gray-700">{currentTask.question}</p>
+                <div className="grid grid-cols-3 gap-4">
+                  {currentTask.options.map((opt: number) => (
+                    <Button 
+                      key={opt}
+                      onClick={() => opt === currentTask.answer ? handleCorrect() : handleRetry()}
+                      className="py-8 text-3xl font-bold bg-white text-gray-700 border-2"
+                    >
+                      {opt}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
 
         {currentTask.type === 'memory-words' && (
           <div className="text-center">
