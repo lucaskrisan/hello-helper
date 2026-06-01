@@ -2,6 +2,8 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { trackEvent } from "@/lib/analytics";
+import { useTranslation } from "react-i18next";
+
 
 export const Route = createFileRoute("/")({
   component: LandingPage,
@@ -9,6 +11,8 @@ export const Route = createFileRoute("/")({
 
 function LandingPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
+
 
   useEffect(() => {
     trackEvent('landing_view');
@@ -21,14 +25,16 @@ function LandingPage() {
       </div>
       
       <h1 className="text-4xl md:text-5xl font-bold text-[#1F2937] mb-8 tracking-tight max-w-2xl leading-tight">
-        Você ainda se lembra do nome da sua primeira professora?
+        {t('landing_title')}
+
       </h1>
       
       <div className="space-y-6 mb-12 text-left max-w-md w-full">
         {[
-          "✔ Do telefone da casa onde cresceu?",
-          "✔ Da primeira música que marcou sua vida?",
+          t('landing_item_1'),
+          t('landing_item_2'),
         ].map((item) => (
+
           <div key={item} className="flex items-center space-x-3 text-xl text-gray-700 font-medium">
             <span>{item}</span>
           </div>
@@ -36,7 +42,8 @@ function LandingPage() {
       </div>
 
       <p className="text-xl text-gray-600 mb-10 max-w-lg leading-relaxed">
-        Faça um teste rápido e descubra como está sua atenção e memória hoje.
+        {t('landing_subtitle')}
+
       </p>
       
       <div className="space-y-4 w-full max-w-xs">
@@ -44,13 +51,14 @@ function LandingPage() {
           onClick={() => navigate({ to: "/game", search: { mode: 'trial' } })}
           className="w-full bg-primary hover:bg-primary/90 text-white text-2xl py-10 px-12 rounded-2xl shadow-xl transition-transform hover:scale-105 active:scale-95 font-bold uppercase tracking-wider"
         >
-          FAZER TESTE
+          {t('start_test')}
         </Button>
-        <p className="text-sm text-gray-400">Teste gratuito de 2 minutos</p>
+        <p className="text-sm text-gray-400">{t('free_test_info')}</p>
       </div>
 
       <div className="mt-16 text-gray-400 text-sm">
-        Feito com carinho para quem tem 50+
+        {t('made_for_50plus')}
+
       </div>
     </div>
   );
