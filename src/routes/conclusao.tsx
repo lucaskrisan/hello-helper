@@ -36,19 +36,19 @@ function Conclusion() {
           <div className="space-y-6 mb-8 text-left">
             <div className="flex justify-between items-center p-3 bg-gray-50 rounded-xl border border-gray-100">
               <span className="font-medium">Memória</span>
-              {renderStars(3)}
+              {renderStars(Math.max(1, Math.floor((score / 20) - (time > 120 ? 1 : 0))))}
             </div>
             <div className="flex justify-between items-center p-3 bg-gray-50 rounded-xl border border-gray-100">
               <span className="font-medium">Atenção</span>
-              {renderStars(4)}
+              {renderStars(Math.max(1, Math.floor(score / 20)))}
             </div>
             <div className="flex justify-between items-center p-3 bg-gray-50 rounded-xl border border-gray-100">
               <span className="font-medium">Raciocínio</span>
-              {renderStars(4)}
+              {renderStars(Math.max(1, Math.floor(score / 20)))}
             </div>
             <div className="flex justify-between items-center p-3 bg-gray-50 rounded-xl border border-gray-100">
               <span className="font-medium">Velocidade Mental</span>
-              {renderStars(3)}
+              {renderStars(time < 60 ? 5 : time < 100 ? 4 : time < 150 ? 3 : 2)}
             </div>
           </div>
 
