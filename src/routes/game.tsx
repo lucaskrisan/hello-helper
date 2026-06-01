@@ -241,7 +241,8 @@ function Game() {
 
         {currentTask.type === 'memory-words' && (
           <div className="text-center">
-            <h2 className="text-2xl font-bold mb-6">Memorize as palavras</h2>
+            <h2 className="text-2xl font-bold mb-2">Memorize as palavras</h2>
+            <p className="text-gray-500 mb-6 px-4">Tente fixar estas palavras na mente. Você precisará lembrá-las em alguns segundos!</p>
             {memState === 'showing' ? (
               <div className="space-y-4">
                 <div className="flex justify-center mb-6">
@@ -289,7 +290,7 @@ function Game() {
         {currentTask.type === 'memory-sequence' && (
           <div className="text-center">
             <h2 className="text-2xl font-bold mb-2">Sequência de Cores</h2>
-            <p className="text-gray-500 mb-8">{isShowingSequence ? "Observe a sequência..." : "Repita a sequência tocando nas cores"}</p>
+            <p className="text-gray-500 mb-8 px-4">{isShowingSequence ? "Observe com atenção a ordem em que as cores piscam..." : "Agora, toque nas cores seguindo a mesma ordem que você acabou de ver!"}</p>
             <div className="grid grid-cols-2 gap-4 max-w-[280px] mx-auto">
               {currentTask.colors.map((color: string, i: number) => (
                 <button
@@ -328,7 +329,8 @@ function Game() {
 
         {currentTask.type === 'memory-shopping' && (
           <div className="text-center">
-            <h2 className="text-2xl font-bold mb-6">Lista de Compras</h2>
+            <h2 className="text-2xl font-bold mb-2">Lista de Compras</h2>
+            <p className="text-gray-500 mb-6 px-4">Imagine que você está no mercado. Memorize bem as quantidades de cada item da sua lista!</p>
             {memState === 'showing' ? (
               <div className="space-y-6">
                 <div className="flex justify-center mb-6">
@@ -377,7 +379,8 @@ function Game() {
         {currentTask.type === 'memory-association' && (
 
           <div className="text-center">
-            <h2 className="text-2xl font-bold mb-6">Associação de Cores</h2>
+            <h2 className="text-2xl font-bold mb-2">Associação de Cores</h2>
+            <p className="text-gray-500 mb-6 px-4">Guarde bem a cor deste objeto. Vamos ver se você consegue lembrá-la daqui a pouco!</p>
             {memState === 'showing' ? (
               <div className="space-y-4">
                 <div className="flex justify-center mb-6">
@@ -453,7 +456,7 @@ function Game() {
         {(currentTask.type === 'attention-letter' || currentTask.type === 'attention-color') && (
           <div className="text-center">
             <h2 className="text-2xl font-bold mb-2">Atenção Visual</h2>
-            <p className="text-gray-500 mb-8">Toque no elemento diferente</p>
+            <p className="text-gray-500 mb-8 px-4">Olhe para o quadro abaixo e toque no único elemento que é diferente dos outros.</p>
             <div className={`grid gap-3 mx-auto max-w-[320px]`} style={{ gridTemplateColumns: `repeat(${currentTask.cols || 4}, 1fr)` }}>
               {currentTask.grid.map((item: string, i: number) => (
                 <Button 
@@ -477,7 +480,7 @@ function Game() {
         {currentTask.type === 'word-search' && (
           <div className="text-center">
             <h2 className="text-2xl font-bold mb-2">Caça-Palavras</h2>
-            <p className="text-gray-500 mb-6">Encontre: <span className="text-primary font-bold text-xl">{currentTask.word}</span></p>
+            <p className="text-gray-500 mb-6 px-4">Toque nas letras para formar a palavra <span className="text-primary font-bold text-xl">{currentTask.word}</span> que está escondida no quadro.</p>
             <div className="grid grid-cols-6 gap-2 mx-auto w-fit">
               {currentTask.grid.map((row: string[], r: number) => 
                 row.map((char: string, c: number) => {
