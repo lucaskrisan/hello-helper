@@ -58,21 +58,21 @@ function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-[#2D3A2F] flex items-center justify-center p-6">
-      <Card className="w-full max-w-md p-8 bg-white/5 backdrop-blur-md border-0 shadow-2xl rounded-3xl">
-        <div className="text-center mb-10">
-          <h1 className="text-3xl font-bold text-white mb-2">Desafio da Mente</h1>
-          <p className="text-white/60">Entre para continuar seu treino</p>
+    <div className="min-h-screen bg-[#2D3A2F] flex items-center justify-center p-4 sm:p-6">
+      <Card className="w-full max-w-md p-6 sm:p-8 bg-white/5 backdrop-blur-md border-0 shadow-2xl rounded-3xl">
+        <div className="text-center mb-8 sm:mb-10">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Desafio da Mente</h1>
+          <p className="text-white/60 text-sm sm:text-base">Entre para continuar seu treino</p>
         </div>
         
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
           <div className="space-y-2">
             <Input
               type="email"
               placeholder="E-mail"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="bg-white/10 border-0 text-white placeholder:text-white/40 h-14 rounded-2xl px-6 focus-visible:ring-1 focus-visible:ring-[#4CAF50]"
+              className="bg-white/10 border-0 text-white placeholder:text-white/40 h-12 sm:h-14 rounded-2xl px-6 focus-visible:ring-1 focus-visible:ring-[#4CAF50] text-sm sm:text-base"
               required
             />
           </div>
@@ -82,17 +82,17 @@ function Login() {
               placeholder="Senha"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="bg-white/10 border-0 text-white placeholder:text-white/40 h-14 rounded-2xl px-6 focus-visible:ring-1 focus-visible:ring-[#4CAF50]"
+              className="bg-white/10 border-0 text-white placeholder:text-white/40 h-12 sm:h-14 rounded-2xl px-6 focus-visible:ring-1 focus-visible:ring-[#4CAF50] text-sm sm:text-base"
               required
             />
           </div>
 
-          {error && <p className="text-red-400 text-sm text-center">{error}</p>}
+          {error && <p className="text-red-400 text-xs sm:text-sm text-center">{error}</p>}
 
           <Button 
             type="submit"
             disabled={loading}
-            className="w-full h-14 text-lg font-bold bg-[#4CAF50] hover:bg-[#45a049] text-white rounded-2xl transition-all shadow-lg"
+            className="w-full h-12 sm:h-14 text-base sm:text-lg font-bold bg-[#4CAF50] hover:bg-[#45a049] text-white rounded-2xl transition-all shadow-lg mt-2"
           >
             {loading ? "CARREGANDO..." : "ENTRAR"}
           </Button>
