@@ -121,11 +121,35 @@
 @layer base {
   * {
     border-color: var(--color-border);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
   }
 
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
   }
+
+  /* Melhorar a renderização em dispositivos móveis */
+  main {
+    flex: 1;
+    width: 100%;
+  }
+}
+
+/* Evitar o efeito de "piscada" em botões e links no mobile */
+button, a {
+  touch-action: manipulation;
 }
