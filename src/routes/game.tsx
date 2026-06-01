@@ -30,7 +30,7 @@ function Game() {
   // Estados específicos de exercícios
   const [selectedWords, setSelectedWords] = useState<string[]>([]);
   const [memState, setMemState] = useState<'showing' | 'choosing'>('showing');
-  const [timeLeft, setTimeLeft] = useState(10);
+  const [timeLeft, setTimeLeft] = useState(15);
   const [activeButton, setActiveButton] = useState<number | null>(null);
   const [userSequence, setUserSequence] = useState<number[]>([]);
   const [isShowingSequence, setIsShowingSequence] = useState(false);
@@ -74,7 +74,7 @@ function Game() {
     setActiveButton(null);
     setIsShowingSequence(false);
     setMemState('showing');
-    setTimeLeft(10);
+    setTimeLeft(15);
     setSearchSelection([]);
     setFeedback({ type: null, message: "" });
   }, [search.mode, search.categoryId, taskIndex]);
@@ -119,7 +119,7 @@ function Game() {
       setFeedback({ type: null, message: "" });
       if (currentTask?.type === 'memory') {
         setMemState('showing');
-        setTimeLeft(10);
+        setTimeLeft(15);
         setSelectedWords([]);
       } else if (currentTask?.type === 'word-search') {
         setSearchSelection([]);
@@ -146,7 +146,7 @@ function Game() {
 
   // Timer para memória
   useEffect(() => {
-    if (currentTask?.type === 'memory' && memState === 'showing') {
+    if (currentTask?.type?.startsWith('memory') && currentTask.type !== 'memory-sequence' && memState === 'showing') {
       if (timeLeft <= 0) {
         setMemState('choosing');
         return;
@@ -154,7 +154,7 @@ function Game() {
       const timer = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
       return () => clearInterval(timer);
     }
-  }, [currentTask, memState, timeLeft]);
+  }, [currentTask?.type, memState, timeLeft]);
 
   if (!currentTask) return null;
 
@@ -205,7 +205,7 @@ function Game() {
                   <div className="relative w-20 h-20 flex items-center justify-center">
                     <svg className="absolute w-full h-full -rotate-90">
                       <circle cx="40" cy="40" r="36" stroke="currentColor" strokeWidth="4" fill="transparent" className="text-gray-100" />
-                      <circle cx="40" cy="40" r="36" stroke="currentColor" strokeWidth="4" fill="transparent" strokeDasharray="226.2" strokeDashoffset={226.2 * (1 - timeLeft / 10)} className="text-orange-500 transition-all duration-1000" />
+                      <circle cx="40" cy="40" r="36" stroke="currentColor" strokeWidth="4" fill="transparent" strokeDasharray="226.2" strokeDashoffset={226.2 * (1 - timeLeft / 15)} className="text-orange-500 transition-all duration-1000" />
                     </svg>
                     <span className="text-2xl font-bold text-orange-600">{timeLeft}</span>
                   </div>
@@ -292,7 +292,7 @@ function Game() {
                   <div className="relative w-20 h-20 flex items-center justify-center">
                     <svg className="absolute w-full h-full -rotate-90">
                       <circle cx="40" cy="40" r="36" stroke="currentColor" strokeWidth="4" fill="transparent" className="text-gray-100" />
-                      <circle cx="40" cy="40" r="36" stroke="currentColor" strokeWidth="4" fill="transparent" strokeDasharray="226.2" strokeDashoffset={226.2 * (1 - timeLeft / 10)} className="text-orange-500 transition-all duration-1000" />
+                      <circle cx="40" cy="40" r="36" stroke="currentColor" strokeWidth="4" fill="transparent" strokeDasharray="226.2" strokeDashoffset={226.2 * (1 - timeLeft / 15)} className="text-orange-500 transition-all duration-1000" />
                     </svg>
                     <span className="text-2xl font-bold text-orange-600">{timeLeft}</span>
                   </div>
@@ -341,7 +341,7 @@ function Game() {
                   <div className="relative w-20 h-20 flex items-center justify-center">
                     <svg className="absolute w-full h-full -rotate-90">
                       <circle cx="40" cy="40" r="36" stroke="currentColor" strokeWidth="4" fill="transparent" className="text-gray-100" />
-                      <circle cx="40" cy="40" r="36" stroke="currentColor" strokeWidth="4" fill="transparent" strokeDasharray="226.2" strokeDashoffset={226.2 * (1 - timeLeft / 10)} className="text-orange-500 transition-all duration-1000" />
+                      <circle cx="40" cy="40" r="36" stroke="currentColor" strokeWidth="4" fill="transparent" strokeDasharray="226.2" strokeDashoffset={226.2 * (1 - timeLeft / 15)} className="text-orange-500 transition-all duration-1000" />
                     </svg>
                     <span className="text-2xl font-bold text-orange-600">{timeLeft}</span>
                   </div>
