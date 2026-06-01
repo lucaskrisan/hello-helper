@@ -24,6 +24,8 @@ function Game() {
   const [currentTask, setCurrentTask] = useState<any>(null);
   const [taskIndex, setTaskIndex] = useState(0); 
   const [score, setScore] = useState(0);
+  const [correctCount, setCorrectCount] = useState(0);
+  const [errorCount, setErrorCount] = useState(0);
   const [startTime] = useState(Date.now());
   const [feedback, setFeedback] = useState<{ type: 'success' | 'retry' | null; message: string }>({ type: null, message: "" });
   
@@ -31,7 +33,8 @@ function Game() {
   const [memState, setMemState] = useState<'showing' | 'choosing'>('showing');
   const [timeLeft, setTimeLeft] = useState(15);
   const [userSequence, setUserSequence] = useState<any[]>([]);
-  const [globalTimeLeft, setGlobalTimeLeft] = useState(300); // 5 minutes in seconds
+  const [globalTimeLeft, setGlobalTimeLeft] = useState(300);
+
 
   const finishChallenge = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -43,20 +46,21 @@ function Game() {
         user_id: user.id,
         score: finalScore,
         total_questions: 7,
-        correct_answers: 7,
+        correct_answers: correctCount,
         total_time: totalTime,
       });
     }
     
     navigate({ to: "/conclusao", search: { score: finalScore, time: totalTime }, replace: true });
-  }, [score, startTime, navigate]);
+  }, [score, correctCount, startTime, navigate]);
 
-  const loadNextTask = useCallback(() => {
+
+  const loadNextTask = useCallback(async () => {
     if (search.mode === 'trial') {
       const trialTasks = [
-        generateTaskByCategory('memory', 10, 'easy'),
-        generateTaskByCategory('attention', 20, 'easy'),
-        generateTaskByCategory('logic', 30, 'easy'),
+        await generateTaskByCategory('memory', 10, 'easy'),
+        await generateTaskByCategory('attention', 20, 'easy'),
+        await generateTaskByCategory('logic', 30, 'easy'),
       ];
       if (taskIndex < 3) {
         setCurrentTask(trialTasks[taskIndex]);
@@ -65,7 +69,7 @@ function Game() {
         finishChallenge();
       }
     } else {
-      const daily = generateDailyChallenge(new Date().toISOString().split('T')[0]);
+      const daily = await generateDailyChallenge(new Date().toISOString().split('T')[0]);
       if (taskIndex < daily.tasks.length) {
         setCurrentTask(daily.tasks[taskIndex]);
         setTaskIndex(prev => prev + 1);
@@ -81,6 +85,7 @@ function Game() {
     setFeedback({ type: null, message: "" });
   }, [search.mode, taskIndex, finishChallenge]);
 
+
   useEffect(() => {
     loadNextTask();
   }, []);
@@ -88,6 +93,17 @@ function Game() {
   const handleCorrect = () => {
     const increment = search.mode === 'trial' ? 33.3 : 14.2;
     setScore(s => s + increment);
+    setCorrectCount(c => c + 1);
+    
+    // Save to history if it has itemIds
+    if (currentTask?.itemIds) {
+      currentTask.itemIds.forEach((id: string) => {
+        import("@/lib/game-engine").then(m => m.saveToHistory(id, currentTask.categoryName || currentTask.category || "unknown"));
+      });
+    } else if (currentTask?.itemId) {
+      import("@/lib/game-engine").then(m => m.saveToHistory(currentTask.itemId, currentTask.categoryName || currentTask.category || "unknown"));
+    }
+
     setFeedback({ type: 'success', message: "Muito bem! Sua mente está despertando!" });
     setTimeout(() => {
       loadNextTask();
@@ -95,6 +111,7 @@ function Game() {
   };
 
   const handleRetry = (msg?: string) => {
+    setErrorCount(e => e + 1);
     setFeedback({ 
       type: 'retry', 
       message: msg || "Vamos tentar de novo? Com calma a mente grava tudo." 
@@ -107,6 +124,7 @@ function Game() {
       }
     }, 3000);
   };
+
 
   useEffect(() => {
     const timer = setInterval(() => {

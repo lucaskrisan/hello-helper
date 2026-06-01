@@ -1,9 +1,5 @@
-
 import { CONTENT_POOLS, ContentItem } from './content-pools';
-
-/**
- * MOTOR DE EXERCÍCIOS - VERSÃO V2 (VALIDADA)
- */
+import { supabase } from '@/integrations/supabase/client';
 
 export const GAME_ASSETS = {
   letters: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"],
@@ -16,7 +12,6 @@ export const GAME_ASSETS = {
   ]
 };
 
-// Gerador de aleatoriedade com seed
 const mulberry32 = (a: number) => {
   return () => {
     let t = a += 0x6D2B79F5;
@@ -26,44 +21,65 @@ const mulberry32 = (a: number) => {
   }
 };
 
-/**
- * CONTROLE DE REPETIÇÃO
- */
-const getHistory = (): string[] => {
-  if (typeof window === 'undefined') return [];
-  return JSON.parse(localStorage.getItem('mente_ativa_history') || '[]');
-};
-
-const saveToHistory = (id: string) => {
-  if (typeof window === 'undefined') return;
-  const history = getHistory();
-  if (!history.includes(id)) {
-    const newHistory = [...history, id].slice(-500); // Mantém os últimos 500 itens
-    localStorage.setItem('mente_ativa_history', JSON.stringify(newHistory));
+const getSessionId = () => {
+  if (typeof window === 'undefined') return 'server';
+  let sid = localStorage.getItem('mente_ativa_session_id');
+  if (!sid) {
+    sid = Math.random().toString(36).substring(2) + Date.now().toString(36);
+    localStorage.setItem('mente_ativa_session_id', sid);
   }
+  return sid;
 };
 
-export const getAvailableItems = (category: string, count: number, random: () => number): ContentItem[] => {
-  const pool = CONTENT_POOLS[category] || CONTENT_POOLS['culinaria']; // Fallback
-  const history = getHistory();
+const getUsedItemIds = async (): Promise<string[]> => {
+  const { data: { user } } = await supabase.auth.getUser();
+  const sessionId = getSessionId();
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+  let query = supabase
+    .from('exercise_history')
+    .select('item_id')
+    .gt('used_at', sevenDaysAgo.toISOString());
+
+  if (user) {
+    query = query.eq('user_id', user.id);
+  } else {
+    query = query.eq('session_id', sessionId);
+  }
+
+  const { data } = await query;
+  return data?.map(d => d.item_id) || [];
+};
+
+export const saveToHistory = async (id: string, category: string) => {
+  const { data: { user } } = await supabase.auth.getUser();
+  const sessionId = getSessionId();
   
-  // Filtra itens não usados recentemente
-  let available = pool.filter(item => !history.includes(item.id));
+  await supabase.from('exercise_history').insert({
+    user_id: user?.id,
+    session_id: sessionId,
+    item_id: id,
+    category: category
+  });
+};
+
+export const getAvailableItems = async (category: string, count: number, random: () => number): Promise<ContentItem[]> => {
+  const pool = CONTENT_POOLS[category] || CONTENT_POOLS['culinaria'];
+  const usedIds = await getUsedItemIds();
   
-  // Se faltar item, reseta parte do histórico para aquela categoria
+  let available = pool.filter(item => !usedIds.includes(item.id));
+  
   if (available.length < count) {
     available = [...pool];
   }
 
-  const selected = available.sort(() => random() - 0.5).slice(0, count);
-  selected.forEach(item => saveToHistory(item.id));
+  const selected = [...available].sort(() => random() - 0.5).slice(0, count);
+  // Do not save here, save when the task is actually presented or completed
   return selected;
 };
 
-/**
- * GERAÇÃO DE TAREFAS POR CATEGORIA COGNITIVA
- */
-export const generateTaskByCategory = (cogType: string, seedOffset: number = 0, level: 'easy' | 'medium' | 'hard' = 'easy') => {
+export const generateTaskByCategory = async (cogType: string, seedOffset: number = 0, level: 'easy' | 'medium' | 'hard' = 'easy') => {
   const seed = Date.now() + seedOffset;
   const random = mulberry32(seed);
 
@@ -71,23 +87,21 @@ export const generateTaskByCategory = (cogType: string, seedOffset: number = 0, 
     case 'memory': {
       const roll = random();
       if (roll < 0.5) {
-        // Memória de Palavras
         const categories = Object.keys(CONTENT_POOLS);
         const cat = categories[Math.floor(random() * categories.length)];
         const count = level === 'easy' ? 3 : level === 'medium' ? 5 : 7;
-        const items = getAvailableItems(cat, count, random);
+        const items = await getAvailableItems(cat, count, random);
         const words = items.map(i => i.word);
+        const itemIds = items.map(i => i.id);
         
-        // Opções misturadas
         const allWords = CONTENT_POOLS[cat].map(i => i.word);
         const options = [...words, ...allWords.filter(w => !words.includes(w)).sort(() => random() - 0.5).slice(0, 5)].sort(() => random() - 0.5);
         
-        return { type: 'memory-words', words, options, level, categoryName: cat };
+        return { type: 'memory-words', words, options, level, categoryName: cat, itemIds };
       } else {
-        // Lista de Compras
         const items = ["Pão", "Leite", "Café", "Maçã", "Arroz", "Feijão", "Açúcar", "Ovo"];
         const count = level === 'easy' ? 2 : level === 'medium' ? 3 : 5;
-        const selected = items.sort(() => random() - 0.5).slice(0, count).map(name => ({
+        const selected = [...items].sort(() => random() - 0.5).slice(0, count).map(name => ({
           item: name,
           qty: Math.floor(random() * 5) + 1
         }));
@@ -100,7 +114,6 @@ export const generateTaskByCategory = (cogType: string, seedOffset: number = 0, 
     case 'attention': {
       const roll = random();
       if (roll < 0.5) {
-        // Atenção Visual (Grade)
         const size = level === 'easy' ? 9 : level === 'medium' ? 16 : 25;
         const letters = ["M", "N", "O", "Q", "E", "F", "B", "P"];
         const baseIdx = Math.floor(random() * letters.length);
@@ -110,22 +123,21 @@ export const generateTaskByCategory = (cogType: string, seedOffset: number = 0, 
         grid[pos] = letters[intruderIdx];
         return { type: 'attention-letter', grid, intruder: letters[intruderIdx], cols: Math.sqrt(size), level };
       } else {
-        // Palavra Intrusa
-        const categories = ["biblia", "culinaria", "geografia", "familia"];
+        const categories = Object.keys(CONTENT_POOLS);
         const cat = categories[Math.floor(random() * categories.length)];
         const pool = CONTENT_POOLS[cat];
-        const items = pool.sort(() => random() - 0.5).slice(0, 4);
+        const items = await getAvailableItems(cat, 4, random);
         const otherCat = categories.find(c => c !== cat)!;
-        const intruder = CONTENT_POOLS[otherCat][0];
+        const intruderItems = await getAvailableItems(otherCat, 1, random);
+        const intruder = intruderItems[0];
         const options = [...items, intruder].sort(() => random() - 0.5);
-        return { type: 'word-intruder', options, intruder: intruder.word, categoryName: cat, level };
+        return { type: 'word-intruder', options, intruder: intruder.word, categoryName: cat, level, itemIds: options.map(o => o.id) };
       }
     }
 
     case 'logic': {
       const roll = random();
       if (roll < 0.5) {
-        // Sequência Numérica
         const start = Math.floor(random() * 10) + 1;
         const step = Math.floor(random() * 5) + 2;
         const sequence = [start, start + step, start + step * 2, start + step * 3];
@@ -133,7 +145,6 @@ export const generateTaskByCategory = (cogType: string, seedOffset: number = 0, 
         const options = [answer, answer + step, answer - 1, answer + 1].sort(() => random() - 0.5);
         return { type: 'logic', sequence, answer, options, level };
       } else {
-        // Cálculo de Troco
         const itemPrice = Math.floor(random() * 15) + 5;
         const paid = itemPrice > 10 ? 20 : 10;
         const answer = paid - itemPrice;
@@ -145,17 +156,17 @@ export const generateTaskByCategory = (cogType: string, seedOffset: number = 0, 
     case 'language': {
       const roll = random();
       if (roll < 0.5) {
-        // Verdadeiro ou Falso
         const categories = Object.keys(CONTENT_POOLS);
         const cat = categories[Math.floor(random() * categories.length)];
-        const item = CONTENT_POOLS[cat].sort(() => random() - 0.5)[0];
-        return { type: 'true-false', statement: item.word, isTrue: item.isTrue, curiosity: item.curiosity, level };
+        const items = await getAvailableItems(cat, 1, random);
+        const item = items[0];
+        return { type: 'true-false', statement: item.word, isTrue: item.isTrue, curiosity: item.curiosity, level, itemId: item.id, category: cat };
       } else {
-        // Ordem Alfabética
-        const items = CONTENT_POOLS['biblia'].sort(() => random() - 0.5).slice(0, 4);
+        const cat = 'biblia';
+        const items = await getAvailableItems(cat, 4, random);
         const words = items.map(i => i.word);
-        const answer = [...words].sort((a, b) => a.localeCompare(b));
-        return { type: 'alphabetical-order', words, answer, level };
+        const answer = [...words].sort((a, b) => a.localeCompare(b, 'pt-BR'));
+        return { type: 'alphabetical-order', words, answer, level, itemIds: items.map(i => i.id), category: cat };
       }
     }
 
@@ -163,16 +174,14 @@ export const generateTaskByCategory = (cogType: string, seedOffset: number = 0, 
   }
 };
 
-export const generateDailyChallenge = (seedStr: string) => {
-  const numericSeed = seedStr.split('-').reduce((acc, part) => acc + parseInt(part), 0);
+export const generateDailyChallenge = async (seedStr: string) => {
+  const numericSeed = seedStr.split('-').reduce((acc, part) => acc + (parseInt(part) || 0), 0);
   const tasks = [];
-  const cogTypes = ['memory', 'attention', 'logic', 'language', 'memory', 'attention', 'logic']; // 7 etapas
-  
-  const random = mulberry32(numericSeed);
+  const cogTypes = ['memory', 'attention', 'logic', 'language', 'memory', 'attention', 'logic'];
   
   for (let i = 0; i < 7; i++) {
     const level = i < 3 ? 'easy' : i < 6 ? 'medium' : 'hard';
-    const task = generateTaskByCategory(cogTypes[i], numericSeed + i * 100, level);
+    const task = await generateTaskByCategory(cogTypes[i], numericSeed + i * 100, level as any);
     if (task) tasks.push(task);
   }
 
