@@ -17,6 +17,8 @@ export const Route = createFileRoute("/conclusao")({
 
 function Conclusion() {
   const navigate = useNavigate();
+  const search = useSearch({ from: "/conclusao" });
+  const { score, time } = search;
   const [step, setStep] = useState<'report' | 'explanation' | 'offer'>('report');
 
   const renderStars = (count: number) => (
