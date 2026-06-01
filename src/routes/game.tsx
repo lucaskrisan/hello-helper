@@ -121,7 +121,8 @@ function Game() {
   }, [currentTask, playSequence]);
 
   const handleCorrect = () => {
-    setScore(s => s + 25);
+    const increment = search.mode === 'daily' ? (100 / 24) : 5;
+    setScore(s => s + increment);
     setFeedback({ type: 'success', message: "Muito bem! Você está indo muito bem!" });
     setTimeout(() => {
       loadNextTask();
