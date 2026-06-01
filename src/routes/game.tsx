@@ -170,23 +170,6 @@ function Game() {
     }, 3000);
   };
 
-  const finishChallenge = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    const finalScore = Math.min(100, Math.round(score));
-    const totalTime = Math.floor((Date.now() - startTime) / 1000);
-    
-    if (user) {
-      await supabase.from("daily_challenges").insert({
-        user_id: user.id,
-        score: finalScore,
-        total_questions: search.mode === 'daily' ? 24 : taskIndex,
-        correct_answers: search.mode === 'daily' ? 24 : taskIndex,
-        total_time: totalTime,
-      });
-    }
-    
-    navigate({ to: "/conclusao", search: { score: finalScore, time: totalTime }, replace: true });
-  };
 
   // Timer para memória
   useEffect(() => {
