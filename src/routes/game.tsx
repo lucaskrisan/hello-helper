@@ -31,6 +31,9 @@ function Game() {
   const [selectedWords, setSelectedWords] = useState<string[]>([]);
   const [memState, setMemState] = useState<'showing' | 'choosing'>('showing');
   const [timeLeft, setTimeLeft] = useState(10);
+  const [activeButton, setActiveButton] = useState<number | null>(null);
+  const [userSequence, setUserSequence] = useState<number[]>([]);
+  const [isShowingSequence, setIsShowingSequence] = useState(false);
   const [searchSelection, setSearchSelection] = useState<{r: number, c: number}[]>([]);
   const [totalTimeInApp, setTotalTimeInApp] = useState(0);
 
