@@ -297,7 +297,16 @@ function Game() {
             {memState === 'showing' ? (
               <div className="space-y-4">
                 <div className="text-3xl font-bold text-orange-600 mb-6">{timeLeft}s</div>
-                {currentTask.words.map((w: string) => <p key={w} className="text-3xl font-bold text-[#4A7C59]">{w}</p>)}
+                <div className="space-y-3 mb-8">
+                  {currentTask.words.map((w: string) => <p key={w} className="text-3xl font-bold text-[#4A7C59]">{w}</p>)}
+                </div>
+                <Button 
+                  onClick={() => setMemState('choosing')}
+                  variant="outline"
+                  className="w-full border-green-200 text-[#4A7C59] hover:bg-green-50 font-bold py-6 rounded-xl"
+                >
+                  ESTOU PRONTO
+                </Button>
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-3">
