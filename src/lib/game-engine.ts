@@ -11,11 +11,16 @@ export const GAME_ASSETS = {
     "Livro", "Caneta", "Papel", "Quadro", "Piano", "Violão", "Flauta",
     "Delfim", "Águia", "Leão", "Tigre", "Girafa", "Zebra", "Urso",
     "Café", "Chá", "Pão", "Fruta", "Vinho", "Queijo", "Mel", "Sabor",
-    "Relógio", "Janela", "Porta", "Escada", "Espelho", "Quadro", "Mesa", "Cadeira",
+    "Relógio", "Janela", "Porta", "Escada", "Espelho", "Mesa", "Cadeira",
     "Tapete", "Luz", "Sombra", "Sol", "Lua", "Terra", "Mar", "Rio", "Lago",
     "Montanha", "Vale", "Floresta", "Deserto", "Ilha", "Barco", "Avião", "Trem",
     "Carro", "Bicicleta", "Caminhada", "Corrida", "Dança", "Canto", "Risada",
-    "Sonho", "Realidade", "Futuro", "Passado", "Presente", "Vida", "Amor", "Paz"
+    "Sonho", "Realidade", "Futuro", "Passado", "Presente", "Vida", "Amor", "Paz",
+    "Biscoito", "Chocolate", "Suco", "Pipoca", "Cinema", "Teatro", "Museu",
+    "Parque", "Praia", "Campo", "Fazenda", "Sítio", "Rancho", "Castelo",
+    "Palácio", "Igreja", "Templo", "Torre", "Ponte", "Farol", "Porto",
+    "Âncora", "Bússola", "Leme", "Vela", "Mastro", "Convés", "Cabine",
+    "Nave", "Foguete", "Astronauta", "Cosmos", "Galáxia", "Nebulosa", "Cometa"
   ],
   categories: [
     { id: "memory", name: "Fortalecer Memória", icon: "🧠", color: "#4A7C59", description: "Exercícios de fixação e lembrança" },
@@ -162,13 +167,18 @@ export const generateDailyChallenge = (seedStr: string) => {
   const tasks = [];
   const categories = ['memory', 'attention', 'logic', 'word-search'];
   
+  // Shuffling categories to change order daily
+  const random = mulberry32(numericSeed);
+  const shuffledCategories = [...categories].sort(() => random() - 0.5);
+  
   for (let i = 0; i < 24; i++) {
     let level: 'easy' | 'medium' | 'hard' = 'easy';
     if (i >= 5 && i < 10) level = 'medium';
     else if (i >= 10) level = 'hard';
 
-    const category = categories[i % categories.length];
-    const task = generateTaskByCategory(category, numericSeed + i, level);
+    const category = shuffledCategories[i % shuffledCategories.length];
+    // Adding larger offset to seeds based on level and index
+    const task = generateTaskByCategory(category, numericSeed + i * 137 + (level === 'hard' ? 5000 : 0), level);
     if (task) tasks.push(task);
   }
 
