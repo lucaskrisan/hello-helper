@@ -15,6 +15,12 @@
   "home": "Inicio",
   "progress": "Progreso",
   "admin": "Administrador",
-  "back_to_dashboard": "Volver al Panel"
-
+  "back_to_dashboard": "Volver al Panel",
+  "landing_title": "¿Aún recuerdas el nombre de tu primera maestra?",
+  "landing_item_1": "✔ ¿El teléfono de la casa donde creciste?",
+  "landing_item_2": "✔ ¿La primera canción que marcó tu vida?",
+  "landing_subtitle": "Haz una prueba rápida y descubre cómo está tu atención y memoria hoy.",
+  "start_test": "HACER PRUEBA",
+  "free_test_info": "Prueba gratuita de 2 minutos",
+  "made_for_50plus": "Hecho con cariño para quienes tienen 50+"
 }

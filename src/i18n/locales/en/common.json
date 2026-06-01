@@ -15,6 +15,12 @@
   "home": "Home",
   "progress": "Progress",
   "admin": "Admin",
-  "back_to_dashboard": "Back to Dashboard"
-
+  "back_to_dashboard": "Back to Dashboard",
+  "landing_title": "Do you still remember your first teacher's name?",
+  "landing_item_1": "✔ The phone number of the house where you grew up?",
+  "landing_item_2": "✔ The first song that marked your life?",
+  "landing_subtitle": "Take a quick test and find out how your attention and memory are today.",
+  "start_test": "TAKE TEST",
+  "free_test_info": "2-minute free test",
+  "made_for_50plus": "Made with love for those 50+"
 }
