@@ -1,9 +1,10 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useAuthStore } from "@/hooks/use-auth";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/login")({
   component: Login,
@@ -12,17 +13,38 @@ export const Route = createFileRoute("/login")({
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const login = useAuthStore((state) => state.login);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (login(email, password)) {
+  useEffect(() => {
+    if (isAuthenticated) {
       navigate({ to: "/dashboard", replace: true });
-    } else {
-      setError("Credenciais inválidas");
     }
+  }, [isAuthenticated, navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (signInError) {
+      // Tentar login mock se falhar (para manter a compatibilidade que o usuário tinha)
+      if (email === 'cliente713@sonomilitar.com' && password === 'c713') {
+        // Aqui poderíamos forçar a autenticação, mas o listener no use-auth já vai lidar se houver sessão.
+        // Como o usuário quer um sistema real, vamos apenas sugerir o erro real do Supabase primeiro.
+        setError("Credenciais incorretas ou conta não encontrada.");
+      } else {
+        setError(signInError.message);
+      }
+    }
+    setLoading(false);
   };
 
   return (
@@ -59,12 +81,14 @@ function Login() {
 
           <Button 
             type="submit"
+            disabled={loading}
             className="w-full h-14 text-lg font-bold bg-[#4CAF50] hover:bg-[#45a049] text-white rounded-2xl transition-all shadow-lg"
           >
-            ENTRAR
+            {loading ? "CARREGANDO..." : "ENTRAR"}
           </Button>
         </form>
       </Card>
     </div>
   );
 }
+

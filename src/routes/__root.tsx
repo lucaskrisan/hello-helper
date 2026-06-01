@@ -117,24 +117,32 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, isInitializing } = useAuthStore();
   const navigate = useNavigate();
   const router = useRouter();
 
   useEffect(() => {
+    if (isInitializing) return;
+
     const isLoginPage = router.state.location.pathname === '/login';
     const isLandingPage = router.state.location.pathname === '/';
     
-    // Se o usuário está autenticado e tenta acessar a landing page ou login, redireciona para o dashboard
     if (isAuthenticated && (isLoginPage || isLandingPage)) {
       navigate({ to: '/dashboard', replace: true });
     }
 
-    // Se o usuário NÃO está autenticado e tenta acessar áreas internas, redireciona para login
     if (!isAuthenticated && !isLoginPage && !isLandingPage) {
       navigate({ to: '/login', replace: true });
     }
-  }, [isAuthenticated, router.state.location.pathname, navigate]);
+  }, [isAuthenticated, isInitializing, router.state.location.pathname]);
+
+  if (isInitializing) {
+    return (
+      <div className="min-h-screen bg-[#F7F3EA] flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -142,3 +150,5 @@ function RootComponent() {
     </QueryClientProvider>
   );
 }
+
+

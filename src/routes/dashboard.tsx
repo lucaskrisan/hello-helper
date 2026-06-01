@@ -16,8 +16,11 @@ function Dashboard() {
   const [challenges, setChallenges] = useState<any[]>([]);
   const navigate = useNavigate();
 
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     async function loadData() {
+      setLoading(true);
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         navigate({ to: "/", replace: true });
@@ -31,17 +34,18 @@ function Dashboard() {
       }
       setProfile(prof);
 
-      const { data: str } = await supabase.from("streaks").select("*").eq("user_id", user.id).maybeSingle();
-      setStreak(str);
+      const [{ data: str }, { data: challs }] = await Promise.all([
+        supabase.from("streaks").select("*").eq("user_id", user.id).maybeSingle(),
+        supabase.from("daily_challenges").select("*").eq("user_id", user.id).order('created_at', { ascending: false })
+      ]);
 
-      const { data: challs } = await supabase.from("daily_challenges")
-        .select("*")
-        .eq("user_id", user.id)
-        .order('created_at', { ascending: false });
+      setStreak(str);
       setChallenges(challs || []);
+      setLoading(false);
     }
     loadData();
   }, [navigate]);
+
 
   const today = new Date();
   const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
@@ -49,6 +53,14 @@ function Dashboard() {
 
   // Dias concluídos baseados nos desafios do banco
   const completedDays = challenges.map(c => new Date(c.created_at).getDate());
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#F7F3EA] flex items-center justify-center p-6">
+        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#F7F3EA] p-6 max-w-2xl mx-auto pb-32">
