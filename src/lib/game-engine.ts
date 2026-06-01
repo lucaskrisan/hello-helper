@@ -51,10 +51,23 @@ export const generateTaskByCategory = (categoryId: string, seedOffset: number = 
 
   switch (categoryId) {
     case 'memory': {
-      const shuffledWords = [...GAME_ASSETS.words].sort(() => random() - 0.5);
-      const selectedWords = shuffledWords.slice(0, 5);
-      const wordOptions = [...selectedWords, ...shuffledWords.slice(5, 10)].sort(() => random() - 0.5);
-      return { type: 'memory', words: selectedWords, options: wordOptions };
+      // Alternar entre tipos de memória para nunca cansar
+      const subType = random() > 0.5 ? 'words' : 'sequence';
+      
+      if (subType === 'words') {
+        const shuffledWords = [...GAME_ASSETS.words].sort(() => random() - 0.5);
+        const selectedWords = shuffledWords.slice(0, 5);
+        const wordOptions = [...selectedWords, ...shuffledWords.slice(5, 10)].sort(() => random() - 0.5);
+        return { type: 'memory-words', words: selectedWords, options: wordOptions };
+      } else {
+        // Sequência de cores (Genius)
+        const sequenceLength = 4;
+        const sequence = [];
+        for (let i = 0; i < sequenceLength; i++) {
+          sequence.push(Math.floor(random() * 4)); // 4 cores
+        }
+        return { type: 'memory-sequence', sequence, colors: GAME_ASSETS.colors.slice(0, 4) };
+      }
     }
     case 'attention': {
       const isColorMode = random() > 0.5;
@@ -103,6 +116,7 @@ export const generateTaskByCategory = (categoryId: string, seedOffset: number = 
       return null;
   }
 };
+
 
 export const generateDailyChallenge = (seedStr: string) => {
   const numericSeed = seedStr.split('-').reduce((acc, part) => acc + parseInt(part), 0);
