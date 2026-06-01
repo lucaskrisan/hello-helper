@@ -15,7 +15,7 @@ function Game() {
   const [score, setScore] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
   const [selectedWords, setSelectedWords] = useState<string[]>([]);
-  const [showFeedback, setShowFeedback] = useState(false);
+  const [feedback, setFeedback] = useState<{ type: 'success' | 'retry' | null; message: string }>({ type: null, message: "" });
   const [startTime] = useState(Date.now());
   const [timeLeft, setTimeLeft] = useState(10);
   const [memState, setMemState] = useState<'showing' | 'choosing'>('showing');
@@ -113,21 +113,42 @@ function Game() {
                   );
                 })}
               </div>
-              {selectedWords.length === 5 && !showFeedback && (
+              {selectedWords.length === 5 && !feedback.type && (
                 <Button 
                   onClick={() => {
                     const matches = selectedWords.filter(w => words.includes(w)).length;
-                    setCorrectCount(prev => prev + (matches === 5 ? 1 : 0));
-                    setScore(prev => prev + (matches * 6.6));
-                    setShowFeedback(true);
-                    setTimeout(() => { setExercise(2); setShowFeedback(false); }, 1500);
+                    if (matches >= 3) {
+                      setCorrectCount(prev => prev + 1);
+                      setScore(prev => prev + 33.3);
+                      setFeedback({ type: 'success', message: "Muito bem! Sua memória está ótima. Vamos ao próximo!" });
+                      setTimeout(() => { 
+                        setExercise(2); 
+                        setFeedback({ type: null, message: "" });
+                        setSelectedWords([]);
+                      }, 2500);
+                    } else {
+                      setFeedback({ type: 'retry', message: "Sua mente ainda não registrou essas palavras. Vamos tentar de novo com calma?" });
+                      setTimeout(() => {
+                        setSelectedWords([]);
+                        setFeedback({ type: null, message: "" });
+                        setMemState('showing');
+                        setTimeLeft(10);
+                      }, 3500);
+                    }
                   }}
                   className="w-full py-8 text-xl font-bold bg-[#D97706] hover:bg-[#b46205] rounded-2xl"
                 >
                   CONFERIR RESPOSTAS
                 </Button>
               )}
-              {showFeedback && <div className="py-4 text-2xl font-bold text-primary animate-in fade-in">Muito bem! Vamos ao próximo.</div>}
+
+              {feedback.type && (
+                <div className={`py-6 px-4 rounded-2xl text-xl font-bold animate-in fade-in zoom-in slide-in-from-bottom-4 duration-500 ${
+                  feedback.type === 'success' ? "text-primary bg-primary/10" : "text-[#D97706] bg-[#FFF9E6]"
+                }`}>
+                  {feedback.message}
+                </div>
+              )}
             </div>
           )}
         </Card>
@@ -137,27 +158,32 @@ function Game() {
         <Card className="w-full max-w-md p-8 bg-white rounded-3xl shadow-sm text-center">
           <h2 className="text-2xl font-bold mb-2">Atenção Visual</h2>
           <p className="text-gray-600 mb-6">Clique na letra diferente entre as demais:</p>
-          {!showFeedback ? (
+          {!feedback.type ? (
             <div className="grid grid-cols-4 gap-4 mb-8">
               {grid.map((l, i) => (
                 <Button key={i} onClick={() => {
                   if (l === intruder) {
-                    setScore(s => s + 33);
+                    setScore(s => s + 33.3);
                     setCorrectCount(c => c + 1);
+                    setFeedback({ type: 'success', message: "Excelente observação! Você encontrou!" });
+                    setTimeout(() => {
+                      setExercise(3);
+                      setFeedback({ type: null, message: "" });
+                    }, 2500);
+                  } else {
+                    setFeedback({ type: 'retry', message: "Quase lá! Olhe com um pouquinho mais de atenção..." });
+                    setTimeout(() => setFeedback({ type: null, message: "" }), 3000);
                   }
-                  setShowFeedback(true);
-                  setTimeout(() => {
-                    setExercise(3);
-                    setShowFeedback(false);
-                  }, 1500);
-                }} className="text-2xl h-16 bg-background text-foreground hover:bg-secondary">
+                }} className="text-2xl h-16 bg-background text-foreground hover:bg-secondary transition-all active:scale-90">
                   {l}
                 </Button>
               ))}
             </div>
           ) : (
-            <div className="py-12 text-2xl font-bold text-primary animate-in fade-in bounce-in">
-              Muito bem! Vamos ao próximo.
+            <div className={`py-12 px-4 rounded-2xl text-xl font-bold animate-in fade-in zoom-in ${
+              feedback.type === 'success' ? "text-primary bg-primary/10" : "text-[#D97706] bg-[#FFF9E6]"
+            }`}>
+              {feedback.message}
             </div>
           )}
         </Card>
@@ -167,29 +193,34 @@ function Game() {
         <Card className="w-full max-w-md p-8 bg-white rounded-3xl shadow-sm text-center">
           <h2 className="text-2xl font-bold mb-2">Qual o próximo número?</h2>
           <p className="text-gray-600 mb-8">Identifique o padrão na sequência:</p>
-          {!showFeedback ? (
+          {!feedback.type ? (
             <>
               <div className="text-5xl font-bold mb-10 text-[#4A7C59] tracking-wider">{sequence.join(", ")} , ?</div>
               <div className="grid grid-cols-2 gap-4">
                 {logicOptions.map(num => (
                   <Button key={num} onClick={async () => {
                     if (num === answer) {
-                      setScore(prev => prev + 34);
+                      setScore(prev => prev + 33.4);
                       setCorrectCount(prev => prev + 1);
+                      setFeedback({ type: 'success', message: "Incrível! Raciocínio nota dez!" });
+                      setTimeout(async () => {
+                        await finishChallenge();
+                      }, 2500);
+                    } else {
+                      setFeedback({ type: 'retry', message: "O padrão é um pouquinho diferente... tente pensar na sequência de novo." });
+                      setTimeout(() => setFeedback({ type: null, message: "" }), 3000);
                     }
-                    setShowFeedback(true);
-                    setTimeout(async () => {
-                      await finishChallenge();
-                    }, 1500);
-                  }} className="py-6 text-xl bg-background text-foreground hover:bg-secondary">
+                  }} className="py-6 text-xl bg-background text-foreground hover:bg-secondary transition-all active:scale-95">
                     {num}
                   </Button>
                 ))}
               </div>
             </>
           ) : (
-            <div className="py-12 text-2xl font-bold text-primary animate-in fade-in bounce-in">
-              Muito bem! Você finalizou.
+            <div className={`py-12 px-4 rounded-2xl text-xl font-bold animate-in fade-in zoom-in ${
+              feedback.type === 'success' ? "text-primary bg-primary/10" : "text-[#D97706] bg-[#FFF9E6]"
+            }`}>
+              {feedback.message}
             </div>
           )}
         </Card>
