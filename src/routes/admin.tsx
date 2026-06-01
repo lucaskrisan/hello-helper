@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Users, CreditCard, BookOpen, Brain, Activity, ShieldCheck } from "lucide-react";
 import { useAuthStore } from "@/hooks/use-auth";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin")({
   component: AdminDashboard,
@@ -49,14 +50,14 @@ function AdminDashboard() {
 
         setIsAdmin(true);
         
-        // Load some basic stats
-        const usersCount = await supabase.from('profiles').select('*', { count: 'exact', head: true }).limit(1);
-        const challengesCount = await supabase.from('daily_challenges').select('*', { count: 'exact', head: true }).limit(1);
+        const { count: usersCount } = await supabase.from('profiles').select('*', { count: 'exact', head: true });
+        const { count: premiumCount } = await supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('is_premium', true);
+        const { count: challengesCount } = await supabase.from('daily_challenges').select('*', { count: 'exact', head: true });
 
         setStats({
-          users: usersCount.count || 0,
-          activeSubscriptions: Math.floor((usersCount.count || 0) * 0.3),
-          dailyChallenges: challengesCount.count || 0,
+          users: usersCount || 0,
+          activeSubscriptions: premiumCount || 0,
+          dailyChallenges: challengesCount || 0,
         });
       } catch (err) {
         console.error("Error in admin dashboard:", err);
@@ -126,7 +127,7 @@ function AdminDashboard() {
             Configurações Globais
           </h2>
           <div className="space-y-4">
-            <Button className="w-full bg-primary">Ver Relatórios Detalhados</Button>
+            <Button className="w-full bg-primary" onClick={() => toast.info("Relatórios em desenvolvimento.")}>Ver Estatísticas de Uso</Button>
             <Button variant="outline" className="w-full">Configurar Planos Stripe</Button>
             <Button variant="ghost" className="w-full text-red-500 hover:text-red-600 hover:bg-red-50">Log de Erros do Sistema</Button>
           </div>
