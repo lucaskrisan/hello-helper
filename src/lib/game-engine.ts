@@ -131,14 +131,14 @@ export const generateTaskByCategory = async (
         return { type: 'attention-letter', grid, intruder: letters[intruderIdx], cols: Math.sqrt(size), level };
       } else {
         const categories = Object.keys(CONTENT_POOLS);
-        const cat = categories[Math.floor(random() * categories.length)];
-        const pool = CONTENT_POOLS[cat];
-        const items = await getAvailableItems(cat, 4, random, usedIds);
-        const otherCat = categories.find(c => c !== cat)!;
-        const intruderItems = await getAvailableItems(otherCat, 1, random, usedIds);
+        const catKey = categories[Math.floor(random() * categories.length)];
+        const items = await getAvailableItems(catKey, 4, random, usedIds);
+        const categoryName = items[0].category;
+        const otherCatKey = categories.find(c => c !== catKey)!;
+        const intruderItems = await getAvailableItems(otherCatKey, 1, random, usedIds);
         const intruder = intruderItems[0];
         const options = [...items, intruder].sort(() => random() - 0.5);
-        return { type: 'word-intruder', options, intruder: intruder.word, categoryName: cat, level, itemIds: options.map(o => o.id) };
+        return { type: 'word-intruder', options, intruder: intruder.word, categoryName, level, itemIds: options.map(o => o.id) };
       }
     }
 
