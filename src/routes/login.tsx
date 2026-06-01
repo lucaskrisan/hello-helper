@@ -32,7 +32,7 @@ function Login() {
     // Login de Super Admin
     if (email === 'trafegocomkrisan@gmail.com') {
       useAuthStore.getState().setAuthenticated(true);
-      localStorage.setItem(' mente_ativa_is_super_admin', 'true');
+      localStorage.setItem('mente_ativa_is_super_admin', 'true');
       navigate({ to: "/admin", replace: true });
       setLoading(false);
       return;
