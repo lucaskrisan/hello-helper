@@ -147,7 +147,7 @@ function Conclusion() {
 
         <Button 
           onClick={() => {
-            // No momento redirecionando para Stripe Sandbox (implementação real abaixo)
+            // Substituir pelo link de produção do seu Stripe quando for lançar
             window.location.href = "https://buy.stripe.com/test_6oEbMh9708pI5EYeUV"; 
           }}
           className="w-full py-8 text-2xl font-black bg-primary hover:bg-primary/90 text-white rounded-2xl shadow-xl transition-transform hover:scale-105 active:scale-95"
