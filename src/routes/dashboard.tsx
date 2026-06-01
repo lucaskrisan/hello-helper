@@ -145,12 +145,12 @@ function Dashboard() {
         ))}
       </div>
 
-      {profile?.email === 'trafegocomkrisan@gmail.com' && (
+      {(profile?.email === 'trafegocomkrisan@gmail.com' || localStorage.getItem('mente_ativa_is_super_admin') === 'true') && (
         <Button 
           onClick={() => navigate({ to: "/admin" })}
           className="w-full mt-4 bg-gray-900 hover:bg-gray-800 text-white rounded-2xl py-4 flex items-center justify-center gap-2"
         >
-          <Settings className="w-5 h-5" />
+          <ShieldCheck className="w-5 h-5 text-primary" />
           ACESSAR PAINEL SUPER ADMIN
         </Button>
       )}
