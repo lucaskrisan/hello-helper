@@ -54,6 +54,14 @@ function Dashboard() {
   // Dias concluídos baseados nos desafios do banco
   const completedDays = challenges.map(c => new Date(c.created_at).getDate());
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#F7F3EA] flex items-center justify-center p-6">
+        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#F7F3EA] p-6 max-w-2xl mx-auto pb-32">
       <header className="flex justify-between items-center mb-8">
