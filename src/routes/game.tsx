@@ -265,7 +265,7 @@ function Game() {
                       key={opt}
                       onClick={() => {
                         if (selectedWords.includes(opt)) setSelectedWords(s => s.filter(w => w !== opt));
-                        else if (selectedWords.length < 5) setSelectedWords(s => [...s, opt]);
+                        else if (selectedWords.length < currentTask.words.length) setSelectedWords(s => [...s, opt]);
                       }}
                       className={`py-8 text-lg rounded-2xl border-2 transition-all ${
                         selectedWords.includes(opt) ? "bg-primary text-white border-primary" : "bg-white border-gray-100 text-gray-700"
@@ -275,10 +275,11 @@ function Game() {
                     </Button>
                   ))}
                 </div>
-                {selectedWords.length === 5 && (
+                {selectedWords.length === currentTask.words.length && (
                   <Button onClick={() => {
-                    const correct = selectedWords.filter(w => currentTask.words.includes(w)).length;
-                    if (correct >= 4) handleCorrect();
+                    const correctCount = selectedWords.filter(w => currentTask.words.includes(w)).length;
+                    const required = Math.max(1, currentTask.words.length - 1); // Exige acertar quase tudo (ex: 2/3, 4/5, 6/7)
+                    if (correctCount >= required) handleCorrect();
                     else handleRetry();
                   }} className="w-full py-8 text-xl font-bold bg-orange-500 rounded-2xl mt-4 shadow-lg">CONFERIR</Button>
                 )}
