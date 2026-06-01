@@ -173,11 +173,12 @@ export const generateTaskByCategory = async (
         let finalIsTrue = isTrue;
         
         if (isTrue) {
-          statement = `"${item.word}" faz parte do grupo: ${cat}?`;
+          statement = `"${item.word}" faz parte do grupo: ${item.category}?`;
         } else {
           const otherCats = categories.filter(c => c !== cat);
-          const wrongCat = otherCats[Math.floor(random() * otherCats.length)];
-          statement = `"${item.word}" faz parte do grupo: ${wrongCat}?`;
+          const randomOtherCatKey = otherCats[Math.floor(random() * otherCats.length)];
+          const otherCatName = CONTENT_POOLS[randomOtherCatKey][0].category;
+          statement = `"${item.word}" faz parte do grupo: ${otherCatName}?`;
           finalIsTrue = false;
         }
         
