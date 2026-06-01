@@ -11,7 +11,7 @@ export const Route = createFileRoute("/game")({
 
 function Game() {
   const navigate = useNavigate();
-  const [exercise, setExercise] = useState(0); // 0 = Intro, 1 = Memória, 2 = Atenção, 3 = Lógica
+  const [exercise, setExercise] = useState(0); // 0 = Intro, 1 = Memória, 2 = Atenção, 3 = Lógica, 4 = Caça-Palavras
   const [score, setScore] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
   const [exerciseOrder, setExerciseOrder] = useState<number[]>([]);
@@ -20,21 +20,22 @@ function Game() {
   const [startTime] = useState(Date.now());
   const [timeLeft, setTimeLeft] = useState(10);
   const [memState, setMemState] = useState<'showing' | 'choosing'>('showing');
+  const [searchSelection, setSearchSelection] = useState<{r: number, c: number}[]>([]);
 
   // Gera o desafio único do dia baseado na data atual
   const today = new Date().toISOString().split('T')[0];
   const challengeData = useMemo(() => generateDailyChallenge(today), [today]);
 
-    const { words, options } = challengeData.memory;
-    const { grid, intruder } = challengeData.attention;
-    const { sequence, options: logicOptions, answer } = challengeData.logic;
-    const { grid: colorGrid, intruder: intruderColor } = challengeData.colorAttention;
+  const { words, options } = challengeData.memory;
+  const { grid, intruder } = challengeData.attention;
+  const { sequence, options: logicOptions, answer } = challengeData.logic;
+  const { grid: colorGrid, intruder: intruderColor } = challengeData.colorAttention;
+  const { grid: searchGrid, word: wordForSearch } = challengeData.wordSearch;
+  console.log('Daily Challenge Word Search:', wordForSearch);
 
   useEffect(() => {
-    // Sorteia a ordem dos exercícios ou seleciona exercícios aleatórios do motor
-    // Aqui apenas garantimos que a seed do dia gera algo novo
     if (exerciseOrder.length === 0) {
-      setExerciseOrder([1, 2, 3]); // Por enquanto fixo, mas vindo da seed
+      setExerciseOrder([1, 2, 4, 3]); // Adicionado exercício 4 (Caça-Palavras) na ordem
     }
   }, []);
 
@@ -57,11 +58,12 @@ function Game() {
 
     const finalScore = Math.min(100, Math.round(score));
     const totalTime = Math.floor((Date.now() - startTime) / 1000);
+    console.log('Finishing challenge with score:', finalScore);
 
     await supabase.from("daily_challenges").insert({
       user_id: user.id,
       score: finalScore,
-      total_questions: 3,
+      total_questions: 4, // Agora são 4 exercícios
       correct_answers: correctCount,
       total_time: totalTime,
     });
@@ -151,11 +153,11 @@ function Game() {
                       setCorrectCount(prev => prev + 1);
                       setScore(prev => prev + 33.3);
                       setFeedback({ type: 'success', message: "Muito bem! Sua memória está ótima. Vamos ao próximo!" });
-                      setTimeout(() => { 
-                        setExercise(2); 
-                        setFeedback({ type: null, message: "" });
-                        setSelectedWords([]);
-                      }, 2500);
+                    setTimeout(() => { 
+                      setExercise(2); 
+                      setFeedback({ type: null, message: "" });
+                      setSelectedWords([]);
+                    }, 2500);
                     } else {
                       setFeedback({ type: 'retry', message: "Sua mente ainda não registrou essas palavras. Vamos tentar de novo com calma?" });
                       setTimeout(() => {
@@ -197,7 +199,7 @@ function Game() {
                     setCorrectCount(c => c + 1);
                     setFeedback({ type: 'success', message: "Excelente observação! Você encontrou!" });
                     setTimeout(() => {
-                      setExercise(3);
+                      setExercise(4); // Vai para o Caça-Palavras agora
                       setFeedback({ type: null, message: "" });
                     }, 2500);
                   } else {
@@ -207,6 +209,57 @@ function Game() {
                 }} className="text-2xl h-16 bg-background text-foreground hover:bg-secondary transition-all active:scale-90">
                   {l}
                 </Button>
+              ))}
+            </div>
+          ) : (
+            <div className={`py-12 px-4 rounded-2xl text-xl font-bold animate-in fade-in zoom-in ${
+              feedback.type === 'success' ? "text-primary bg-primary/10" : "text-[#D97706] bg-[#FFF9E6]"
+            }`}>
+              {feedback.message}
+            </div>
+          )}
+        </Card>
+      )}
+
+      {exercise === 4 && (
+        <Card className="w-full max-w-md p-8 bg-white rounded-3xl shadow-sm text-center">
+          <h2 className="text-2xl font-bold mb-2">Caça-Palavras</h2>
+          <p className="text-gray-600 mb-6 font-medium">Encontre a palavra: <span className="text-primary font-bold">{wordForSearch}</span></p>
+          {!feedback.type ? (
+            <div className="grid grid-cols-6 gap-2 mb-8 mx-auto w-fit">
+              {searchGrid.map((row: string[], rIndex: number) => (
+                row.map((letter: string, cIndex: number) => {
+                  const isSelected = searchSelection.some(s => s.r === rIndex && s.c === cIndex);
+                  return (
+                    <Button 
+                      key={`${rIndex}-${cIndex}`} 
+                      onClick={() => {
+                        const newSelection = [...searchSelection, {r: rIndex, c: cIndex}];
+                        setSearchSelection(newSelection);
+                        
+                        // Verifica se formou a palavra
+                        const selectedLetters = newSelection.map(s => searchGrid[s.r][s.c]).join("");
+                        if (selectedLetters === wordForSearch) {
+                          setScore(s => s + 33.3);
+                          setCorrectCount(c => c + 1);
+                          setFeedback({ type: 'success', message: "Que olhar aguçado! Você encontrou a palavra!" });
+                          setTimeout(() => {
+                            setExercise(3); // Agora sim vai para o último (Lógica)
+                            setFeedback({ type: null, message: "" });
+                          }, 2500);
+                        } else if (!wordForSearch.startsWith(selectedLetters)) {
+                          // Errou a sequência
+                          setSearchSelection([]);
+                        }
+                      }}
+                      className={`w-10 h-10 p-0 text-xl font-bold rounded-lg transition-all ${
+                        isSelected ? "bg-primary text-white" : "bg-background text-foreground hover:bg-secondary/20"
+                      }`}
+                    >
+                      {letter}
+                    </Button>
+                  );
+                })
               ))}
             </div>
           ) : (
