@@ -31,6 +31,7 @@ function Game() {
   const [memState, setMemState] = useState<'showing' | 'choosing'>('showing');
   const [timeLeft, setTimeLeft] = useState(15);
   const [userSequence, setUserSequence] = useState<any[]>([]);
+  const [globalTimeLeft, setGlobalTimeLeft] = useState(300); // 5 minutes in seconds
 
   const finishChallenge = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -108,6 +109,20 @@ function Game() {
   };
 
   useEffect(() => {
+    const timer = setInterval(() => {
+      setGlobalTimeLeft(prev => {
+        if (prev <= 0) {
+          clearInterval(timer);
+          finishChallenge();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [finishChallenge]);
+
+  useEffect(() => {
     if (currentTask?.type?.startsWith('memory') && memState === 'showing') {
       if (timeLeft <= 0) {
         setMemState('choosing');
@@ -117,6 +132,12 @@ function Game() {
       return () => clearInterval(timer);
     }
   }, [currentTask, memState, timeLeft]);
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
 
   if (!currentTask) return null;
 
@@ -133,6 +154,12 @@ function Game() {
         <div className="bg-white px-3 py-1.5 rounded-full shadow-sm flex items-center space-x-1.5 shrink-0">
           <Trophy className="w-4 h-4 text-yellow-500" />
           <span className="font-bold text-gray-700 text-sm">{Math.round(score)}</span>
+        </div>
+        <div className="bg-white px-3 py-1.5 rounded-full shadow-sm flex items-center space-x-1.5 shrink-0">
+          <Hourglass className={`w-4 h-4 ${globalTimeLeft < 60 ? 'text-red-500 animate-pulse' : 'text-primary'}`} />
+          <span className={`font-mono font-bold text-sm ${globalTimeLeft < 60 ? 'text-red-500' : 'text-gray-700'}`}>
+            {formatTime(globalTimeLeft)}
+          </span>
         </div>
       </div>
 
