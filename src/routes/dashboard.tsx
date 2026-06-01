@@ -11,7 +11,7 @@ export const Route = createFileRoute("/dashboard")({
 
 function Dashboard() {
   const [profile, setProfile] = useState<any>(null);
-  const [stats, setStats] = useState({ streak: 0, total: 0 });
+  const [stats, setStats] = useState({ streak: 0, total: 0, evolution: 0 });
   const navigate = useNavigate();
 
   useEffect(() => {
