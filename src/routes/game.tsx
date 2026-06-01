@@ -196,7 +196,7 @@ function Game() {
           </div>
         )}
 
-        {currentTask.type === 'memory' && (
+        {currentTask.type === 'memory-words' && (
           <div className="text-center">
             <h2 className="text-2xl font-bold mb-6">Memorize as palavras</h2>
             {memState === 'showing' ? (
@@ -242,6 +242,46 @@ function Game() {
             )}
           </div>
         )}
+
+        {currentTask.type === 'memory-sequence' && (
+          <div className="text-center">
+            <h2 className="text-2xl font-bold mb-2">Sequência de Cores</h2>
+            <p className="text-gray-500 mb-8">{isShowingSequence ? "Observe a sequência..." : "Repita a sequência tocando nas cores"}</p>
+            <div className="grid grid-cols-2 gap-4 max-w-[280px] mx-auto">
+              {currentTask.colors.map((color: string, i: number) => (
+                <button
+                  key={i}
+                  disabled={isShowingSequence}
+                  onClick={() => {
+                    const nextSequence = [...userSequence, i];
+                    setUserSequence(nextSequence);
+                    
+                    // Feedback visual ao clicar
+                    setActiveButton(i);
+                    setTimeout(() => setActiveButton(null), 300);
+
+                    // Verificar acerto
+                    if (currentTask.sequence[nextSequence.length - 1] !== i) {
+                      handleRetry("Ops! A sequência foi um pouco diferente. Vamos tentar de novo?");
+                      setUserSequence([]);
+                      setTimeout(() => playSequence(currentTask.sequence), 3500);
+                    } else if (nextSequence.length === currentTask.sequence.length) {
+                      handleCorrect();
+                    }
+                  }}
+                  className={`h-28 rounded-3xl transition-all transform active:scale-95 ${
+                    activeButton === i ? "brightness-125 scale-105 shadow-xl ring-4 ring-white" : "brightness-100 shadow-md"
+                  }`}
+                  style={{ backgroundColor: color }}
+                />
+              ))}
+            </div>
+            {!isShowingSequence && userSequence.length > 0 && (
+              <p className="mt-6 text-primary font-bold">{userSequence.length} de {currentTask.sequence.length} cores</p>
+            )}
+          </div>
+        )}
+
 
         {(currentTask.type === 'attention-letter' || currentTask.type === 'attention-color') && (
           <div className="text-center">
