@@ -16,8 +16,11 @@ function Dashboard() {
   const [challenges, setChallenges] = useState<any[]>([]);
   const navigate = useNavigate();
 
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     async function loadData() {
+      setLoading(true);
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         navigate({ to: "/", replace: true });
@@ -31,17 +34,18 @@ function Dashboard() {
       }
       setProfile(prof);
 
-      const { data: str } = await supabase.from("streaks").select("*").eq("user_id", user.id).maybeSingle();
-      setStreak(str);
+      const [{ data: str }, { data: challs }] = await Promise.all([
+        supabase.from("streaks").select("*").eq("user_id", user.id).maybeSingle(),
+        supabase.from("daily_challenges").select("*").eq("user_id", user.id).order('created_at', { ascending: false })
+      ]);
 
-      const { data: challs } = await supabase.from("daily_challenges")
-        .select("*")
-        .eq("user_id", user.id)
-        .order('created_at', { ascending: false });
+      setStreak(str);
       setChallenges(challs || []);
+      setLoading(false);
     }
     loadData();
   }, [navigate]);
+
 
   const today = new Date();
   const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
