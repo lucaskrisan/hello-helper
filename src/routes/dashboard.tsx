@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { GAME_ASSETS } from "@/lib/game-engine";
 import { Settings, BarChart3, Home as HomeIcon } from "lucide-react";
+import { useAuthStore } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/dashboard")({
   component: Dashboard,
@@ -14,44 +15,54 @@ function Dashboard() {
   const [profile, setProfile] = useState<any>(null);
   const [streak, setStreak] = useState<any>(null);
   const [challenges, setChallenges] = useState<any[]>([]);
-  const navigate = useNavigate();
-
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function loadData() {
       setLoading(true);
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
+      const isAuthenticatedMock = useAuthStore.getState().isAuthenticated;
+
+      if (!user && !isAuthenticatedMock) {
         navigate({ to: "/", replace: true });
         return;
       }
 
-      const { data: prof } = await supabase.from("profiles").select("*").eq("user_id", user.id).maybeSingle();
-      if (!prof) {
-        navigate({ to: "/onboarding", replace: true });
-        return;
+      let currentProfile = null;
+      let currentStreak = { current_streak: 0 };
+      let currentChallenges = [];
+
+      if (user) {
+        const { data: prof } = await supabase.from("profiles").select("*").eq("user_id", user.id).maybeSingle();
+        if (!prof) {
+          navigate({ to: "/onboarding", replace: true });
+          return;
+        }
+        currentProfile = prof;
+
+        const [{ data: str }, { data: challs }] = await Promise.all([
+          supabase.from("streaks").select("*").eq("user_id", user.id).maybeSingle(),
+          supabase.from("daily_challenges").select("*").eq("user_id", user.id).order('created_at', { ascending: false })
+        ]);
+        currentStreak = str || currentStreak;
+        currentChallenges = challs || [];
+      } else {
+        // Fallback para login mock
+        currentProfile = { name: "Mente Ativa", display_name: "Explorador" };
       }
-      setProfile(prof);
 
-      const [{ data: str }, { data: challs }] = await Promise.all([
-        supabase.from("streaks").select("*").eq("user_id", user.id).maybeSingle(),
-        supabase.from("daily_challenges").select("*").eq("user_id", user.id).order('created_at', { ascending: false })
-      ]);
-
-      setStreak(str);
-      setChallenges(challs || []);
+      setProfile(currentProfile);
+      setStreak(currentStreak);
+      setChallenges(currentChallenges);
       setLoading(false);
     }
     loadData();
   }, [navigate]);
 
-
   const today = new Date();
   const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
   const currentDay = today.getDate();
-
-  // Dias concluídos baseados nos desafios do banco
   const completedDays = challenges.map(c => new Date(c.created_at).getDate());
 
   if (loading) {
@@ -75,7 +86,6 @@ function Dashboard() {
         </div>
       </header>
 
-      {/* Calendário de Progresso */}
       <Card className="p-6 bg-white rounded-3xl shadow-sm mb-8 border-none overflow-hidden relative">
         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16" />
         <h2 className="font-bold text-lg mb-4 flex items-center space-x-2">
@@ -102,7 +112,6 @@ function Dashboard() {
         </div>
       </Card>
 
-      {/* Botão de Destaque */}
       <Button 
         onClick={() => navigate({ to: "/game", search: { mode: 'daily' } })}
         className="w-full py-12 text-2xl font-bold bg-primary hover:bg-primary/90 text-white rounded-[2.5rem] shadow-xl mb-12 transform transition-all hover:scale-[1.02] active:scale-95 flex flex-col space-y-1 relative overflow-hidden"
@@ -137,7 +146,6 @@ function Dashboard() {
         ))}
       </div>
 
-      {/* Navegação Inferior Fixa */}
       <div className="fixed bottom-0 left-0 right-0 p-6 z-50 pointer-events-none">
         <nav className="max-w-md mx-auto bg-white/90 backdrop-blur-lg p-3 rounded-[2.5rem] shadow-2xl flex justify-around items-center border border-white/50 pointer-events-auto">
           <button 
