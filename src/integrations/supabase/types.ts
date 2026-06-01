@@ -14,7 +14,203 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      daily_challenges: {
+        Row: {
+          completed_at: string | null
+          correct_answers: number | null
+          date: string
+          id: string
+          score: number | null
+          total_questions: number | null
+          total_time: number | null
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          correct_answers?: number | null
+          date?: string
+          id?: string
+          score?: number | null
+          total_questions?: number | null
+          total_time?: number | null
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          correct_answers?: number | null
+          date?: string
+          id?: string
+          score?: number | null
+          total_questions?: number | null
+          total_time?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      exercise_results: {
+        Row: {
+          challenge_id: string | null
+          correct: number | null
+          created_at: string
+          exercise_type: string
+          id: string
+          score: number | null
+          time_spent: number | null
+          total: number | null
+          user_id: string
+        }
+        Insert: {
+          challenge_id?: string | null
+          correct?: number | null
+          created_at?: string
+          exercise_type: string
+          id?: string
+          score?: number | null
+          time_spent?: number | null
+          total?: number | null
+          user_id: string
+        }
+        Update: {
+          challenge_id?: string | null
+          correct?: number | null
+          created_at?: string
+          exercise_type?: string
+          id?: string
+          score?: number | null
+          time_spent?: number | null
+          total?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exercise_results_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "daily_challenges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          age_range: string | null
+          created_at: string
+          id: string
+          main_goal: string | null
+          name: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          age_range?: string | null
+          created_at?: string
+          id?: string
+          main_goal?: string | null
+          name?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          age_range?: string | null
+          created_at?: string
+          id?: string
+          main_goal?: string | null
+          name?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      streaks: {
+        Row: {
+          best_streak: number | null
+          current_streak: number | null
+          id: string
+          last_completed_date: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          best_streak?: number | null
+          current_streak?: number | null
+          id?: string
+          last_completed_date?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          best_streak?: number | null
+          current_streak?: number | null
+          id?: string
+          last_completed_date?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      subscriptions: {
+        Row: {
+          created_at: string
+          id: string
+          plan: string | null
+          status: string | null
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          plan?: string | null
+          status?: string | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          plan?: string | null
+          status?: string | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_preferences: {
+        Row: {
+          font_size: string | null
+          id: string
+          language: string | null
+          notifications_enabled: boolean | null
+          theme: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          font_size?: string | null
+          id?: string
+          language?: string | null
+          notifications_enabled?: boolean | null
+          theme?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          font_size?: string | null
+          id?: string
+          language?: string | null
+          notifications_enabled?: boolean | null
+          theme?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
