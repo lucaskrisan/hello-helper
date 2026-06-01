@@ -20,7 +20,13 @@ function Login() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate({ to: "/dashboard", replace: true });
+      // Se for o Super Admin, vai para o painel, senão vai para o dashboard
+      const isSuperAdmin = localStorage.getItem('mente_ativa_is_super_admin') === 'true';
+      if (isSuperAdmin) {
+        navigate({ to: "/admin", replace: true });
+      } else {
+        navigate({ to: "/dashboard", replace: true });
+      }
     }
   }, [isAuthenticated, navigate]);
 

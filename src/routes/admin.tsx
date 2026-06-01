@@ -21,6 +21,7 @@ export const Route = createFileRoute("/admin")({
 
 function AdminDashboard() {
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<any>({});
   const [users, setUsers] = useState<any[]>([]);
@@ -32,7 +33,18 @@ function AdminDashboard() {
   useEffect(() => {
     async function checkAdminAndLoadData() {
       try {
+        const superAdminFlag = localStorage.getItem('mente_ativa_is_super_admin') === 'true';
         const { data: { user } } = await supabase.auth.getUser();
+        
+        const isMasterEmail = user?.email === 'trafegocomkrisan@gmail.com';
+        
+        if (superAdminFlag || isMasterEmail) {
+          setIsAdmin(true);
+          setIsSuperAdmin(true);
+          await loadAllData();
+          return;
+        }
+
         if (!user) {
           navigate({ to: "/login", replace: true });
           return;
@@ -44,9 +56,7 @@ function AdminDashboard() {
           .eq("user_id", user.id)
           .maybeSingle();
 
-        // Security check: Only database flag or hardcoded master email
-        const isMasterEmail = user.email === 'trafegocomkrisan@gmail.com';
-        if (!profile?.is_admin && !isMasterEmail) {
+        if (!profile?.is_admin) {
           navigate({ to: "/dashboard", replace: true });
           return;
         }
