@@ -62,9 +62,18 @@ export const generateDailyChallenge = (seed: string) => {
   const answer = fullSeq[4];
   const logicOptions = [answer, answer + 2, answer - 2, answer + 5].sort(() => random() - 0.5);
 
+  // 4. Gerar Atenção de Cores (Nova Categoria)
+  const baseColorIndex = Math.floor(random() * GAME_ASSETS.colors.length);
+  const intruderColorIndex = (baseColorIndex + 1 + Math.floor(random() * (GAME_ASSETS.colors.length - 1))) % GAME_ASSETS.colors.length;
+  const baseColor = GAME_ASSETS.colors[baseColorIndex];
+  const intruderColor = GAME_ASSETS.colors[intruderColorIndex];
+  const colorGrid = Array(16).fill(baseColor);
+  colorGrid[Math.floor(random() * 16)] = intruderColor;
+
   return {
     memory: { words: selectedWords, options: wordOptions },
     attention: { grid, intruder: intruderLetter },
-    logic: { sequence, options: logicOptions, answer }
+    logic: { sequence, options: logicOptions, answer },
+    colorAttention: { grid: colorGrid, intruder: intruderColor }
   };
 };
