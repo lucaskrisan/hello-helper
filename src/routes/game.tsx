@@ -70,6 +70,9 @@ function Game() {
     
     // Reset states
     setSelectedWords([]);
+    setUserSequence([]);
+    setActiveButton(null);
+    setIsShowingSequence(false);
     setMemState('showing');
     setTimeLeft(10);
     setSearchSelection([]);
