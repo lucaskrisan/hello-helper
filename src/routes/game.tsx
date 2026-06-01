@@ -434,18 +434,25 @@ function Game() {
         {currentTask.type === 'logic' && (
           <div className="text-center">
             <h2 className="text-2xl font-bold mb-2">Padrão Numérico</h2>
-            <p className="text-gray-500 mb-6 px-4">{currentTask.patternDesc || "Descubra qual número completa a lógica abaixo."}</p>
+            <div className="bg-blue-50 p-4 rounded-2xl mb-6 border border-blue-100">
+              <p className="text-blue-800 font-bold mb-1">Como resolver?</p>
+              <p className="text-sm text-blue-600">
+                {currentTask.patternDesc || "Descubra qual número completa a lógica abaixo."}
+              </p>
+            </div>
             <div className="flex justify-center items-center gap-2 mb-10 overflow-x-auto pb-2">
               {currentTask.sequence.map((num: number, i: number) => (
                 <div key={i} className="flex items-center">
-                  <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-xl font-bold border-2 border-blue-100">
-                    {num}
+                  <div className="flex flex-col items-center">
+                    <div className="w-14 h-14 bg-white text-blue-600 rounded-xl flex items-center justify-center text-xl font-bold border-2 border-blue-200 shadow-sm">
+                      {num}
+                    </div>
                   </div>
                   {i < currentTask.sequence.length - 1 && <span className="mx-1 text-gray-300">→</span>}
                 </div>
               ))}
               <span className="mx-1 text-gray-300">→</span>
-              <div className="w-14 h-14 bg-blue-600 text-white rounded-xl flex items-center justify-center text-2xl font-bold animate-pulse">
+              <div className="w-14 h-14 bg-blue-600 text-white rounded-xl flex items-center justify-center text-2xl font-bold animate-pulse shadow-lg ring-4 ring-blue-100">
                 ?
               </div>
             </div>
