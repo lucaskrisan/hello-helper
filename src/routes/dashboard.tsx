@@ -78,7 +78,31 @@ function Dashboard() {
           <p className="text-secondary font-medium">Média Acertos</p>
           <p className="text-3xl font-bold">{stats.evolution}%</p>
         </Card>
+      <div className="mt-12">
+        <h3 className="text-xl font-bold mb-6 text-foreground/80">Categorias de Treino</h3>
+        <div className="grid grid-cols-1 gap-4">
+          {[
+            { id: "memory", name: "Fortalecer Memória", icon: <Brain />, color: "bg-green-100 text-green-700" },
+            { id: "attention", name: "Foco e Atenção", icon: <Eye />, color: "bg-amber-100 text-amber-700" },
+            { id: "logic", name: "Raciocínio Lógico", icon: <Puzzle />, color: "bg-blue-100 text-blue-700" },
+            { id: "word-search", name: "Caça-Palavras", icon: <Search />, color: "bg-purple-100 text-purple-700" }
+          ].map((cat) => (
+            <div key={cat.id} className="flex items-center p-4 bg-white rounded-2xl shadow-sm border border-gray-50">
+              <div className={`w-12 h-12 rounded-xl flex items-center justify-center mr-4 ${cat.color}`}>
+                {cat.icon}
+              </div>
+              <div className="flex-1">
+                <p className="font-bold text-[#1F2937]">{cat.name}</p>
+                <p className="text-xs text-gray-500">Conteúdo atualizado hoje</p>
+              </div>
+              <div className="text-primary/40">
+                <Settings className="w-5 h-5 rotate-90" />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
+    </div>
 
       <div className="mt-8">
         <Button 
