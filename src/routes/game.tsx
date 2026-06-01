@@ -147,17 +147,18 @@ function Game() {
 
   const finishChallenge = async () => {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
     const finalScore = Math.min(100, Math.round(score));
     const totalTime = Math.floor((Date.now() - startTime) / 1000);
     
-    await supabase.from("daily_challenges").insert({
-      user_id: user.id,
-      score: finalScore,
-      total_questions: 4,
-      correct_answers: 4,
-      total_time: totalTime,
-    });
+    if (user) {
+      await supabase.from("daily_challenges").insert({
+        user_id: user.id,
+        score: finalScore,
+        total_questions: search.mode === 'daily' ? 24 : taskIndex,
+        correct_answers: search.mode === 'daily' ? 24 : taskIndex,
+        total_time: totalTime,
+      });
+    }
     
     navigate({ to: "/conclusao", search: { score: finalScore, time: totalTime }, replace: true });
   };
