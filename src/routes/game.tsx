@@ -259,6 +259,7 @@ function Game() {
               </div>
             )}
           </div>
+        )}
 
         {currentTask.type === 'memory-words' && (
           <div className="text-center">
