@@ -1,5 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/")({
   component: LandingPage,
@@ -7,35 +9,55 @@ export const Route = createFileRoute("/")({
 
 function LandingPage() {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        navigate({ to: "/dashboard", replace: true });
+      } else {
+        setLoading(false);
+      }
+    });
+  }, [navigate]);
+
+  if (loading) return null;
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 text-center">
-      <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
-        Seu desafio mental de hoje está pronto.
+    <div className="min-h-screen bg-[#F7F3EA] flex flex-col items-center justify-center p-6 text-center">
+      <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mb-8 animate-bounce">
+        <span className="text-5xl">🧠</span>
+      </div>
+      <h1 className="text-4xl md:text-5xl font-bold text-[#1F2937] mb-6 tracking-tight">
+        Desafio da Mente
       </h1>
-      <p className="text-xl text-foreground/80 mb-10 max-w-lg">
-        Exercícios simples para memória, atenção e raciocínio, feitos para adultos 50+.
+      <p className="text-xl text-gray-600 mb-10 max-w-lg leading-relaxed">
+        O treino diário que mantém sua memória jovem e sua mente afiada. Feito com carinho para quem tem 50+.
       </p>
-      <Button 
-        onClick={() => navigate({ to: "/login" })}
-        className="bg-primary hover:bg-primary/90 text-primary-foreground text-lg py-8 px-12 rounded-full shadow-lg transition-transform hover:scale-105 active:scale-95"
-      >
-        COMEÇAR AGORA
-      </Button>
+      
+      <div className="space-y-4 w-full max-w-xs">
+        <Button 
+          onClick={() => navigate({ to: "/login" })}
+          className="w-full bg-primary hover:bg-primary/90 text-white text-xl py-8 px-12 rounded-2xl shadow-lg transition-transform hover:scale-105 active:scale-95"
+        >
+          COMEÇAR AGORA
+        </Button>
+        <p className="text-sm text-gray-400">Gratuito para começar • Sem anúncios</p>
+      </div>
 
-      <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl text-left">
+      <div className="mt-16 grid grid-cols-1 gap-4 w-full max-w-sm">
         {[
-          "Treine sua memória todos os dias",
-          "Exercícios simples e rápidos",
-          "Acompanhe sua evolução",
-          "Crie uma rotina saudável",
+          "✨ Exercícios que nunca se repetem",
+          "🎯 Treino personalizado para você",
+          "📈 Acompanhe sua evolução real",
         ].map((benefit) => (
-          <div key={benefit} className="flex items-center space-x-3 p-4 bg-white rounded-xl shadow-sm">
-            <div className="w-4 h-4 rounded-full bg-secondary" />
-            <span className="text-foreground font-semibold text-lg">{benefit}</span>
+          <div key={benefit} className="p-4 bg-white/50 rounded-2xl text-left border border-white/20">
+            <span className="text-gray-700 font-medium">{benefit}</span>
           </div>
         ))}
       </div>
     </div>
   );
 }
+
+

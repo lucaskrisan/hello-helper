@@ -1,9 +1,10 @@
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
-import { Settings, Brain, Eye, Puzzle, Search } from "lucide-react";
+import { GAME_ASSETS } from "@/lib/game-engine";
+import { Settings, BarChart3, Home as HomeIcon } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard")({
   component: Dashboard,
@@ -11,108 +12,134 @@ export const Route = createFileRoute("/dashboard")({
 
 function Dashboard() {
   const [profile, setProfile] = useState<any>(null);
-  const [stats, setStats] = useState({ streak: 0, total: 0, evolution: 0 });
+  const [streak, setStreak] = useState<any>(null);
+  const [challenges, setChallenges] = useState<any[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    let mounted = true;
-
     async function loadData() {
       const { data: { user } } = await supabase.auth.getUser();
-      
-      if (user && mounted) {
-        const { data: prof } = await supabase.from("profiles").select("*").eq("user_id", user.id).maybeSingle();
-        
-        if (!prof && mounted) {
-          navigate({ to: "/onboarding", replace: true });
-          return;
-        } 
-        
-        if (prof && mounted) {
-          setProfile(prof);
-          const { data: streak } = await supabase.from("streaks").select("*").eq("user_id", user.id).maybeSingle();
-          const { data: challenges, count } = await supabase.from("daily_challenges").select("*", { count: 'exact' }).eq("user_id", user.id);
-          
-          const avgScore = count ? Math.round(challenges?.reduce((acc: number, curr: any) => acc + (curr.score || 0), 0) / count) : 0;
-          
-          if (mounted) {
-            setStats({ 
-              streak: streak?.current_streak || 0, 
-              total: count || 0,
-              evolution: avgScore
-            });
-          }
-        }
+      if (!user) {
+        navigate({ to: "/", replace: true });
+        return;
       }
+
+      const { data: prof } = await supabase.from("profiles").select("*").eq("user_id", user.id).maybeSingle();
+      if (!prof) {
+        navigate({ to: "/onboarding", replace: true });
+        return;
+      }
+      setProfile(prof);
+
+      const { data: str } = await supabase.from("streaks").select("*").eq("user_id", user.id).maybeSingle();
+      setStreak(str);
+
+      const { data: challs } = await supabase.from("daily_challenges")
+        .select("*")
+        .eq("user_id", user.id)
+        .order('created_at', { ascending: false });
+      setChallenges(challs || []);
     }
     loadData();
-    return () => { mounted = false; };
   }, [navigate]);
 
+  const today = new Date();
+  const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+  const currentDay = today.getDate();
+
+  // Dias concluídos baseados nos desafios do banco
+  const completedDays = challenges.map(c => new Date(c.created_at).getDate());
+
   return (
-    <div className="min-h-screen bg-[#F7F3EA] p-6 max-w-lg mx-auto">
-      <header className="mb-8 flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Bom dia{profile?.name ? `, ${profile.name}` : ""}</h1>
-        <Link to="/settings" className="p-2 bg-white rounded-full shadow-sm text-primary">
-          <Settings className="w-6 h-6" />
-        </Link>
+    <div className="min-h-screen bg-[#F7F3EA] p-6 max-w-2xl mx-auto pb-28">
+      <header className="flex justify-between items-center mb-8">
+        <div>
+          <h1 className="text-2xl font-bold text-[#1F2937]">Bom dia{profile?.display_name || profile?.name ? `, ${profile.display_name || profile.name}` : ""}! 👋</h1>
+          <p className="text-gray-600">Sua mente agradece o treino de hoje.</p>
+        </div>
+        <div className="bg-white p-3 rounded-2xl shadow-sm flex items-center space-x-2 border border-white/50">
+          <span className="text-2xl">🔥</span>
+          <span className="font-bold text-xl text-[#D97706]">{streak?.current_streak || 0}</span>
+        </div>
       </header>
 
-      <Card className="p-8 bg-white mb-8 text-center rounded-3xl shadow-sm border-0">
-        <p className="text-xl mb-6 font-medium text-[#4A7C59]">Hoje é um ótimo dia para treinar!</p>
-        <Button 
-          onClick={() => navigate({ to: "/game" })}
-          className="w-full py-12 text-2xl font-bold bg-[#4A7C59] hover:bg-[#3d694a] rounded-3xl shadow-xl transition-all hover:scale-[1.02] active:scale-[0.98]"
-        >
-          INICIAR MEU TREINO
-        </Button>
-        <p className="mt-4 text-sm text-gray-500">Estimativa: 10 minutos</p>
+      {/* Calendário de Progresso */}
+      <Card className="p-6 bg-white rounded-3xl shadow-sm mb-8 border-none overflow-hidden relative">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16" />
+        <h2 className="font-bold text-lg mb-4 flex items-center space-x-2">
+          <span>📅</span>
+          <span>Seu Progresso em {today.toLocaleDateString('pt-BR', { month: 'long' })}</span>
+        </h2>
+        <div className="grid grid-cols-7 gap-2">
+          {Array.from({ length: daysInMonth }).map((_, i) => {
+            const day = i + 1;
+            const isToday = day === currentDay;
+            const isCompleted = completedDays.includes(day);
+            return (
+              <div 
+                key={day} 
+                className={`h-11 flex items-center justify-center rounded-xl text-sm font-bold transition-all ${
+                  isToday ? "bg-primary text-white shadow-lg scale-110 ring-2 ring-primary/20" : 
+                  isCompleted ? "bg-primary/20 text-primary" : "bg-gray-50 text-gray-300"
+                }`}
+              >
+                {day}
+              </div>
+            );
+          })}
+        </div>
       </Card>
 
-      <div className="grid grid-cols-2 gap-4">
-        <Card className="p-4 bg-white text-center rounded-2xl border-0 shadow-sm">
-          <p className="text-secondary font-medium">Sequência</p>
-          <p className="text-3xl font-bold">{stats.streak} dias</p>
-        </Card>
-        <Card className="p-4 bg-white text-center rounded-2xl border-0 shadow-sm">
-          <p className="text-secondary font-medium">Média Acertos</p>
-          <p className="text-3xl font-bold">{stats.evolution}%</p>
-        </Card>
-      <div className="mt-12">
-        <h3 className="text-xl font-bold mb-6 text-foreground/80">Categorias de Treino</h3>
-        <div className="grid grid-cols-1 gap-4">
-          {[
-            { id: "memory", name: "Fortalecer Memória", icon: <Brain />, color: "bg-green-100 text-green-700" },
-            { id: "attention", name: "Foco e Atenção", icon: <Eye />, color: "bg-amber-100 text-amber-700" },
-            { id: "logic", name: "Raciocínio Lógico", icon: <Puzzle />, color: "bg-blue-100 text-blue-700" },
-            { id: "word-search", name: "Caça-Palavras", icon: <Search />, color: "bg-purple-100 text-purple-700" }
-          ].map((cat) => (
-            <div key={cat.id} className="flex items-center p-4 bg-white rounded-2xl shadow-sm border border-gray-50">
-              <div className={`w-12 h-12 rounded-xl flex items-center justify-center mr-4 ${cat.color}`}>
-                {cat.icon}
-              </div>
-              <div className="flex-1">
-                <p className="font-bold text-[#1F2937]">{cat.name}</p>
-                <p className="text-xs text-gray-500">Conteúdo atualizado hoje</p>
-              </div>
-              <div className="text-primary/40">
-                <Settings className="w-5 h-5 rotate-90" />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
+      {/* Botão de Destaque */}
+      <Button 
+        onClick={() => navigate({ to: "/game", search: { mode: 'daily' } })}
+        className="w-full py-12 text-2xl font-bold bg-primary hover:bg-primary/90 text-white rounded-[2.5rem] shadow-xl mb-12 transform transition-all hover:scale-[1.02] active:scale-95 flex flex-col space-y-1 relative overflow-hidden"
+      >
+        <div className="absolute inset-0 bg-white/10 opacity-0 hover:opacity-100 transition-opacity" />
+        <span className="relative z-10">INICIAR DESAFIO DO DIA</span>
+        <span className="text-sm font-normal opacity-80 relative z-10">Treino completo para hoje • 5 minutos</span>
+      </Button>
 
-      <div className="mt-8">
-        <Button 
-          variant="ghost"
-          onClick={() => navigate({ to: "/progresso" })}
-          className="w-full text-lg text-[#4A7C59]"
-        >
-          Ver minha evolução →
-        </Button>
+      <h3 className="text-xl font-bold mb-6 text-[#1F2937] flex items-center space-x-2">
+        <span className="text-2xl">🧩</span>
+        <span>Treino por Categoria</span>
+      </h3>
+      <div className="grid grid-cols-1 gap-4">
+        {GAME_ASSETS.categories.map((cat) => (
+          <Button
+            key={cat.id}
+            onClick={() => navigate({ to: "/game", search: { mode: 'category', categoryId: cat.id } })}
+            className="h-auto p-5 bg-white hover:bg-gray-50 text-left justify-start border-none rounded-3xl shadow-sm flex items-center space-x-4 transition-all hover:translate-x-1 group"
+          >
+            <div className="text-4xl p-4 rounded-2xl transition-transform group-hover:scale-110" style={{ backgroundColor: `${cat.color}15`, color: cat.color }}>
+              {cat.icon}
+            </div>
+            <div className="flex flex-col flex-1">
+              <span className="text-lg font-bold text-[#1F2937]">{cat.name}</span>
+              <span className="text-sm text-gray-500 font-normal">{cat.description}</span>
+            </div>
+            <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-300">
+              →
+            </div>
+          </Button>
+        ))}
       </div>
+
+      {/* Navegação Inferior Fixa */}
+      <nav className="fixed bottom-6 left-6 right-6 bg-white/90 backdrop-blur-lg p-3 rounded-[2.5rem] shadow-2xl flex justify-around items-center border border-white/50 z-50">
+        <button onClick={() => navigate({ to: "/dashboard" })} className="flex flex-col items-center p-2 text-primary">
+          <HomeIcon className="w-6 h-6 mb-1" />
+          <span className="text-[10px] font-bold uppercase tracking-wider">Início</span>
+        </button>
+        <button onClick={() => navigate({ to: "/progresso" })} className="flex flex-col items-center p-2 text-gray-400 hover:text-primary transition-colors">
+          <BarChart3 className="w-6 h-6 mb-1" />
+          <span className="text-[10px] font-bold uppercase tracking-wider">Progresso</span>
+        </button>
+        <button onClick={() => navigate({ to: "/settings" })} className="flex flex-col items-center p-2 text-gray-400 hover:text-primary transition-colors">
+          <Settings className="w-6 h-6 mb-1" />
+          <span className="text-[10px] font-bold uppercase tracking-wider">Ajustes</span>
+        </button>
+      </nav>
     </div>
   );
 }
