@@ -47,6 +47,33 @@ export type Database = {
         }
         Relationships: []
       }
+      exercise_history: {
+        Row: {
+          category: string
+          id: string
+          item_id: string
+          session_id: string | null
+          used_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          category: string
+          id?: string
+          item_id: string
+          session_id?: string | null
+          used_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          category?: string
+          id?: string
+          item_id?: string
+          session_id?: string | null
+          used_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       exercise_results: {
         Row: {
           challenge_id: string | null
