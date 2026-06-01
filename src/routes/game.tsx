@@ -219,6 +219,57 @@ function Game() {
         </Card>
       )}
 
+      {exercise === 4 && (
+        <Card className="w-full max-w-md p-8 bg-white rounded-3xl shadow-sm text-center">
+          <h2 className="text-2xl font-bold mb-2">Caça-Palavras</h2>
+          <p className="text-gray-600 mb-6 font-medium">Encontre a palavra: <span className="text-primary font-bold">{wordForSearch}</span></p>
+          {!feedback.type ? (
+            <div className="grid grid-cols-6 gap-2 mb-8 mx-auto w-fit">
+              {searchGrid.map((row: string[], rIndex: number) => (
+                row.map((letter: string, cIndex: number) => {
+                  const isSelected = searchSelection.some(s => s.r === rIndex && s.c === cIndex);
+                  return (
+                    <Button 
+                      key={`${rIndex}-${cIndex}`} 
+                      onClick={() => {
+                        const newSelection = [...searchSelection, {r: rIndex, c: cIndex}];
+                        setSearchSelection(newSelection);
+                        
+                        // Verifica se formou a palavra
+                        const selectedLetters = newSelection.map(s => searchGrid[s.r][s.c]).join("");
+                        if (selectedLetters === wordForSearch) {
+                          setScore(s => s + 33.3);
+                          setCorrectCount(c => c + 1);
+                          setFeedback({ type: 'success', message: "Que olhar aguçado! Você encontrou a palavra!" });
+                          setTimeout(() => {
+                            setExercise(3); // Agora sim vai para o último (Lógica)
+                            setFeedback({ type: null, message: "" });
+                          }, 2500);
+                        } else if (!wordForSearch.startsWith(selectedLetters)) {
+                          // Errou a sequência
+                          setSearchSelection([]);
+                        }
+                      }}
+                      className={`w-10 h-10 p-0 text-xl font-bold rounded-lg transition-all ${
+                        isSelected ? "bg-primary text-white" : "bg-background text-foreground hover:bg-secondary/20"
+                      }`}
+                    >
+                      {letter}
+                    </Button>
+                  );
+                })
+              ))}
+            </div>
+          ) : (
+            <div className={`py-12 px-4 rounded-2xl text-xl font-bold animate-in fade-in zoom-in ${
+              feedback.type === 'success' ? "text-primary bg-primary/10" : "text-[#D97706] bg-[#FFF9E6]"
+            }`}>
+              {feedback.message}
+            </div>
+          )}
+        </Card>
+      )}
+
       {exercise === 3 && (
         <Card className="w-full max-w-md p-8 bg-white rounded-3xl shadow-sm text-center">
           <h2 className="text-2xl font-bold mb-2">Qual o próximo número?</h2>
