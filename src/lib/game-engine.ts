@@ -15,9 +15,12 @@ export const GAME_ASSETS = {
   letters: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"],
   logicPatterns: [
     { name: "Addition", fn: (start: number, step: number) => [start, start + step, start + step * 2, start + step * 3, start + step * 4] },
-    { name: "Multiplication", fn: (start: number, step: number) => [start, start * step, start * step * step, start * step * step * step, start * step * step * step * step] },
-    { name: "Subtraction", fn: (start: number, step: number) => [start, start - step, start - step * 2, start - step * 3, start - step * 4] }
-  ]
+    { name: "Multiplication", fn: (start: number, step: number) => [start, start * step, start * (step * step), start * (step * step * step), start * (step * step * step * step)] },
+    { name: "Subtraction", fn: (start: number, step: number) => [start, start - step, start - step * 2, start - step * 3, start - step * 4] },
+    { name: "Fibonacci-ish", fn: (start: number, step: number) => [start, start + step, start + (start + step), (start + step) + (start + start + step), (start + (start + step)) + ((start + step) + (start + start + step))] }
+  ],
+  colors: ["#EF4444", "#3B82F6", "#10B981", "#F59E0B", "#8B5CF6", "#EC4899"],
+  shapes: ["square", "circle", "triangle"]
 };
 
 export const generateDailyChallenge = (seed: string) => {
@@ -59,9 +62,18 @@ export const generateDailyChallenge = (seed: string) => {
   const answer = fullSeq[4];
   const logicOptions = [answer, answer + 2, answer - 2, answer + 5].sort(() => random() - 0.5);
 
+  // 4. Gerar Atenção de Cores (Nova Categoria)
+  const baseColorIndex = Math.floor(random() * GAME_ASSETS.colors.length);
+  const intruderColorIndex = (baseColorIndex + 1 + Math.floor(random() * (GAME_ASSETS.colors.length - 1))) % GAME_ASSETS.colors.length;
+  const baseColor = GAME_ASSETS.colors[baseColorIndex];
+  const intruderColor = GAME_ASSETS.colors[intruderColorIndex];
+  const colorGrid = Array(16).fill(baseColor);
+  colorGrid[Math.floor(random() * 16)] = intruderColor;
+
   return {
     memory: { words: selectedWords, options: wordOptions },
     attention: { grid, intruder: intruderLetter },
-    logic: { sequence, options: logicOptions, answer }
+    logic: { sequence, options: logicOptions, answer },
+    colorAttention: { grid: colorGrid, intruder: intruderColor }
   };
 };
