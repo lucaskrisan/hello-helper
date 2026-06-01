@@ -190,43 +190,43 @@ function Game() {
   return (
     <div className="min-h-screen bg-[#F7F3EA] p-4 flex flex-col items-center">
       {/* Top Navigation */}
-      <div className="w-full max-w-md flex justify-between items-center mb-6">
+      <div className="w-full max-w-md flex justify-between items-center mb-4 gap-2">
         <Button 
           variant="ghost" 
           onClick={() => navigate({ to: "/" })}
-          className="rounded-full w-12 h-12 p-0 bg-white shadow-sm"
+          className="rounded-full w-10 h-10 p-0 bg-white shadow-sm shrink-0"
         >
-          <ChevronLeft className="w-6 h-6" />
+          <ChevronLeft className="w-5 h-5" />
         </Button>
-        <div className="bg-white px-4 py-2 rounded-full shadow-sm flex items-center space-x-2">
+        <div className="bg-white px-3 py-1.5 rounded-full shadow-sm flex items-center space-x-2 flex-1 justify-center min-w-0">
           {search.mode === 'daily' ? (
-            <div className="flex flex-col items-center">
-              <div className="flex items-center space-x-2">
-                <Brain className="w-5 h-5 text-primary" />
-                <span className="font-bold text-gray-700">
+            <div className="flex flex-col items-center truncate">
+              <div className="flex items-center space-x-1.5">
+                <Brain className="w-4 h-4 text-primary shrink-0" />
+                <span className="font-bold text-gray-700 text-sm">
                   Etapa {taskIndex}/24
                 </span>
               </div>
-              <div className="text-[10px] font-bold uppercase tracking-tighter text-primary">
-                {currentTask.level === 'easy' ? 'Nível Easy' : currentTask.level === 'medium' ? 'Nível Medium' : 'Nível Hard - Mente Forte'}
+              <div className="text-[9px] font-bold uppercase tracking-tighter text-primary truncate w-full text-center">
+                {currentTask.level === 'easy' ? 'Easy' : currentTask.level === 'medium' ? 'Medium' : 'Mente Forte'}
               </div>
             </div>
           ) : (
-            <>
-              <Hourglass className="w-5 h-5 text-orange-500 animate-pulse" />
-              <span className="font-bold text-gray-700">
+            <div className="flex items-center space-x-2">
+              <Hourglass className="w-4 h-4 text-orange-500 animate-pulse shrink-0" />
+              <span className="font-bold text-gray-700 text-sm">
                 {Math.floor(sessionTimeLeft / 60)}:{(sessionTimeLeft % 60).toString().padStart(2, '0')}
               </span>
-            </>
+            </div>
           )}
         </div>
-        <div className="bg-white px-4 py-2 rounded-full shadow-sm flex items-center space-x-2">
-          <Trophy className="w-5 h-5 text-yellow-500" />
-          <span className="font-bold text-gray-700">{Math.round(score)}</span>
+        <div className="bg-white px-3 py-1.5 rounded-full shadow-sm flex items-center space-x-1.5 shrink-0">
+          <Trophy className="w-4 h-4 text-yellow-500" />
+          <span className="font-bold text-gray-700 text-sm">{Math.round(score)}</span>
         </div>
       </div>
 
-      <Card className="w-full max-w-md p-6 bg-white rounded-[2rem] shadow-sm border-none min-h-[500px] flex flex-col justify-center relative overflow-hidden">
+      <Card className="w-full max-w-md p-4 sm:p-6 bg-white rounded-[2rem] shadow-sm border-none min-h-[450px] sm:min-h-[500px] flex flex-col justify-center relative overflow-hidden">
         {feedback.type && (
           <div className={`absolute inset-0 z-10 flex items-center justify-center p-8 text-center animate-in fade-in zoom-in duration-300 ${
             feedback.type === 'success' ? "bg-primary/95 text-white" : "bg-orange-500/95 text-white"
@@ -502,7 +502,7 @@ function Game() {
           <div className="text-center">
             <h2 className="text-2xl font-bold mb-2">Caça-Palavras</h2>
             <p className="text-gray-500 mb-6 px-4">Toque nas letras para formar a palavra <span className="text-primary font-bold text-xl">{currentTask.word}</span> que está escondida no quadro.</p>
-            <div className="grid grid-cols-6 gap-2 mx-auto w-fit">
+            <div className="grid grid-cols-6 gap-1.5 sm:gap-2 mx-auto w-fit">
               {currentTask.grid.map((row: string[], r: number) => 
                 row.map((char: string, c: number) => {
                   const isSelected = searchSelection.some(s => s.r === r && s.c === c);
@@ -516,7 +516,7 @@ function Game() {
                         if (word === currentTask.word) handleCorrect();
                         else if (!currentTask.word.startsWith(word)) setSearchSelection([]);
                       }}
-                      className={`w-11 h-11 p-0 text-xl font-bold rounded-xl transition-all ${
+                      className={`w-9 h-9 sm:w-11 sm:h-11 p-0 text-lg sm:text-xl font-bold rounded-lg sm:rounded-xl transition-all ${
                         isSelected ? "bg-primary text-white scale-110 z-10" : "bg-gray-50 text-gray-700 hover:bg-gray-100"
                       }`}
                     >
