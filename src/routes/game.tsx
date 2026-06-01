@@ -35,6 +35,7 @@ function Game() {
   const [timeLeft, setTimeLeft] = useState(15);
   const [userSequence, setUserSequence] = useState<any[]>([]);
   const [globalTimeLeft, setGlobalTimeLeft] = useState(300);
+  const [isLoading, setIsLoading] = useState(true);
 
 
   const finishChallenge = useCallback(async () => {
@@ -68,23 +69,35 @@ function Game() {
       }
     } else {
       // Carregamento inicial
+      setIsLoading(true);
       let newTasks: any[] = [];
-      if (search.mode === 'trial') {
-        newTasks = [
-          await generateTaskByCategory('memory', 10, 'easy'),
-          await generateTaskByCategory('attention', 20, 'easy'),
-          await generateTaskByCategory('logic', 30, 'easy'),
-          await generateTaskByCategory('language', 40, 'medium'),
-          await generateTaskByCategory('memory', 50, 'medium'),
-        ];
-      } else {
-        const daily = await generateDailyChallenge(new Date().toISOString().split('T')[0]);
-        newTasks = daily.tasks;
+      try {
+        if (search.mode === 'trial') {
+          const { data: { user } } = await supabase.auth.getUser();
+          const { getUsedItemIds } = await import("@/lib/game-engine");
+          const usedIds = await getUsedItemIds(user?.id);
+          
+          newTasks = [
+            await generateTaskByCategory('memory', 10, 'easy', usedIds),
+            await generateTaskByCategory('attention', 20, 'easy', usedIds),
+            await generateTaskByCategory('logic', 30, 'easy', usedIds),
+            await generateTaskByCategory('language', 40, 'medium', usedIds),
+            await generateTaskByCategory('memory', 50, 'medium', usedIds),
+          ];
+        } else {
+          const daily = await generateDailyChallenge(new Date().toISOString().split('T')[0]);
+          newTasks = daily.tasks;
+        }
+        
+        setTasks(newTasks);
+        setCurrentTask(newTasks[0]);
+        setTaskIndex(1);
+      } catch (err) {
+        console.error("Error loading tasks:", err);
+        toast.error("Erro ao carregar os exercícios. Tente novamente.");
+      } finally {
+        setIsLoading(false);
       }
-      
-      setTasks(newTasks);
-      setCurrentTask(newTasks[0]);
-      setTaskIndex(1);
     }
     
     setSelectedWords([]);
@@ -117,7 +130,7 @@ function Game() {
     setFeedback({ type: 'success', message: "Muito bem! Sua mente está despertando!" });
     setTimeout(() => {
       loadNextTask();
-    }, 2000);
+    }, 1200);
   };
 
   const handleRetry = (msg?: string) => {
@@ -132,7 +145,7 @@ function Game() {
         setMemState('showing');
         setTimeLeft(15);
       }
-    }, 3000);
+    }, 1500);
   };
 
 
@@ -167,7 +180,16 @@ function Game() {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  if (!currentTask) return null;
+  if (isLoading || !currentTask) {
+    return (
+      <div className="min-h-screen bg-[#F7F3EA] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-gray-500 font-medium">Preparando seu treino cerebral...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#F7F3EA] p-4 flex flex-col items-center">

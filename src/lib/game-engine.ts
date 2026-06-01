@@ -31,8 +31,7 @@ const getSessionId = () => {
   return sid;
 };
 
-const getUsedItemIds = async (): Promise<string[]> => {
-  const { data: { user } } = await supabase.auth.getUser();
+export const getUsedItemIds = async (userId?: string): Promise<string[]> => {
   const sessionId = getSessionId();
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
@@ -42,8 +41,8 @@ const getUsedItemIds = async (): Promise<string[]> => {
     .select('item_id')
     .gt('used_at', sevenDaysAgo.toISOString());
 
-  if (user) {
-    query = query.eq('user_id', user.id);
+  if (userId) {
+    query = query.eq('user_id', userId);
   } else {
     query = query.eq('session_id', sessionId);
   }
@@ -64,9 +63,13 @@ export const saveToHistory = async (id: string, category: string) => {
   });
 };
 
-export const getAvailableItems = async (category: string, count: number, random: () => number): Promise<ContentItem[]> => {
+export const getAvailableItems = async (
+  category: string, 
+  count: number, 
+  random: () => number, 
+  usedIds: string[] = []
+): Promise<ContentItem[]> => {
   const pool = CONTENT_POOLS[category] || CONTENT_POOLS['culinaria'];
-  const usedIds = await getUsedItemIds();
   
   let available = pool.filter(item => !usedIds.includes(item.id));
   
@@ -74,12 +77,15 @@ export const getAvailableItems = async (category: string, count: number, random:
     available = [...pool];
   }
 
-  const selected = [...available].sort(() => random() - 0.5).slice(0, count);
-  // Do not save here, save when the task is actually presented or completed
-  return selected;
+  return [...available].sort(() => random() - 0.5).slice(0, count);
 };
 
-export const generateTaskByCategory = async (cogType: string, seedOffset: number = 0, level: 'easy' | 'medium' | 'hard' = 'easy') => {
+export const generateTaskByCategory = async (
+  cogType: string, 
+  seedOffset: number = 0, 
+  level: 'easy' | 'medium' | 'hard' = 'easy',
+  usedIds: string[] = []
+) => {
   const seed = Date.now() + seedOffset;
   const random = mulberry32(seed);
 
@@ -90,7 +96,7 @@ export const generateTaskByCategory = async (cogType: string, seedOffset: number
         const categories = Object.keys(CONTENT_POOLS);
         const cat = categories[Math.floor(random() * categories.length)];
         const count = level === 'easy' ? 3 : level === 'medium' ? 5 : 7;
-        const items = await getAvailableItems(cat, count, random);
+        const items = await getAvailableItems(cat, count, random, usedIds);
         const words = items.map(i => i.word);
         const itemIds = items.map(i => i.id);
         
@@ -126,9 +132,9 @@ export const generateTaskByCategory = async (cogType: string, seedOffset: number
         const categories = Object.keys(CONTENT_POOLS);
         const cat = categories[Math.floor(random() * categories.length)];
         const pool = CONTENT_POOLS[cat];
-        const items = await getAvailableItems(cat, 4, random);
+        const items = await getAvailableItems(cat, 4, random, usedIds);
         const otherCat = categories.find(c => c !== cat)!;
-        const intruderItems = await getAvailableItems(otherCat, 1, random);
+        const intruderItems = await getAvailableItems(otherCat, 1, random, usedIds);
         const intruder = intruderItems[0];
         const options = [...items, intruder].sort(() => random() - 0.5);
         return { type: 'word-intruder', options, intruder: intruder.word, categoryName: cat, level, itemIds: options.map(o => o.id) };
@@ -158,12 +164,13 @@ export const generateTaskByCategory = async (cogType: string, seedOffset: number
       if (roll < 0.5) {
         const categories = Object.keys(CONTENT_POOLS);
         const cat = categories[Math.floor(random() * categories.length)];
-        const items = await getAvailableItems(cat, 1, random);
+        const items = await getAvailableItems(cat, 1, random, usedIds);
         const item = items[0];
         return { type: 'true-false', statement: item.word, isTrue: item.isTrue, curiosity: item.curiosity, level, itemId: item.id, category: cat };
       } else {
-        const cat = 'biblia';
-        const items = await getAvailableItems(cat, 4, random);
+        const categories = Object.keys(CONTENT_POOLS);
+        const cat = categories[Math.floor(random() * categories.length)];
+        const items = await getAvailableItems(cat, 4, random, usedIds);
         const words = items.map(i => i.word);
         const answer = [...words].sort((a, b) => a.localeCompare(b, 'pt-BR'));
         return { type: 'alphabetical-order', words, answer, level, itemIds: items.map(i => i.id), category: cat };
@@ -175,17 +182,23 @@ export const generateTaskByCategory = async (cogType: string, seedOffset: number
 };
 
 export const generateDailyChallenge = async (seedStr: string) => {
+  const { data: { user } } = await supabase.auth.getUser();
+  const usedIds = await getUsedItemIds(user?.id);
+  
   const numericSeed = seedStr.split('-').reduce((acc, part) => acc + (parseInt(part) || 0), 0);
   const tasks = [];
   const cogTypes = ['memory', 'attention', 'logic', 'language'];
   
-  // Aumentado para 10 etapas para dar mais substância ao treino diário
   for (let i = 0; i < 10; i++) {
     const type = cogTypes[i % cogTypes.length];
-    // Progressão de dificuldade: 3 fáceis, 4 médias, 3 difíceis
     const level = i < 3 ? 'easy' : i < 7 ? 'medium' : 'hard';
-    const task = await generateTaskByCategory(type, numericSeed + i * 100, level as any);
-    if (task) tasks.push(task);
+    const task = await generateTaskByCategory(type, numericSeed + i * 100, level as any, usedIds);
+    if (task) {
+      tasks.push(task);
+      // Evitar que itens escolhidos na mesma geração sejam repetidos
+      if (task.itemIds) usedIds.push(...task.itemIds);
+      if (task.itemId) usedIds.push(task.itemId);
+    }
   }
 
   return { tasks };
