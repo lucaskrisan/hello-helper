@@ -10,11 +10,15 @@ interface AuthState {
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
-  isAuthenticated: false,
+  isAuthenticated: localStorage.getItem('mente_ativa_auth') === 'true',
   isInitializing: true,
-  setAuthenticated: (value) => set({ isAuthenticated: value, isInitializing: false }),
+  setAuthenticated: (value) => {
+    localStorage.setItem('mente_ativa_auth', String(value));
+    set({ isAuthenticated: value, isInitializing: false });
+  },
   setInitializing: (value) => set({ isInitializing: value }),
   logout: async () => {
+    localStorage.removeItem('mente_ativa_auth');
     await supabase.auth.signOut();
     set({ isAuthenticated: false, isInitializing: false });
   },
