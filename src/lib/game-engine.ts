@@ -51,9 +51,13 @@ export const generateTaskByCategory = (categoryId: string, seedOffset: number = 
 
   switch (categoryId) {
     case 'memory': {
-      // Alternar entre 3 tipos de memória
+      // Alternar entre 4 tipos de memória
       const roll = random();
-      const subType = roll < 0.33 ? 'words' : roll < 0.66 ? 'sequence' : 'association';
+      let subType = 'words';
+      if (roll < 0.25) subType = 'words';
+      else if (roll < 0.5) subType = 'sequence';
+      else if (roll < 0.75) subType = 'association';
+      else subType = 'shopping';
       
       if (subType === 'words') {
         const shuffledWords = [...GAME_ASSETS.words].sort(() => random() - 0.5);
@@ -61,23 +65,34 @@ export const generateTaskByCategory = (categoryId: string, seedOffset: number = 
         const wordOptions = [...selectedWords, ...shuffledWords.slice(5, 10)].sort(() => random() - 0.5);
         return { type: 'memory-words', words: selectedWords, options: wordOptions };
       } else if (subType === 'sequence') {
-        // Sequência de cores (Genius)
         const sequenceLength = 4;
         const sequence = [];
         for (let i = 0; i < sequenceLength; i++) {
-          sequence.push(Math.floor(random() * 4)); // 4 cores
+          sequence.push(Math.floor(random() * 4));
         }
         return { type: 'memory-sequence', sequence, colors: GAME_ASSETS.colors.slice(0, 4) };
-      } else {
-        // Associação de Itens e Cores
+      } else if (subType === 'association') {
         const items = ["Flor", "Vaso", "Relógio", "Livro", "Caneta"];
         const selectedItem = items[Math.floor(random() * items.length)];
         const selectedColor = GAME_ASSETS.colors[Math.floor(random() * GAME_ASSETS.colors.length)];
         const options = GAME_ASSETS.colors.sort(() => random() - 0.5).slice(0, 4);
         if (!options.includes(selectedColor)) options[0] = selectedColor;
         return { type: 'memory-association', item: selectedItem, color: selectedColor, options: options.sort(() => random() - 0.5) };
+      } else {
+        // Lista de Compras
+        const items = ["Pão", "Leite", "Café", "Maçã", "Arroz", "Feijão", "Açúcar"];
+        const shuffledItems = items.sort(() => random() - 0.5);
+        const list = [
+          { item: shuffledItems[0], qty: Math.floor(random() * 5) + 1 },
+          { item: shuffledItems[1], qty: Math.floor(random() * 5) + 1 },
+          { item: shuffledItems[2], qty: Math.floor(random() * 5) + 1 },
+        ];
+        const correct = list[Math.floor(random() * 3)];
+        const options = [correct.qty, (correct.qty + 1) % 6 || 1, (correct.qty + 2) % 6 || 2, 6].sort(() => random() - 0.5);
+        return { type: 'memory-shopping', list, question: `Quantos(as) ${correct.item} estavam na lista?`, answer: correct.qty, options };
       }
     }
+
     case 'attention': {
       const isColorMode = random() > 0.5;
       if (isColorMode) {
