@@ -366,7 +366,7 @@ function Game() {
                         if (qty === currentTask.answer) handleCorrect();
                         else handleRetry("Quase! Essa não era a quantidade certa. Vamos tentar de novo?");
                       }}
-                      className="py-10 text-4xl font-bold rounded-[1.5rem] bg-white border-2 border-gray-100 text-gray-700 shadow-sm transition-all active:scale-95"
+                      className="py-6 sm:py-10 text-2xl sm:text-4xl font-bold rounded-[1.5rem] bg-white border-2 border-gray-100 text-gray-700 shadow-sm transition-all active:scale-95"
                     >
                       {qty}
                     </Button>
