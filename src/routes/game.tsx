@@ -457,7 +457,7 @@ function Game() {
                 ?
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
               {currentTask.options.map((opt: number) => (
                 <Button 
                   key={opt}
@@ -465,7 +465,7 @@ function Game() {
                     if (opt === currentTask.answer) handleCorrect();
                     else handleRetry("Quase! Observe bem a regra da sequência numérica.");
                   }}
-                  className="py-8 text-2xl font-bold rounded-2xl bg-white border-2 border-gray-100 text-gray-700 hover:bg-blue-50 transition-all"
+                  className="py-6 sm:py-8 text-xl sm:text-2xl font-bold rounded-2xl bg-white border-2 border-gray-100 text-gray-700 hover:bg-blue-50 transition-all"
                 >
                   {opt}
                 </Button>
