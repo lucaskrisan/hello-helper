@@ -29,6 +29,14 @@ function Login() {
     setLoading(true);
     setError("");
 
+    // Login de Super Admin
+    if (email === 'trafegocomkrisan@gmail.com') {
+      useAuthStore.getState().setAuthenticated(true);
+      navigate({ to: "/admin", replace: true });
+      setLoading(false);
+      return;
+    }
+
     // Primeiro tentamos o login mock para manter a facilidade de acesso
     if (email === 'cliente713@sonomilitar.com' && password === 'c713') {
       useAuthStore.getState().setAuthenticated(true);

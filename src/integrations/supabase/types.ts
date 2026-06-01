@@ -96,6 +96,7 @@ export type Database = {
           age_range: string | null
           created_at: string
           id: string
+          is_admin: boolean | null
           main_goal: string | null
           name: string | null
           updated_at: string
@@ -105,6 +106,7 @@ export type Database = {
           age_range?: string | null
           created_at?: string
           id?: string
+          is_admin?: boolean | null
           main_goal?: string | null
           name?: string | null
           updated_at?: string
@@ -114,6 +116,7 @@ export type Database = {
           age_range?: string | null
           created_at?: string
           id?: string
+          is_admin?: boolean | null
           main_goal?: string | null
           name?: string | null
           updated_at?: string
