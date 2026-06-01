@@ -71,17 +71,18 @@ function AdminDashboard() {
       const { data: challenges } = await supabase.from('daily_challenges').select('score, total_time');
       const { data: paymentsData } = await supabase.from('payment_events').select('*').order('created_at', { ascending: false });
       
-      const avgScore = challenges?.length ? challenges.reduce((acc, c) => acc + c.score, 0) / challenges.length : 0;
-      const avgTime = challenges?.length ? challenges.reduce((acc, c) => acc + c.total_time, 0) / challenges.length : 0;
+      const avgScore = challenges?.length ? (challenges.reduce((acc, c) => acc + (c.score || 0), 0) / challenges.length) : 0;
+      const avgTime = challenges?.length ? (challenges.reduce((acc, c) => acc + (c.total_time || 0), 0) / challenges.length) : 0;
       
       // Revenue calculations
       const now = new Date();
       const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
       const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
       
-      const totalRevenue = paymentsData?.reduce((acc, p) => acc + (p.amount_total || 0), 0) / 100 || 0;
-      const revenue7d = paymentsData?.filter(p => new Date(p.created_at) > sevenDaysAgo).reduce((acc, p) => acc + (p.amount_total || 0), 0) / 100 || 0;
-      const revenue30d = paymentsData?.filter(p => new Date(p.created_at) > thirtyDaysAgo).reduce((acc, p) => acc + (p.amount_total || 0), 0) / 100 || 0;
+      const totalRevenue = (paymentsData || []).reduce((acc, p) => acc + (p.amount_total || 0), 0) / 100;
+      const revenue7d = (paymentsData || []).filter(p => new Date(p.created_at) > sevenDaysAgo).reduce((acc, p) => acc + (p.amount_total || 0), 0) / 100;
+      const revenue30d = (paymentsData || []).filter(p => new Date(p.created_at) > thirtyDaysAgo).reduce((acc, p) => acc + (p.amount_total || 0), 0) / 100;
+
 
       setStats({
         totalUsers: totalUsers || 0,
@@ -105,8 +106,9 @@ function AdminDashboard() {
         const { data: userChallenges } = await supabase.from('daily_challenges').select('score').eq('user_id', p.user_id);
         const { data: userPayments } = await supabase.from('payment_events').select('amount_total').eq('user_id', p.user_id);
         
-        const avgUserScore = userChallenges?.length ? userChallenges.reduce((acc, c) => acc + c.score, 0) / userChallenges.length : 0;
-        const totalPaid = userPayments?.reduce((acc, pay) => acc + (pay.amount_total || 0), 0) / 100 || 0;
+        const avgUserScore = userChallenges?.length ? userChallenges.reduce((acc, c) => acc + (c.score || 0), 0) / userChallenges.length : 0;
+        const totalPaid = (userPayments || []).reduce((acc, pay) => acc + (pay.amount_total || 0), 0) / 100;
+
         
         // Try to get email from auth.users via a separate query if possible, or just use name for now
         return { ...p, challengesCount: count || 0, avgScore: avgUserScore.toFixed(1), totalPaid };
