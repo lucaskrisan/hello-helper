@@ -11,11 +11,16 @@ export const GAME_ASSETS = {
     "Livro", "Caneta", "Papel", "Quadro", "Piano", "Violão", "Flauta",
     "Delfim", "Águia", "Leão", "Tigre", "Girafa", "Zebra", "Urso",
     "Café", "Chá", "Pão", "Fruta", "Vinho", "Queijo", "Mel", "Sabor",
-    "Relógio", "Janela", "Porta", "Escada", "Espelho", "Quadro", "Mesa", "Cadeira",
+    "Relógio", "Janela", "Porta", "Escada", "Espelho", "Mesa", "Cadeira",
     "Tapete", "Luz", "Sombra", "Sol", "Lua", "Terra", "Mar", "Rio", "Lago",
     "Montanha", "Vale", "Floresta", "Deserto", "Ilha", "Barco", "Avião", "Trem",
     "Carro", "Bicicleta", "Caminhada", "Corrida", "Dança", "Canto", "Risada",
-    "Sonho", "Realidade", "Futuro", "Passado", "Presente", "Vida", "Amor", "Paz"
+    "Sonho", "Realidade", "Futuro", "Passado", "Presente", "Vida", "Amor", "Paz",
+    "Biscoito", "Chocolate", "Suco", "Pipoca", "Cinema", "Teatro", "Museu",
+    "Parque", "Praia", "Campo", "Fazenda", "Sítio", "Rancho", "Castelo",
+    "Palácio", "Igreja", "Templo", "Torre", "Ponte", "Farol", "Porto",
+    "Âncora", "Bússola", "Leme", "Vela", "Mastro", "Convés", "Cabine",
+    "Nave", "Foguete", "Astronauta", "Cosmos", "Galáxia", "Nebulosa", "Cometa"
   ],
   categories: [
     { id: "memory", name: "Fortalecer Memória", icon: "🧠", color: "#4A7C59", description: "Exercícios de fixação e lembrança" },
