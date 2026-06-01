@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { generateTaskByCategory, generateDailyChallenge, GAME_ASSETS } from "@/lib/game-engine";
 import { toast } from "sonner";
-import { ChevronLeft, Trophy, Brain, Timer } from "lucide-react";
+import { ChevronLeft, Trophy, Brain, Timer, Hourglass } from "lucide-react";
 
 export const Route = createFileRoute("/game")({
   component: Game,
