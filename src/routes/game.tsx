@@ -393,13 +393,26 @@ function Game() {
                   </div>
                 </div>
                 <div className="p-8 rounded-[2rem] border-4 inline-block mb-4" style={{ borderColor: currentTask.color }}>
-                   <span className="text-6xl">{currentTask.item === 'Flor' ? '🌸' : currentTask.item === 'Vaso' ? '🏺' : currentTask.item === 'Relógio' ? '⌚' : currentTask.item === 'Livro' ? '📖' : '🖋️'}</span>
+                   <span className="text-6xl">
+                     {currentTask.item === 'Flor' ? '🌸' : 
+                      currentTask.item === 'Vaso' ? '🏺' : 
+                      currentTask.item === 'Relógio' ? '⌚' : 
+                      currentTask.item === 'Livro' ? '📖' : 
+                      currentTask.item === 'Caneta' ? '🖋️' :
+                      currentTask.item === 'Cadeira' ? '🪑' :
+                      currentTask.item === 'Mesa' ? '🪑' : // Mesa emoji alternative
+                      currentTask.item === 'Lâmpada' ? '💡' : '🖋️'}
+                   </span>
                 </div>
-                <p className="text-2xl font-bold text-gray-700">O {currentTask.item} é desta cor.</p>
+                <p className="text-2xl font-bold text-gray-700">
+                  {['Flor', 'Caneta', 'Cadeira', 'Mesa', 'Lâmpada'].includes(currentTask.item) ? 'A' : 'O'} {currentTask.item} é desta cor.
+                </p>
               </div>
             ) : (
               <div className="space-y-6">
-                <p className="text-lg text-gray-600">Qual era a cor do <span className="font-bold text-primary">{currentTask.item}</span>?</p>
+                <p className="text-lg text-gray-600">
+                  Qual era a cor {['Flor', 'Caneta', 'Cadeira', 'Mesa', 'Lâmpada'].includes(currentTask.item) ? 'da' : 'do'} <span className="font-bold text-primary">{currentTask.item}</span>?
+                </p>
                 <div className="grid grid-cols-2 gap-4">
                   {currentTask.options.map((color: string) => (
                     <Button 
