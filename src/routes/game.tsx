@@ -22,6 +22,7 @@ function Game() {
   const search = useSearch({ from: "/game" });
   
   const [currentTask, setCurrentTask] = useState<any>(null);
+  const [tasks, setTasks] = useState<any[]>([]);
   const [taskIndex, setTaskIndex] = useState(0); 
   const [score, setScore] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
@@ -45,37 +46,45 @@ function Game() {
       await supabase.from("daily_challenges").insert({
         user_id: user.id,
         score: finalScore,
-        total_questions: 7,
+        total_questions: tasks.length || 7,
         correct_answers: correctCount,
         total_time: totalTime,
       });
     }
     
     navigate({ to: "/conclusao", search: { score: finalScore, time: totalTime }, replace: true });
-  }, [score, correctCount, startTime, navigate]);
+  }, [score, correctCount, startTime, navigate, tasks.length]);
 
 
-  const loadNextTask = useCallback(async () => {
-    if (search.mode === 'trial') {
-      const trialTasks = [
-        await generateTaskByCategory('memory', 10, 'easy'),
-        await generateTaskByCategory('attention', 20, 'easy'),
-        await generateTaskByCategory('logic', 30, 'easy'),
-      ];
-      if (taskIndex < 3) {
-        setCurrentTask(trialTasks[taskIndex]);
+  const loadNextTask = useCallback(async (currentTasks?: any[]) => {
+    const activeTasks = currentTasks || tasks;
+    
+    if (activeTasks.length > 0) {
+      if (taskIndex < activeTasks.length) {
+        setCurrentTask(activeTasks[taskIndex]);
         setTaskIndex(prev => prev + 1);
       } else {
         finishChallenge();
       }
     } else {
-      const daily = await generateDailyChallenge(new Date().toISOString().split('T')[0]);
-      if (taskIndex < daily.tasks.length) {
-        setCurrentTask(daily.tasks[taskIndex]);
-        setTaskIndex(prev => prev + 1);
+      // Carregamento inicial
+      let newTasks: any[] = [];
+      if (search.mode === 'trial') {
+        newTasks = [
+          await generateTaskByCategory('memory', 10, 'easy'),
+          await generateTaskByCategory('attention', 20, 'easy'),
+          await generateTaskByCategory('logic', 30, 'easy'),
+          await generateTaskByCategory('language', 40, 'medium'),
+          await generateTaskByCategory('memory', 50, 'medium'),
+        ];
       } else {
-        finishChallenge();
+        const daily = await generateDailyChallenge(new Date().toISOString().split('T')[0]);
+        newTasks = daily.tasks;
       }
+      
+      setTasks(newTasks);
+      setCurrentTask(newTasks[0]);
+      setTaskIndex(1);
     }
     
     setSelectedWords([]);
@@ -83,7 +92,7 @@ function Game() {
     setTimeLeft(15);
     setUserSequence([]);
     setFeedback({ type: null, message: "" });
-  }, [search.mode, taskIndex, finishChallenge]);
+  }, [search.mode, taskIndex, finishChallenge, tasks]);
 
 
   useEffect(() => {
@@ -91,7 +100,8 @@ function Game() {
   }, []);
 
   const handleCorrect = () => {
-    const increment = search.mode === 'trial' ? 33.3 : 14.2;
+    const total = tasks.length || (search.mode === 'trial' ? 5 : 10);
+    const increment = 100 / total;
     setScore(s => s + increment);
     setCorrectCount(c => c + 1);
     
@@ -167,7 +177,7 @@ function Game() {
         </Button>
         <div className="bg-white px-3 py-1.5 rounded-full shadow-sm flex items-center space-x-2 flex-1 justify-center">
           <Brain className="w-4 h-4 text-primary" />
-          <span className="font-bold text-gray-700 text-sm">Etapa {taskIndex}/{search.mode === 'trial' ? '3' : '7'}</span>
+          <span className="font-bold text-gray-700 text-sm">Etapa {taskIndex}/{tasks.length || (search.mode === 'trial' ? '5' : '10')}</span>
         </div>
         <div className="bg-white px-3 py-1.5 rounded-full shadow-sm flex items-center space-x-1.5 shrink-0">
           <Trophy className="w-4 h-4 text-yellow-500" />

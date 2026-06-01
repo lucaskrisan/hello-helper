@@ -177,11 +177,14 @@ export const generateTaskByCategory = async (cogType: string, seedOffset: number
 export const generateDailyChallenge = async (seedStr: string) => {
   const numericSeed = seedStr.split('-').reduce((acc, part) => acc + (parseInt(part) || 0), 0);
   const tasks = [];
-  const cogTypes = ['memory', 'attention', 'logic', 'language', 'memory', 'attention', 'logic'];
+  const cogTypes = ['memory', 'attention', 'logic', 'language'];
   
-  for (let i = 0; i < 7; i++) {
-    const level = i < 3 ? 'easy' : i < 6 ? 'medium' : 'hard';
-    const task = await generateTaskByCategory(cogTypes[i], numericSeed + i * 100, level as any);
+  // Aumentado para 10 etapas para dar mais substância ao treino diário
+  for (let i = 0; i < 10; i++) {
+    const type = cogTypes[i % cogTypes.length];
+    // Progressão de dificuldade: 3 fáceis, 4 médias, 3 difíceis
+    const level = i < 3 ? 'easy' : i < 7 ? 'medium' : 'hard';
+    const task = await generateTaskByCategory(type, numericSeed + i * 100, level as any);
     if (task) tasks.push(task);
   }
 
