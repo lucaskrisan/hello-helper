@@ -17,7 +17,7 @@ export const Route = createFileRoute("/conclusao")({
 
 function Conclusion() {
   const navigate = useNavigate();
-  const [step, setStep] = useState<'report' | 'offer'>('report');
+  const [step, setStep] = useState<'report' | 'explanation' | 'offer'>('report');
 
   const renderStars = (count: number) => (
     <div className="flex space-x-1">
@@ -62,10 +62,57 @@ function Conclusion() {
           </div>
 
           <Button 
-            onClick={() => setStep('offer')}
+            onClick={() => setStep('explanation')}
             className="w-full py-10 text-xl font-bold bg-primary hover:bg-primary/90 text-white rounded-2xl shadow-lg transition-transform hover:scale-105 active:scale-95 uppercase"
           >
             CONTINUAR TREINANDO
+          </Button>
+        </Card>
+      </div>
+    );
+  }
+
+  if (step === 'explanation') {
+    return (
+      <div className="min-h-screen bg-[#F7F3EA] p-4 flex flex-col items-center justify-center">
+        <Card className="w-full max-w-md p-6 sm:p-8 bg-white rounded-3xl shadow-sm text-center">
+          <h1 className="text-3xl font-bold mb-6 text-[#1F2937]">O que isso significa?</h1>
+          
+          <div className="space-y-4 text-left mb-8">
+            <p className="text-gray-700 leading-relaxed text-lg">
+              Sua atenção está em um bom nível. Sua memória apresentou espaço para evolução.
+            </p>
+            <p className="text-gray-700 leading-relaxed text-lg">
+              Isso não significa que exista um problema. Significa apenas que sua mente, como qualquer outra parte do corpo, pode ser estimulada e treinada.
+            </p>
+            <p className="text-gray-700 leading-relaxed text-lg font-medium">
+              A maioria das pessoas nunca faz isso.
+            </p>
+          </div>
+
+          <div className="bg-green-50 p-6 rounded-2xl mb-8 text-left">
+            <p className="font-bold text-green-800 mb-4">Nos próximos 30 dias você receberá:</p>
+            <ul className="space-y-3">
+              <li className="flex items-center gap-2 text-green-900">
+                <Check className="w-5 h-5" /> Um desafio novo por dia
+              </li>
+              <li className="flex items-center gap-2 text-green-900">
+                <Check className="w-5 h-5" /> Exercícios progressivos
+              </li>
+              <li className="flex items-center gap-2 text-green-900">
+                <Check className="w-5 h-5" /> Acompanhamento da sua evolução
+              </li>
+              <li className="flex items-center gap-2 text-green-900">
+                <Check className="w-5 h-5" /> Novos desafios de memória e atenção
+              </li>
+            </ul>
+          </div>
+
+          <Button 
+            onClick={() => setStep('offer')}
+            className="w-full py-10 text-xl font-bold bg-primary hover:bg-primary/90 text-white rounded-2xl shadow-lg transition-transform hover:scale-105 active:scale-95 uppercase"
+          >
+            VER MEU PLANO
           </Button>
         </Card>
       </div>
@@ -100,8 +147,8 @@ function Conclusion() {
 
         <Button 
           onClick={() => {
-            console.log("Validação: Usuário clicou no Checkout (US$ 19,90)");
-            navigate({ to: "/premium" }); 
+            // No momento redirecionando para Stripe Sandbox (implementação real abaixo)
+            window.location.href = "https://buy.stripe.com/test_6oEbMh9708pI5EYeUV"; 
           }}
           className="w-full py-8 text-2xl font-black bg-primary hover:bg-primary/90 text-white rounded-2xl shadow-xl transition-transform hover:scale-105 active:scale-95"
         >
