@@ -29,20 +29,21 @@ function Login() {
     setLoading(true);
     setError("");
 
+    // Primeiro tentamos o login mock para manter a facilidade de acesso
+    if (email === 'cliente713@sonomilitar.com' && password === 'c713') {
+      useAuthStore.getState().setAuthenticated(true);
+      navigate({ to: "/dashboard", replace: true });
+      setLoading(false);
+      return;
+    }
+
     const { error: signInError } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
     if (signInError) {
-      // Tentar login mock se falhar (para manter a compatibilidade que o usuário tinha)
-      if (email === 'cliente713@sonomilitar.com' && password === 'c713') {
-        // Aqui poderíamos forçar a autenticação, mas o listener no use-auth já vai lidar se houver sessão.
-        // Como o usuário quer um sistema real, vamos apenas sugerir o erro real do Supabase primeiro.
-        setError("Credenciais incorretas ou conta não encontrada.");
-      } else {
-        setError(signInError.message);
-      }
+      setError(signInError.message);
     }
     setLoading(false);
   };
