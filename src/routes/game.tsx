@@ -14,6 +14,7 @@ function Game() {
   const [exercise, setExercise] = useState(0); // 0 = Intro, 1 = Memória, 2 = Atenção, 3 = Lógica
   const [score, setScore] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
+  const [exerciseOrder, setExerciseOrder] = useState<number[]>([]);
   const [selectedWords, setSelectedWords] = useState<string[]>([]);
   const [feedback, setFeedback] = useState<{ type: 'success' | 'retry' | null; message: string }>({ type: null, message: "" });
   const [startTime] = useState(Date.now());
