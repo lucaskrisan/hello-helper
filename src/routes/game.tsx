@@ -12,6 +12,8 @@ function Game() {
   const [exercise, setExercise] = useState(1);
   const [score, setScore] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
+  const [selectedWords, setSelectedWords] = useState<string[]>([]);
+  const [showFeedback, setShowFeedback] = useState(false);
   const [startTime] = useState(Date.now());
   const navigate = useNavigate();
 
@@ -108,25 +110,56 @@ function Game() {
             </div>
           ) : (
             <div className="space-y-6">
-              <p className="text-xl font-medium text-gray-700">Quais palavras você viu?</p>
+              <p className="text-xl font-medium text-gray-700">Selecione as 5 palavras que você viu:</p>
               <div className="grid grid-cols-2 gap-3">
-                {options.map(opt => (
-                  <Button 
-                    key={opt} 
-                    variant="outline"
-                    onClick={() => { 
-                      if (words.includes(opt)) {
-                        setScore(s => s + 33);
-                        setCorrectCount(c => c + 1);
-                      }
-                      setExercise(2);
-                    }} 
-                    className="py-8 text-lg bg-white border-2 border-gray-100 text-[#1F2937] hover:bg-secondary hover:text-white rounded-2xl shadow-sm transition-all"
-                  >
-                    {opt}
-                  </Button>
-                ))}
+                {options.map(opt => {
+                  const isSelected = selectedWords.includes(opt);
+                  return (
+                    <Button 
+                      key={opt} 
+                      variant={isSelected ? "default" : "outline"}
+                      onClick={() => { 
+                        if (isSelected) {
+                          setSelectedWords(prev => prev.filter(w => w !== opt));
+                        } else if (selectedWords.length < 5) {
+                          setSelectedWords(prev => [...prev, opt]);
+                        }
+                      }} 
+                      className={`py-8 text-lg rounded-2xl shadow-sm transition-all border-2 ${
+                        isSelected 
+                          ? "bg-primary text-white border-primary" 
+                          : "bg-white border-gray-100 text-[#1F2937] hover:border-primary/50"
+                      }`}
+                    >
+                      {opt}
+                    </Button>
+                  );
+                })}
               </div>
+              
+              {selectedWords.length === 5 && !showFeedback && (
+                <Button 
+                  onClick={() => {
+                    const matches = selectedWords.filter(w => words.includes(w)).length;
+                    setCorrectCount(prev => prev + (matches === 5 ? 1 : 0));
+                    setScore(prev => prev + (matches * 6.6)); // Pontuação proporcional
+                    setShowFeedback(true);
+                    setTimeout(() => {
+                      setExercise(2);
+                      setShowFeedback(false);
+                    }, 1500);
+                  }}
+                  className="w-full py-8 text-xl font-bold bg-[#D97706] hover:bg-[#b46205] rounded-2xl animate-in zoom-in"
+                >
+                  CONFERIR RESPOSTAS
+                </Button>
+              )}
+
+              {showFeedback && (
+                <div className="py-4 text-2xl font-bold text-primary animate-in fade-in bounce-in">
+                  Muito bem! Vamos ao próximo.
+                </div>
+              )}
             </div>
           )}
         </Card>
