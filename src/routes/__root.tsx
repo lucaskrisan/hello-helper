@@ -131,7 +131,7 @@ function RootComponent() {
       navigate({ to: '/dashboard', replace: true });
     }
 
-    if (!isAuthenticated && !isLoginPage && !isLandingPage) {
+    if (!isAuthenticated && !isLoginPage && !isLandingPage && router.state.location.pathname !== '/admin') {
       navigate({ to: '/login', replace: true });
     }
   }, [isAuthenticated, isInitializing, router.state.location.pathname]);
