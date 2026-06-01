@@ -38,23 +38,23 @@ function Game() {
   const [isLoading, setIsLoading] = useState(true);
 
 
-  const finishChallenge = useCallback(async () => {
+  const finishChallenge = useCallback(async (currentScore: number, currentCorrect: number, currentTasksLength: number) => {
     const { data: { user } } = await supabase.auth.getUser();
-    const finalScore = Math.min(100, Math.round(score));
+    const finalScore = Math.min(100, Math.round(currentScore));
     const totalTime = Math.floor((Date.now() - startTime) / 1000);
     
     if (user) {
       await supabase.from("daily_challenges").insert({
         user_id: user.id,
         score: finalScore,
-        total_questions: tasks.length || 7,
-        correct_answers: correctCount,
+        total_questions: currentTasksLength || 7,
+        correct_answers: currentCorrect,
         total_time: totalTime,
       });
     }
     
     navigate({ to: "/conclusao", search: { score: finalScore, time: totalTime }, replace: true });
-  }, [score, correctCount, startTime, navigate, tasks.length]);
+  }, [startTime, navigate]);
 
 
   const loadNextTask = useCallback(async (currentTasks?: any[]) => {
@@ -65,7 +65,7 @@ function Game() {
         setCurrentTask(activeTasks[taskIndex]);
         setTaskIndex(prev => prev + 1);
       } else {
-        finishChallenge();
+        finishChallenge(score, correctCount, tasks.length);
       }
     } else {
       // Carregamento inicial
@@ -152,16 +152,23 @@ function Game() {
   useEffect(() => {
     const timer = setInterval(() => {
       setGlobalTimeLeft(prev => {
-        if (prev <= 0) {
+        if (prev <= 1) {
           clearInterval(timer);
-          finishChallenge();
+          // Usamos refs ou estado capturado para evitar o loop de dependência
+          // Mas aqui o componente vai re-renderizar e o finishChallenge vai ser chamado
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
     return () => clearInterval(timer);
-  }, [finishChallenge]);
+  }, []); // Sem dependências para não reiniciar o timer
+
+  useEffect(() => {
+    if (globalTimeLeft === 0 && !isLoading) {
+      finishChallenge(score, correctCount, tasks.length);
+    }
+  }, [globalTimeLeft, isLoading, finishChallenge, score, correctCount, tasks.length]);
 
   useEffect(() => {
     if (currentTask?.type?.includes('memory') && memState === 'showing') {
