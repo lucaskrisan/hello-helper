@@ -1,34 +1,31 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
+import { generateDailyChallenge } from "@/lib/game-engine";
 
 export const Route = createFileRoute("/game")({
   component: Game,
 });
 
 function Game() {
+  const navigate = useNavigate();
   const [exercise, setExercise] = useState(1);
   const [score, setScore] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
   const [selectedWords, setSelectedWords] = useState<string[]>([]);
   const [showFeedback, setShowFeedback] = useState(false);
   const [startTime] = useState(Date.now());
-  const navigate = useNavigate();
-
-  // EXERCICIO 1: Memória
-  const [memState, setMemState] = useState<'showing' | 'choosing'>('showing');
   const [timeLeft, setTimeLeft] = useState(10);
-  const words = ["Amizade", "Natureza", "Saúde", "Tempo", "Família"];
-  const options = ["Amizade", "Natureza", "Saúde", "Tempo", "Família", "Cidade", "Viagem", "Festa"];
 
-  // EXERCICIO 2: Atenção
-  const letters = "AAAAAAAAABAAAAAAAA".split("");
-  
-  // EXERCICIO 3: Lógica
-  const sequence = [2, 4, 6, 8];
-  const logicOptions = [9, 10, 11, 12];
+  // Gera o desafio único do dia baseado na data atual
+  const today = new Date().toISOString().split('T')[0];
+  const challengeData = useMemo(() => generateDailyChallenge(today), [today]);
+
+  const { words, options } = challengeData.memory;
+  const { grid, intruder } = challengeData.attention;
+  const { sequence, options: logicOptions, answer } = challengeData.logic;
 
   useEffect(() => {
     if (exercise === 1 && memState === 'showing') {
