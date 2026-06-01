@@ -160,10 +160,11 @@ function Game() {
     });
     setTimeout(() => {
       setFeedback({ type: null, message: "" });
-      if (currentTask?.type === 'memory') {
+      if (currentTask?.type?.startsWith('memory')) {
         setMemState('showing');
         setTimeLeft(15);
         setSelectedWords([]);
+        setUserSequence([]);
       } else if (currentTask?.type === 'word-search') {
         setSearchSelection([]);
       }
