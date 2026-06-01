@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
-import { Settings } from "lucide-react";
+import { Settings, Brain, Eye, Puzzle, Search } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard")({
   component: Dashboard,
