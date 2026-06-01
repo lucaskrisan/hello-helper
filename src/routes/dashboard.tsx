@@ -21,11 +21,11 @@ function Dashboard() {
   useEffect(() => {
     async function loadData() {
       setLoading(true);
-      const { data: { user } } = await supabase.auth.getUser();
       const isAuthenticatedMock = useAuthStore.getState().isAuthenticated;
+      const { data: { user } } = await supabase.auth.getUser();
 
       if (!user && !isAuthenticatedMock) {
-        navigate({ to: "/", replace: true });
+        navigate({ to: "/login", replace: true });
         return;
       }
 
