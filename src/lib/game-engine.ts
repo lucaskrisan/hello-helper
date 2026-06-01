@@ -147,14 +147,16 @@ export const generateDailyChallenge = (seedStr: string) => {
   const numericSeed = seedStr.split('-').reduce((acc, part) => acc + parseInt(part), 0);
   const random = mulberry32(numericSeed);
 
-  // Um desafio diário agora é uma sequência de uma tarefa de cada categoria
-  return {
-    tasks: [
-      generateTaskByCategory('memory', numericSeed),
-      generateTaskByCategory('attention', numericSeed + 1),
-      generateTaskByCategory('word-search', numericSeed + 2),
-      generateTaskByCategory('logic', numericSeed + 3)
-    ]
-  };
+  // Um desafio diário agora tem 24 etapas variadas
+  const tasks = [];
+  const categories = ['memory', 'attention', 'logic', 'word-search'];
+  
+  for (let i = 0; i < 24; i++) {
+    const category = categories[i % categories.length];
+    const task = generateTaskByCategory(category, numericSeed + i);
+    if (task) tasks.push(task);
+  }
+
+  return { tasks };
 };
 

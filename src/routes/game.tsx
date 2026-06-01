@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { generateTaskByCategory, generateDailyChallenge, GAME_ASSETS } from "@/lib/game-engine";
 import { toast } from "sonner";
-import { ChevronLeft, Trophy, Brain, Timer } from "lucide-react";
+import { ChevronLeft, Trophy, Brain, Timer, Hourglass } from "lucide-react";
 
 export const Route = createFileRoute("/game")({
   component: Game,
@@ -36,6 +36,47 @@ function Game() {
   const [isShowingSequence, setIsShowingSequence] = useState(false);
   const [searchSelection, setSearchSelection] = useState<{r: number, c: number}[]>([]);
   const [totalTimeInApp, setTotalTimeInApp] = useState(0);
+  const [sessionTimeLeft, setSessionTimeLeft] = useState(300); // 5 minutos para categorias
+
+  const finishChallenge = useCallback(async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    const finalScore = Math.min(100, Math.round(score));
+    const totalTime = Math.floor((Date.now() - startTime) / 1000);
+    
+    if (user) {
+      await supabase.from("daily_challenges").insert({
+        user_id: user.id,
+        score: finalScore,
+        total_questions: search.mode === 'daily' ? 24 : taskIndex,
+        correct_answers: search.mode === 'daily' ? 24 : taskIndex,
+        total_time: totalTime,
+      });
+    }
+    
+    navigate({ to: "/conclusao", search: { score: finalScore, time: totalTime }, replace: true });
+  }, [score, startTime, search.mode, taskIndex, navigate]);
+
+  // Timer de sessão para modo categoria
+  useEffect(() => {
+    if (search.mode === 'category') {
+      const timer = setInterval(() => {
+        setSessionTimeLeft(prev => {
+          if (prev <= 0) {
+            clearInterval(timer);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [search.mode]);
+
+  useEffect(() => {
+    if (search.mode === 'category' && sessionTimeLeft === 0) {
+      finishChallenge();
+    }
+  }, [sessionTimeLeft, search.mode, finishChallenge]);
 
   // 10-minute engagement check
   useEffect(() => {
@@ -66,6 +107,7 @@ function Game() {
     } else if (search.mode === 'category' && search.categoryId) {
       const task = generateTaskByCategory(search.categoryId, Math.random() * 10000);
       setCurrentTask(task);
+      setTaskIndex(prev => prev + 1);
     }
     
     // Reset states
@@ -103,7 +145,8 @@ function Game() {
   }, [currentTask, playSequence]);
 
   const handleCorrect = () => {
-    setScore(s => s + 25);
+    const increment = search.mode === 'daily' ? (100 / 24) : 5;
+    setScore(s => s + increment);
     setFeedback({ type: 'success', message: "Muito bem! Você está indo muito bem!" });
     setTimeout(() => {
       loadNextTask();
@@ -127,22 +170,6 @@ function Game() {
     }, 3000);
   };
 
-  const finishChallenge = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-    const finalScore = Math.min(100, Math.round(score));
-    const totalTime = Math.floor((Date.now() - startTime) / 1000);
-    
-    await supabase.from("daily_challenges").insert({
-      user_id: user.id,
-      score: finalScore,
-      total_questions: 4,
-      correct_answers: 4,
-      total_time: totalTime,
-    });
-    
-    navigate({ to: "/conclusao", search: { score: finalScore, time: totalTime }, replace: true });
-  };
 
   // Timer para memória
   useEffect(() => {
@@ -172,10 +199,21 @@ function Game() {
           <ChevronLeft className="w-6 h-6" />
         </Button>
         <div className="bg-white px-4 py-2 rounded-full shadow-sm flex items-center space-x-2">
-          <Brain className="w-5 h-5 text-primary" />
-          <span className="font-bold text-gray-700">
-            {search.mode === 'daily' ? `Etapa ${taskIndex}/4` : categoryInfo?.name}
-          </span>
+          {search.mode === 'daily' ? (
+            <>
+              <Brain className="w-5 h-5 text-primary" />
+              <span className="font-bold text-gray-700">
+                Etapa {taskIndex}/24
+              </span>
+            </>
+          ) : (
+            <>
+              <Hourglass className="w-5 h-5 text-orange-500 animate-pulse" />
+              <span className="font-bold text-gray-700">
+                {Math.floor(sessionTimeLeft / 60)}:{(sessionTimeLeft % 60).toString().padStart(2, '0')}
+              </span>
+            </>
+          )}
         </div>
         <div className="bg-white px-4 py-2 rounded-full shadow-sm flex items-center space-x-2">
           <Trophy className="w-5 h-5 text-yellow-500" />

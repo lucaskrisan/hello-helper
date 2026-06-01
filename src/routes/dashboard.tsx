@@ -117,7 +117,7 @@ function Dashboard() {
       >
         <div className="absolute inset-0 bg-white/10 opacity-0 hover:opacity-100 transition-opacity" />
         <span className="relative z-10">INICIAR DESAFIO DO DIA</span>
-        <span className="text-sm font-normal opacity-80 relative z-10">Treino completo para hoje • 5 minutos</span>
+        <span className="text-sm font-normal opacity-80 relative z-10">Treino completo para hoje • 24 etapas</span>
       </Button>
 
       <h3 className="text-xl font-bold mb-6 text-[#1F2937] flex items-center space-x-2">
