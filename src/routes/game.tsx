@@ -200,12 +200,17 @@ function Game() {
         </Button>
         <div className="bg-white px-4 py-2 rounded-full shadow-sm flex items-center space-x-2">
           {search.mode === 'daily' ? (
-            <>
-              <Brain className="w-5 h-5 text-primary" />
-              <span className="font-bold text-gray-700">
-                Etapa {taskIndex}/24
-              </span>
-            </>
+            <div className="flex flex-col items-center">
+              <div className="flex items-center space-x-2">
+                <Brain className="w-5 h-5 text-primary" />
+                <span className="font-bold text-gray-700">
+                  Etapa {taskIndex}/24
+                </span>
+              </div>
+              <div className="text-[10px] font-bold uppercase tracking-tighter text-primary">
+                {currentTask.level === 'easy' ? 'Nível Easy' : currentTask.level === 'medium' ? 'Nível Medium' : 'Nível Hard - Mente Forte'}
+              </div>
+            </div>
           ) : (
             <>
               <Hourglass className="w-5 h-5 text-orange-500 animate-pulse" />
