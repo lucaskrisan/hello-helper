@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
@@ -26,6 +26,9 @@ function Game() {
   const [taskIndex, setTaskIndex] = useState(0); 
   const [score, setScore] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
+  const scoreRef = useRef(0);
+  const correctCountRef = useRef(0);
+  const tasksLengthRef = useRef(0);
   const [errorCount, setErrorCount] = useState(0);
   const [startTime] = useState(Date.now());
   const [feedback, setFeedback] = useState<{ type: 'success' | 'retry' | null; message: string }>({ type: null, message: "" });
@@ -35,56 +38,73 @@ function Game() {
   const [timeLeft, setTimeLeft] = useState(15);
   const [userSequence, setUserSequence] = useState<any[]>([]);
   const [globalTimeLeft, setGlobalTimeLeft] = useState(300);
+  const [isLoading, setIsLoading] = useState(true);
 
 
   const finishChallenge = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser();
-    const finalScore = Math.min(100, Math.round(score));
+    const finalScore = Math.min(100, Math.round(scoreRef.current));
     const totalTime = Math.floor((Date.now() - startTime) / 1000);
     
     if (user) {
       await supabase.from("daily_challenges").insert({
         user_id: user.id,
         score: finalScore,
-        total_questions: tasks.length || 7,
-        correct_answers: correctCount,
+        total_questions: tasksLengthRef.current || 7,
+        correct_answers: correctCountRef.current,
         total_time: totalTime,
       });
     }
     
     navigate({ to: "/conclusao", search: { score: finalScore, time: totalTime }, replace: true });
-  }, [score, correctCount, startTime, navigate, tasks.length]);
+  }, [startTime, navigate]);
 
 
-  const loadNextTask = useCallback(async (currentTasks?: any[]) => {
-    const activeTasks = currentTasks || tasks;
-    
-    if (activeTasks.length > 0) {
-      if (taskIndex < activeTasks.length) {
-        setCurrentTask(activeTasks[taskIndex]);
+  const loadNextTask = useCallback(async (forceTasks?: any[]) => {
+    if (forceTasks) {
+      tasksLengthRef.current = forceTasks.length;
+      setTasks(forceTasks);
+      setCurrentTask(forceTasks[0]);
+      setTaskIndex(1);
+    } else if (tasks.length > 0) {
+      if (taskIndex < tasks.length) {
+        setCurrentTask(tasks[taskIndex]);
         setTaskIndex(prev => prev + 1);
       } else {
         finishChallenge();
       }
     } else {
       // Carregamento inicial
-      let newTasks: any[] = [];
-      if (search.mode === 'trial') {
-        newTasks = [
-          await generateTaskByCategory('memory', 10, 'easy'),
-          await generateTaskByCategory('attention', 20, 'easy'),
-          await generateTaskByCategory('logic', 30, 'easy'),
-          await generateTaskByCategory('language', 40, 'medium'),
-          await generateTaskByCategory('memory', 50, 'medium'),
-        ];
-      } else {
-        const daily = await generateDailyChallenge(new Date().toISOString().split('T')[0]);
-        newTasks = daily.tasks;
+      setIsLoading(true);
+      try {
+        let newTasks: any[] = [];
+        const { data: { user } } = await supabase.auth.getUser();
+        const { getUsedItemIds } = await import("@/lib/game-engine");
+        const usedIds = await getUsedItemIds(user?.id);
+
+        if (search.mode === 'trial') {
+          newTasks = [
+            await generateTaskByCategory('memory', 10, 'easy', usedIds),
+            await generateTaskByCategory('attention', 20, 'easy', usedIds),
+            await generateTaskByCategory('logic', 30, 'easy', usedIds),
+            await generateTaskByCategory('language', 40, 'medium', usedIds),
+            await generateTaskByCategory('memory', 50, 'medium', usedIds),
+          ];
+        } else {
+          const daily = await generateDailyChallenge(new Date().toISOString().split('T')[0]);
+          newTasks = daily.tasks;
+        }
+        
+        tasksLengthRef.current = newTasks.length;
+        setTasks(newTasks);
+        setCurrentTask(newTasks[0]);
+        setTaskIndex(1);
+      } catch (err) {
+        console.error("Error loading tasks:", err);
+        toast.error("Erro ao carregar os exercícios. Tente novamente.");
+      } finally {
+        setIsLoading(false);
       }
-      
-      setTasks(newTasks);
-      setCurrentTask(newTasks[0]);
-      setTaskIndex(1);
     }
     
     setSelectedWords([]);
@@ -92,7 +112,7 @@ function Game() {
     setTimeLeft(15);
     setUserSequence([]);
     setFeedback({ type: null, message: "" });
-  }, [search.mode, taskIndex, finishChallenge, tasks]);
+  }, [search.mode, finishChallenge, score, correctCount, tasks.length]);
 
 
   useEffect(() => {
@@ -100,10 +120,18 @@ function Game() {
   }, []);
 
   const handleCorrect = () => {
-    const total = tasks.length || (search.mode === 'trial' ? 5 : 10);
+    const total = tasksLengthRef.current || (search.mode === 'trial' ? 5 : 10);
     const increment = 100 / total;
-    setScore(s => s + increment);
-    setCorrectCount(c => c + 1);
+    setScore(s => {
+      const next = s + increment;
+      scoreRef.current = next;
+      return next;
+    });
+    setCorrectCount(c => {
+      const next = c + 1;
+      correctCountRef.current = next;
+      return next;
+    });
     
     // Save to history if it has itemIds
     if (currentTask?.itemIds) {
@@ -117,7 +145,7 @@ function Game() {
     setFeedback({ type: 'success', message: "Muito bem! Sua mente está despertando!" });
     setTimeout(() => {
       loadNextTask();
-    }, 2000);
+    }, 1200);
   };
 
   const handleRetry = (msg?: string) => {
@@ -132,26 +160,33 @@ function Game() {
         setMemState('showing');
         setTimeLeft(15);
       }
-    }, 3000);
+    }, 1500);
   };
 
 
   useEffect(() => {
     const timer = setInterval(() => {
       setGlobalTimeLeft(prev => {
-        if (prev <= 0) {
+        if (prev <= 1) {
           clearInterval(timer);
-          finishChallenge();
+          // Usamos refs ou estado capturado para evitar o loop de dependência
+          // Mas aqui o componente vai re-renderizar e o finishChallenge vai ser chamado
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
     return () => clearInterval(timer);
-  }, [finishChallenge]);
+  }, []); // Sem dependências para não reiniciar o timer
 
   useEffect(() => {
-    if (currentTask?.type?.startsWith('memory') && memState === 'showing') {
+    if (globalTimeLeft === 0 && !isLoading) {
+      finishChallenge();
+    }
+  }, [globalTimeLeft, isLoading, finishChallenge]);
+
+  useEffect(() => {
+    if (currentTask?.type?.includes('memory') && memState === 'showing') {
       if (timeLeft <= 0) {
         setMemState('choosing');
         return;
@@ -167,7 +202,16 @@ function Game() {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  if (!currentTask) return null;
+  if (isLoading || !currentTask) {
+    return (
+      <div className="min-h-screen bg-[#F7F3EA] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-gray-500 font-medium">Preparando seu treino cerebral...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#F7F3EA] p-4 flex flex-col items-center">
@@ -201,6 +245,41 @@ function Game() {
               <h3 className="text-3xl font-bold mb-2">{feedback.type === 'success' ? "Muito bem!" : "Vamos tentar?"}</h3>
               <p className="text-xl opacity-90">{feedback.message}</p>
             </div>
+          </div>
+        )}
+        
+        {currentTask.type === 'memory-shopping' && (
+          <div className="text-center">
+            <h2 className="text-2xl font-bold mb-2">Lista de Compras</h2>
+            <p className="text-gray-500 mb-6">Memorize os itens e as quantidades.</p>
+            {memState === 'showing' ? (
+              <div className="space-y-4">
+                <div className="text-3xl font-bold text-orange-600 mb-6">{timeLeft}s</div>
+                <div className="bg-orange-50 p-6 rounded-2xl space-y-3">
+                  {currentTask.list.map((item: any, i: number) => (
+                    <div key={i} className="flex justify-between items-center text-xl font-bold text-orange-900 border-b border-orange-200 pb-2">
+                      <span>{item.item}</span>
+                      <span className="bg-orange-200 px-3 py-1 rounded-lg">{item.qty}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-8">
+                <p className="text-2xl font-bold text-gray-700">{currentTask.question}</p>
+                <div className="grid grid-cols-3 gap-4">
+                  {currentTask.options.map((opt: number) => (
+                    <Button 
+                      key={opt}
+                      onClick={() => opt === currentTask.answer ? handleCorrect() : handleRetry()}
+                      className="py-8 text-3xl font-bold bg-white text-gray-700 border-2"
+                    >
+                      {opt}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
