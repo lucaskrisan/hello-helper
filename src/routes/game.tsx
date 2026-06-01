@@ -38,6 +38,24 @@ function Game() {
   const [totalTimeInApp, setTotalTimeInApp] = useState(0);
   const [sessionTimeLeft, setSessionTimeLeft] = useState(300); // 5 minutos para categorias
 
+  const finishChallenge = useCallback(async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    const finalScore = Math.min(100, Math.round(score));
+    const totalTime = Math.floor((Date.now() - startTime) / 1000);
+    
+    if (user) {
+      await supabase.from("daily_challenges").insert({
+        user_id: user.id,
+        score: finalScore,
+        total_questions: search.mode === 'daily' ? 24 : taskIndex,
+        correct_answers: search.mode === 'daily' ? 24 : taskIndex,
+        total_time: totalTime,
+      });
+    }
+    
+    navigate({ to: "/conclusao", search: { score: finalScore, time: totalTime }, replace: true });
+  }, [score, startTime, search.mode, taskIndex, navigate]);
+
   // Timer de sessão para modo categoria
   useEffect(() => {
     if (search.mode === 'category') {
@@ -58,7 +76,7 @@ function Game() {
     if (search.mode === 'category' && sessionTimeLeft === 0) {
       finishChallenge();
     }
-  }, [sessionTimeLeft, search.mode]);
+  }, [sessionTimeLeft, search.mode, finishChallenge]);
 
   // 10-minute engagement check
   useEffect(() => {
