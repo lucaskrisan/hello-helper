@@ -468,40 +468,6 @@ function Game() {
             </div>
           </div>
         )}
-                    currentTask.type === 'attention-letter' ? "bg-gray-50 text-3xl font-bold" : ""
-                  }`}
-                  style={currentTask.type === 'attention-color' ? { backgroundColor: item } : {}}
-                >
-                  {currentTask.type === 'attention-letter' ? item : ""}
-                </Button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {currentTask.type === 'logic' && (
-          <div className="text-center">
-            <h2 className="text-2xl font-bold mb-2">Qual o próximo?</h2>
-            <p className="text-gray-500 mb-8">Descubra o segredo da sequência</p>
-            <div className="text-5xl font-bold mb-12 text-primary tracking-tighter">
-              {currentTask.sequence.join(", ")} , ?
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              {currentTask.options.map((num: number) => (
-                <Button 
-                  key={num}
-                  onClick={() => {
-                    if (num === currentTask.answer) handleCorrect();
-                    else handleRetry("O padrão é diferente... tente mais uma vez!");
-                  }}
-                  className="py-10 text-3xl font-bold rounded-[1.5rem] bg-gray-50 text-gray-700 border-2 border-gray-100"
-                >
-                  {num}
-                </Button>
-              ))}
-            </div>
-          </div>
-        )}
 
         {currentTask.type === 'word-search' && (
           <div className="text-center">
