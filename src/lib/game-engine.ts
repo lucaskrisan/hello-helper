@@ -115,14 +115,29 @@ export const generateTaskByCategory = (categoryId: string, seedOffset: number = 
       }
     }
     case 'logic': {
-      const pattern = GAME_ASSETS.logicPatterns[Math.floor(random() * GAME_ASSETS.logicPatterns.length)];
-      const startNum = Math.floor(random() * (level === 'easy' ? 10 : level === 'medium' ? 50 : 100)) + 1;
-      const stepNum = Math.floor(random() * (level === 'easy' ? 5 : level === 'medium' ? 10 : 20)) + 2;
+      const patterns = [
+        { name: "Soma Constante", fn: (s: number, d: number) => [s, s + d, s + d*2, s + d*3, s + d*4], desc: "Cada número aumenta o mesmo tanto." },
+        { name: "Subtração Constante", fn: (s: number, d: number) => [s, s - d, s - d*2, s - d*3, s - d*4], desc: "Cada número diminui o mesmo tanto." },
+        { name: "Dobro", fn: (s: number) => [s, s * 2, s * 4, s * 8, s * 16], desc: "Cada número é o dobro do anterior." }
+      ];
+      
+      const pattern = patterns[Math.floor(random() * patterns.length)];
+      const startNum = level === 'easy' ? Math.floor(random() * 10) + 1 : Math.floor(random() * 50) + 1;
+      const stepNum = Math.floor(random() * 5) + 2;
+      
       const fullSeq = pattern.fn(startNum, stepNum);
       const sequence = fullSeq.slice(0, 4);
       const answer = fullSeq[4];
-      const logicOptions = [answer, answer + 5, answer - 5, answer + 10].sort(() => random() - 0.5);
-      return { type: 'logic', sequence, options: logicOptions, answer, level };
+      const logicOptions = [answer, answer + 2, answer - 2, answer + 5].sort(() => random() - 0.5);
+      
+      return { 
+        type: 'logic', 
+        sequence, 
+        options: logicOptions, 
+        answer, 
+        level,
+        patternDesc: (pattern as any).desc 
+      };
     }
     case 'word-search': {
       const word = GAME_ASSETS.words[Math.floor(random() * GAME_ASSETS.words.length)].toUpperCase();
