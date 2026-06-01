@@ -151,11 +151,11 @@ function Game() {
                       setCorrectCount(prev => prev + 1);
                       setScore(prev => prev + 33.3);
                       setFeedback({ type: 'success', message: "Muito bem! Sua memória está ótima. Vamos ao próximo!" });
-                      setTimeout(() => { 
-                        setExercise(2); 
-                        setFeedback({ type: null, message: "" });
-                        setSelectedWords([]);
-                      }, 2500);
+                    setTimeout(() => { 
+                      setExercise(2); 
+                      setFeedback({ type: null, message: "" });
+                      setSelectedWords([]);
+                    }, 2500);
                     } else {
                       setFeedback({ type: 'retry', message: "Sua mente ainda não registrou essas palavras. Vamos tentar de novo com calma?" });
                       setTimeout(() => {
@@ -197,7 +197,7 @@ function Game() {
                     setCorrectCount(c => c + 1);
                     setFeedback({ type: 'success', message: "Excelente observação! Você encontrou!" });
                     setTimeout(() => {
-                      setExercise(3);
+                      setExercise(4); // Vai para o Caça-Palavras agora
                       setFeedback({ type: null, message: "" });
                     }, 2500);
                   } else {
