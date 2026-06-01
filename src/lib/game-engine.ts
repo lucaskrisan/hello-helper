@@ -161,12 +161,35 @@ export const generateTaskByCategory = async (
 
     case 'language': {
       const roll = random();
+      const categories = Object.keys(CONTENT_POOLS);
+      const cat = categories[Math.floor(random() * categories.length)];
+      
       if (roll < 0.5) {
-        const categories = Object.keys(CONTENT_POOLS);
-        const cat = categories[Math.floor(random() * categories.length)];
         const items = await getAvailableItems(cat, 1, random, usedIds);
         const item = items[0];
-        return { type: 'true-false', statement: item.word, isTrue: item.isTrue, curiosity: item.curiosity, level, itemId: item.id, category: cat };
+        const isTrue = random() > 0.5;
+        
+        let statement = "";
+        let finalIsTrue = isTrue;
+        
+        if (isTrue) {
+          statement = `"${item.word}" faz parte do grupo: ${cat}?`;
+        } else {
+          const otherCats = categories.filter(c => c !== cat);
+          const wrongCat = otherCats[Math.floor(random() * otherCats.length)];
+          statement = `"${item.word}" faz parte do grupo: ${wrongCat}?`;
+          finalIsTrue = false;
+        }
+        
+        return { 
+          type: 'true-false', 
+          statement, 
+          isTrue: finalIsTrue, 
+          curiosity: item.curiosity, 
+          level, 
+          itemId: item.id, 
+          category: cat 
+        };
       } else {
         const categories = Object.keys(CONTENT_POOLS);
         const cat = categories[Math.floor(random() * categories.length)];
