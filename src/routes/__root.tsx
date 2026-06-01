@@ -124,14 +124,16 @@ function RootComponent() {
   useEffect(() => {
     if (isInitializing) return;
 
-    const isLoginPage = router.state.location.pathname === '/login';
-    const isLandingPage = router.state.location.pathname === '/';
+    const pathname = router.state.location.pathname;
+    const isLoginPage = pathname === '/login';
+    const isLandingPage = pathname === '/';
+    const isAdminPage = pathname.startsWith('/admin');
     
     if (isAuthenticated && (isLoginPage || isLandingPage)) {
       navigate({ to: '/dashboard', replace: true });
     }
 
-    if (!isAuthenticated && !isLoginPage && !isLandingPage && router.state.location.pathname !== '/admin') {
+    if (!isAuthenticated && !isLoginPage && !isLandingPage && !isAdminPage) {
       navigate({ to: '/login', replace: true });
     }
   }, [isAuthenticated, isInitializing, router.state.location.pathname]);
