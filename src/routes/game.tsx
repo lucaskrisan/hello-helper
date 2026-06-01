@@ -258,8 +258,8 @@ function Game() {
               </div>
             ) : (
               <div className="space-y-6">
-                <p className="text-lg text-gray-600">Quais palavras você viu?</p>
-                <div className="grid grid-cols-2 gap-3">
+                <p className="text-sm sm:text-lg text-gray-600">Quais palavras você viu?</p>
+                <div className="grid grid-cols-2 gap-2 sm:gap-3">
                   {currentTask.options.map((opt: string) => (
                     <Button 
                       key={opt}
@@ -267,7 +267,7 @@ function Game() {
                         if (selectedWords.includes(opt)) setSelectedWords(s => s.filter(w => w !== opt));
                         else if (selectedWords.length < currentTask.words.length) setSelectedWords(s => [...s, opt]);
                       }}
-                      className={`py-8 text-lg rounded-2xl border-2 transition-all ${
+                      className={`py-4 sm:py-8 text-base sm:text-lg rounded-xl sm:rounded-2xl border-2 transition-all ${
                         selectedWords.includes(opt) ? "bg-primary text-white border-primary" : "bg-white border-gray-100 text-gray-700"
                       }`}
                     >
