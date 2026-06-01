@@ -115,13 +115,18 @@ function Game() {
           <div className="text-4xl font-bold mb-8 text-[#4A7C59]">{sequence.join(", ")} , ?</div>
           <div className="grid grid-cols-2 gap-4">
             {logicOptions.map(num => (
-              <Button key={num} onClick={() => {
-                if (num === 10) {
-                  setScore(s => s + 34);
-                  setCorrectCount(c => c + 1);
-                }
-                setTimeout(finishChallenge, 100);
-              }} className="py-6 text-xl bg-background text-foreground">
+              <Button 
+                key={num} 
+                onClick={async () => {
+                  if (num === 10) {
+                    setScore(prev => prev + 34);
+                    setCorrectCount(prev => prev + 1);
+                  }
+                  // Chama diretamente a função sem setTimeout para evitar desync
+                  await finishChallenge();
+                }} 
+                className="py-6 text-xl bg-background text-foreground hover:bg-secondary"
+              >
                 {num}
               </Button>
             ))}
