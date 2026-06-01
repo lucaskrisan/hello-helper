@@ -57,7 +57,9 @@ const generateItems = (category: string, count: number, startId: string): Conten
       "Paladar", "Tato", "Equilíbrio", "Postura", "Coluna", "Articulação", "Joelho", "Ombro", "Perna", "Braço",
       "Mão", "Pé", "Cabeça", "Pescoço", "Costas", "Barriga", "Peito", "Sorriso", "Alegria", "Bem-estar",
       "Saúde", "Vida", "Longevidade", "Vitalidade", "Energia", "Força", "Flexibilidade", "Calma", "Relaxamento", "Meditação",
-      "Fruta", "Vegetal", "Cereal", "Grão", "Natural", "Orgânico", "Integral", "Fibra", "Antioxidante", "Suplemento"
+      "Fruta", "Vegetal", "Cereal", "Grão", "Natural", "Orgânico", "Integral", "Fibra", "Antioxidante", "Suplemento",
+      "Ar", "Sol", "Natureza", "Paz", "Mente", "Corpo", "Equilíbrio", "Harmonia", "Amor", "Felicidade"
+
     ],
     'Animais': [
       "Cachorro", "Gato", "Cavalo", "Vaca", "Boi", "Porco", "Ovelha", "Cabra", "Galinha", "Pato",
