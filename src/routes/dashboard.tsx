@@ -51,7 +51,7 @@ function Dashboard() {
   const completedDays = challenges.map(c => new Date(c.created_at).getDate());
 
   return (
-    <div className="min-h-screen bg-[#F7F3EA] p-6 max-w-2xl mx-auto pb-28">
+    <div className="min-h-screen bg-[#F7F3EA] p-6 max-w-2xl mx-auto pb-32">
       <header className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-2xl font-bold text-[#1F2937]">Bom dia{profile?.display_name || profile?.name ? `, ${profile.display_name || profile.name}` : ""}! 👋</h1>
