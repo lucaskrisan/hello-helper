@@ -83,6 +83,25 @@ function Game() {
     loadNextTask();
   }, []);
 
+  const playSequence = useCallback(async (sequence: number[]) => {
+    setIsShowingSequence(true);
+    for (const buttonIdx of sequence) {
+      setActiveButton(buttonIdx);
+      await new Promise(r => setTimeout(r, 800));
+      setActiveButton(null);
+      await new Promise(r => setTimeout(r, 300));
+    }
+    setIsShowingSequence(false);
+  }, []);
+
+  useEffect(() => {
+    if (currentTask?.type === 'memory-sequence') {
+      setTimeout(() => {
+        playSequence(currentTask.sequence);
+      }, 1000);
+    }
+  }, [currentTask, playSequence]);
+
   const handleCorrect = () => {
     setScore(s => s + 25);
     setFeedback({ type: 'success', message: "Muito bem! Você está indo muito bem!" });
