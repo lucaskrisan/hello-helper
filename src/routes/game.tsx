@@ -76,8 +76,34 @@ function Game() {
           <h2 className="text-2xl font-bold mb-6">Memorize estas palavras</h2>
           {memState === 'showing' ? (
             <div className="space-y-4">
-              {words.map(w => <p key={w} className="text-3xl font-medium text-[#4A7C59]">{w}</p>)}
-              <p className="mt-8 text-sm text-gray-500">Memorize em 10 segundos...</p>
+              <div className="flex justify-center mb-6">
+                <div className="relative w-20 h-20 flex items-center justify-center">
+                  <svg className="absolute w-full h-full -rotate-90">
+                    <circle
+                      cx="40"
+                      cy="40"
+                      r="36"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                      fill="transparent"
+                      className="text-gray-100"
+                    />
+                    <circle
+                      cx="40"
+                      cy="40"
+                      r="36"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                      fill="transparent"
+                      strokeDasharray="226.2"
+                      strokeDashoffset={226.2 * (1 - timeLeft / 10)}
+                      className="text-[#D97706] transition-all duration-1000"
+                    />
+                  </svg>
+                  <span className="text-2xl font-bold text-[#D97706]">{timeLeft}</span>
+                </div>
+              </div>
+              {words.map(w => <p key={w} className="text-3xl font-bold text-[#4A7C59] animate-in fade-in slide-in-from-bottom-2">{w}</p>)}
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-3">
