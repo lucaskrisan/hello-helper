@@ -43,9 +43,8 @@ function Game() {
     if (search.mode === 'category') {
       const timer = setInterval(() => {
         setSessionTimeLeft(prev => {
-          if (prev <= 1) {
+          if (prev <= 0) {
             clearInterval(timer);
-            finishChallenge();
             return 0;
           }
           return prev - 1;
@@ -54,6 +53,12 @@ function Game() {
       return () => clearInterval(timer);
     }
   }, [search.mode]);
+
+  useEffect(() => {
+    if (search.mode === 'category' && sessionTimeLeft === 0) {
+      finishChallenge();
+    }
+  }, [sessionTimeLeft, search.mode]);
 
   // 10-minute engagement check
   useEffect(() => {
