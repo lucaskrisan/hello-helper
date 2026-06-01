@@ -39,7 +39,7 @@ function Dashboard() {
           navigate({ to: "/onboarding", replace: true });
           return;
         }
-        currentProfile = prof;
+        currentProfile = { ...prof, email: user.email };
 
         const [{ data: str }, { data: challs }] = await Promise.all([
           supabase.from("streaks").select("*").eq("user_id", user.id).maybeSingle(),
