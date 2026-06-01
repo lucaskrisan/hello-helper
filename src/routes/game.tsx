@@ -71,6 +71,26 @@ function Game() {
 
   return (
     <div className="min-h-screen bg-[#F7F3EA] p-6 flex flex-col items-center justify-center">
+      {exercise === 0 && (
+        <Card className="w-full max-w-md p-8 bg-white rounded-3xl shadow-sm text-center">
+          <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+            <span className="text-4xl">🧠</span>
+          </div>
+          <h2 className="text-2xl font-bold mb-4">Seu Desafio de Hoje</h2>
+          <p className="text-gray-600 mb-8 text-lg">
+            Preparamos 3 exercícios rápidos para treinar sua memória, atenção e raciocínio lógico. 
+            <br/><br/>
+            <strong>Pronto para começar?</strong>
+          </p>
+          <Button 
+            onClick={() => setExercise(1)}
+            className="w-full py-8 text-xl font-bold bg-primary hover:bg-primary/90 text-white rounded-2xl"
+          >
+            ESTOU PRONTO!
+          </Button>
+        </Card>
+      )}
+
       {exercise === 1 && (
         <Card className="w-full max-w-md p-8 bg-white rounded-3xl shadow-sm text-center">
           <h2 className="text-2xl font-bold mb-6">Memorize estas palavras</h2>
