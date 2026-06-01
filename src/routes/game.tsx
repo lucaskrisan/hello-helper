@@ -36,6 +36,7 @@ function Game() {
 
   const finishChallenge = async () => {
     const { data: { user } } = await supabase.auth.getUser();
+    console.log('Game finishing for user:', user?.id);
     if (!user) return;
 
     const finalScore = score;

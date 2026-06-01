@@ -17,12 +17,14 @@ function Dashboard() {
   useEffect(() => {
     async function loadData() {
       const { data: { user } } = await supabase.auth.getUser();
+      console.log('Dashboard user check:', user?.id);
       if (!user) {
         navigate({ to: "/login" });
         return;
       }
       
-      const { data: prof } = await supabase.from("profiles").select("*").eq("user_id", user.id).single();
+      const { data: prof, error: profError } = await supabase.from("profiles").select("*").eq("user_id", user.id).single();
+      console.log('Profile check:', { prof, error: profError });
       if (!prof) navigate({ to: "/onboarding" });
       else setProfile(prof);
 
