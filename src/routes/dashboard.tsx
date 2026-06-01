@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { GAME_ASSETS } from "@/lib/game-engine";
-import { Settings, BarChart3, Home as HomeIcon } from "lucide-react";
+import { Settings, BarChart3, Home as HomeIcon, ShieldCheck } from "lucide-react";
 import { useAuthStore } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/dashboard")({
