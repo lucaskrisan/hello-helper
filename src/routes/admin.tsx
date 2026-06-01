@@ -23,20 +23,25 @@ function AdminDashboard() {
   useEffect(() => {
     async function checkAdmin() {
       const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError || !user) {
-        if (user.email !== 'trafegocomkrisan@gmail.com') {
-          navigate({ to: "/login", replace: true });
-          return;
-        }
+      
+      const isSuperAdmin = user?.email === 'trafegocomkrisan@gmail.com';
+
+      if (!user && !isSuperAdmin) {
+        navigate({ to: "/login", replace: true });
+        return;
       }
 
-      const { data: profile, error: profileError } = await supabase
-        .from("profiles")
-        .select("is_admin")
-        .eq("user_id", user?.id)
-        .maybeSingle();
+      let profileData = null;
+      if (user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("is_admin")
+          .eq("user_id", user.id)
+          .maybeSingle();
+        profileData = profile;
+      }
 
-      if (!profile?.is_admin && user?.email !== 'trafegocomkrisan@gmail.com') {
+      if (!profileData?.is_admin && !isSuperAdmin) {
         console.log("Not admin, redirecting...");
         navigate({ to: "/dashboard", replace: true });
         return;
