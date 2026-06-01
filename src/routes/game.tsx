@@ -283,7 +283,56 @@ function Game() {
         )}
 
 
+        {currentTask.type === 'memory-shopping' && (
+          <div className="text-center">
+            <h2 className="text-2xl font-bold mb-6">Lista de Compras</h2>
+            {memState === 'showing' ? (
+              <div className="space-y-6">
+                <div className="flex justify-center mb-6">
+                  <div className="relative w-20 h-20 flex items-center justify-center">
+                    <svg className="absolute w-full h-full -rotate-90">
+                      <circle cx="40" cy="40" r="36" stroke="currentColor" strokeWidth="4" fill="transparent" className="text-gray-100" />
+                      <circle cx="40" cy="40" r="36" stroke="currentColor" strokeWidth="4" fill="transparent" strokeDasharray="226.2" strokeDashoffset={226.2 * (1 - timeLeft / 10)} className="text-orange-500 transition-all duration-1000" />
+                    </svg>
+                    <span className="text-2xl font-bold text-orange-600">{timeLeft}</span>
+                  </div>
+                </div>
+                <div className="bg-orange-50 p-6 rounded-[2rem] border-2 border-orange-100 text-left">
+                  <p className="text-orange-800 font-bold mb-4 flex items-center gap-2">🛒 Memorize as quantidades:</p>
+                  <ul className="space-y-3">
+                    {currentTask.list.map((item: any, i: number) => (
+                      <li key={i} className="text-2xl text-gray-700 flex justify-between border-b border-orange-200/50 pb-2">
+                        <span className="font-medium">{item.item}</span>
+                        <span className="font-bold text-primary">{item.qty}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-8">
+                <p className="text-2xl font-bold text-gray-700">{currentTask.question}</p>
+                <div className="grid grid-cols-2 gap-4">
+                  {currentTask.options.map((qty: number) => (
+                    <Button 
+                      key={qty}
+                      onClick={() => {
+                        if (qty === currentTask.answer) handleCorrect();
+                        else handleRetry("Quase! Essa não era a quantidade certa. Vamos tentar de novo?");
+                      }}
+                      className="py-10 text-4xl font-bold rounded-[1.5rem] bg-white border-2 border-gray-100 text-gray-700 shadow-sm transition-all active:scale-95"
+                    >
+                      {qty}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         {currentTask.type === 'memory-association' && (
+
           <div className="text-center">
             <h2 className="text-2xl font-bold mb-6">Associação de Cores</h2>
             {memState === 'showing' ? (
