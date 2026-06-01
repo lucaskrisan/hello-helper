@@ -125,7 +125,8 @@ function Game() {
 
       {exercise === 2 && (
         <Card className="w-full max-w-md p-8 bg-white rounded-3xl shadow-sm text-center">
-          <h2 className="text-2xl font-bold mb-6">Encontre a letra diferente</h2>
+          <h2 className="text-2xl font-bold mb-2">Atenção Visual</h2>
+          <p className="text-gray-600 mb-6">Clique na letra diferente entre as demais:</p>
           <div className="grid grid-cols-4 gap-4 mb-8">
             {letters.map((l, i) => (
               <Button key={i} onClick={() => {
@@ -144,8 +145,9 @@ function Game() {
 
       {exercise === 3 && (
         <Card className="w-full max-w-md p-8 bg-white rounded-3xl shadow-sm text-center">
-          <h2 className="text-2xl font-bold mb-6">Qual o próximo número?</h2>
-          <div className="text-4xl font-bold mb-8 text-[#4A7C59]">{sequence.join(", ")} , ?</div>
+          <h2 className="text-2xl font-bold mb-2">Qual o próximo número?</h2>
+          <p className="text-gray-600 mb-8">Identifique o padrão na sequência:</p>
+          <div className="text-5xl font-bold mb-10 text-[#4A7C59] tracking-wider">{sequence.join(", ")} , ?</div>
           <div className="grid grid-cols-2 gap-4">
             {logicOptions.map(num => (
               <Button 
