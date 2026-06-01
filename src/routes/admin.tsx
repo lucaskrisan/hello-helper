@@ -22,19 +22,21 @@ function AdminDashboard() {
 
   useEffect(() => {
     async function checkAdmin() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        navigate({ to: "/login", replace: true });
-        return;
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
+        if (user.email !== 'trafegocomkrisan@gmail.com') {
+          navigate({ to: "/login", replace: true });
+          return;
+        }
       }
 
-      const { data: profile } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from("profiles")
         .select("is_admin")
-        .eq("user_id", user.id)
+        .eq("user_id", user?.id)
         .maybeSingle();
 
-      if (!profile?.is_admin && user.email !== 'trafegocomkrisan@gmail.com') {
+      if (!profile?.is_admin && user?.email !== 'trafegocomkrisan@gmail.com') {
         console.log("Not admin, redirecting...");
         navigate({ to: "/dashboard", replace: true });
         return;
