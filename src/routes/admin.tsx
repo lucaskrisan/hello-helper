@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Users, CreditCard, BookOpen, Brain, Activity, ShieldCheck } from "lucide-react";
 import { useAuthStore } from "@/hooks/use-auth";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin")({
   component: AdminDashboard,
