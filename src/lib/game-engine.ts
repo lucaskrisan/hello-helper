@@ -94,16 +94,17 @@ export const generateTaskByCategory = async (
       const roll = random();
       if (roll < 0.5) {
         const categories = Object.keys(CONTENT_POOLS);
-        const cat = categories[Math.floor(random() * categories.length)];
+        const catKey = categories[Math.floor(random() * categories.length)];
         const count = level === 'easy' ? 3 : level === 'medium' ? 5 : 7;
-        const items = await getAvailableItems(cat, count, random, usedIds);
+        const items = await getAvailableItems(catKey, count, random, usedIds);
         const words = items.map(i => i.word);
         const itemIds = items.map(i => i.id);
+        const categoryName = items[0].category;
         
-        const allWords = CONTENT_POOLS[cat].map(i => i.word);
+        const allWords = CONTENT_POOLS[catKey].map(i => i.word);
         const options = [...words, ...allWords.filter(w => !words.includes(w)).sort(() => random() - 0.5).slice(0, 5)].sort(() => random() - 0.5);
         
-        return { type: 'memory-words', words, options, level, categoryName: cat, itemIds };
+        return { type: 'memory-words', words, options, level, categoryName, itemIds };
       } else {
         const items = ["Pão", "Leite", "Café", "Maçã", "Arroz", "Feijão", "Açúcar", "Ovo"];
         const count = level === 'easy' ? 2 : level === 'medium' ? 3 : 5;
