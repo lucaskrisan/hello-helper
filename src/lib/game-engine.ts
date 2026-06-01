@@ -5,12 +5,17 @@ export const GAME_ASSETS = {
     "Amizade", "Natureza", "Saúde", "Tempo", "Família", "Cidade", "Viagem", "Festa",
     "Carinho", "Alegria", "Esperança", "Respeito", "Bondade", "Coragem", "Sorriso",
     "Abraço", "Caminho", "Horizonte", "Paixão", "Tesouro", "História", "Memória",
-    "Cérebro", "Sabedoria", "Cultura", "Música", "Pintura", "Poesia", "Jardim",
-    "Flores", "Árvore", "Montanha", "Oceano", "Estrela", "Universo", "Planeta",
-    "Sol", "Lua", "Vento", "Chuva", "Nuvem", "Relógio", "Bússola", "Mapa",
-    "Livro", "Caneta", "Papel", "Quadro", "Piano", "Violão", "Flauta", "Harpa",
-    "Delfim", "Águia", "Leão", "Tigre", "Elefante", "Girafa", "Zebra", "Urso",
-    "Café", "Chá", "Pão", "Fruta", "Vinho", "Queijo", "Mel", "Sabor", "Aroma"
+    "Sabedoria", "Cultura", "Música", "Pintura", "Poesia", "Jardim", "Flores",
+    "Oceano", "Estrela", "Planeta", "Vento", "Chuva", "Nuvem", "Mapa",
+    "Livro", "Caneta", "Papel", "Quadro", "Piano", "Violão", "Flauta",
+    "Delfim", "Águia", "Leão", "Tigre", "Girafa", "Zebra", "Urso",
+    "Café", "Chá", "Pão", "Fruta", "Vinho", "Queijo", "Mel", "Sabor"
+  ],
+  categories: [
+    { id: "memory", name: "Fortalecer Memória", icon: "🧠", color: "#4A7C59" },
+    { id: "attention", name: "Foco e Atenção", icon: "👁️", color: "#D97706" },
+    { id: "logic", name: "Raciocínio Lógico", icon: "🧩", color: "#3B82F6" },
+    { id: "word-search", name: "Caça-Palavras", icon: "🔍", color: "#8B5CF6" }
   ],
   letters: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"],
   logicPatterns: [
