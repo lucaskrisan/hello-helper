@@ -13,6 +13,9 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { useAuthStore } from "../hooks/use-auth";
+import "../i18n/config";
+import { LanguageSwitcher } from "../components/LanguageSwitcher";
+
 
 function NotFoundComponent() {
   return (
@@ -125,8 +128,12 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <Outlet />
+      <div className="fixed top-4 right-4 z-[100]">
+        <LanguageSwitcher />
+      </div>
     </QueryClientProvider>
   );
 }
+
 
 
