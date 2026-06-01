@@ -441,19 +441,19 @@ function Game() {
                 {currentTask.patternDesc || "Descubra qual número completa a lógica abaixo."}
               </p>
             </div>
-            <div className="flex justify-center items-center gap-2 mb-10 overflow-x-auto pb-2">
+            <div className="flex justify-center items-center gap-1.5 sm:gap-2 mb-8 sm:mb-10 overflow-x-auto pb-2">
               {currentTask.sequence.map((num: number, i: number) => (
                 <div key={i} className="flex items-center">
                   <div className="flex flex-col items-center">
-                    <div className="w-14 h-14 bg-white text-blue-600 rounded-xl flex items-center justify-center text-xl font-bold border-2 border-blue-200 shadow-sm">
+                    <div className="w-11 h-11 sm:w-14 sm:h-14 bg-white text-blue-600 rounded-lg sm:rounded-xl flex items-center justify-center text-lg sm:text-xl font-bold border-2 border-blue-200 shadow-sm">
                       {num}
                     </div>
                   </div>
-                  {i < currentTask.sequence.length - 1 && <span className="mx-1 text-gray-300">→</span>}
+                  {i < currentTask.sequence.length - 1 && <span className="mx-0.5 sm:mx-1 text-gray-300">→</span>}
                 </div>
               ))}
-              <span className="mx-1 text-gray-300">→</span>
-              <div className="w-14 h-14 bg-blue-600 text-white rounded-xl flex items-center justify-center text-2xl font-bold animate-pulse shadow-lg ring-4 ring-blue-100">
+              <span className="mx-0.5 sm:mx-1 text-gray-300">→</span>
+              <div className="w-11 h-11 sm:w-14 sm:h-14 bg-blue-600 text-white rounded-lg sm:rounded-xl flex items-center justify-center text-xl sm:text-2xl font-bold animate-pulse shadow-lg ring-4 ring-blue-100">
                 ?
               </div>
             </div>
