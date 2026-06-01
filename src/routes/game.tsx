@@ -463,7 +463,7 @@ function Game() {
                   key={opt}
                   onClick={() => {
                     if (opt === currentTask.answer) handleCorrect();
-                    else handleRetry("Quase! Observe bem como os números estão crescendo.");
+                    else handleRetry("Quase! Observe bem a regra da sequência numérica.");
                   }}
                   className="py-8 text-2xl font-bold rounded-2xl bg-white border-2 border-gray-100 text-gray-700 hover:bg-blue-50 transition-all"
                 >
