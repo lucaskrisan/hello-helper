@@ -17,7 +17,10 @@ function Progress() {
   useEffect(() => {
     async function loadStats() {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        navigate({ to: "/login", replace: true });
+        return;
+      }
 
       const { data: streak } = await supabase.from("streaks").select("*").eq("user_id", user.id).single();
       const { data: challenges } = await supabase.from("daily_challenges").select("*").eq("user_id", user.id).order('date', { ascending: true });

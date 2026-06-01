@@ -16,7 +16,10 @@ function Settings() {
   useEffect(() => {
     async function load() {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        navigate({ to: "/login", replace: true });
+        return;
+      }
       const { data } = await supabase.from("profiles").select("*").eq("user_id", user.id).single();
       setProfile(data);
     }
