@@ -343,11 +343,11 @@ function Game() {
                     <span className="text-2xl font-bold text-orange-600">{timeLeft}</span>
                   </div>
                 </div>
-                <div className="bg-orange-50 p-6 rounded-[2rem] border-2 border-orange-100 text-left">
-                  <p className="text-orange-800 font-bold mb-4 flex items-center gap-2">🛒 Memorize as quantidades:</p>
-                  <ul className="space-y-3">
+                <div className="bg-orange-50 p-4 sm:p-6 rounded-[1.5rem] sm:rounded-[2rem] border-2 border-orange-100 text-left">
+                  <p className="text-orange-800 font-bold mb-3 sm:mb-4 flex items-center gap-2 text-sm sm:text-base">🛒 Memorize as quantidades:</p>
+                  <ul className="space-y-2 sm:space-y-3">
                     {currentTask.list.map((item: any, i: number) => (
-                      <li key={i} className="text-2xl text-gray-700 flex justify-between border-b border-orange-200/50 pb-2">
+                      <li key={i} className="text-xl sm:text-2xl text-gray-700 flex justify-between border-b border-orange-200/50 pb-1 sm:pb-2">
                         <span className="font-medium">{item.item}</span>
                         <span className="font-bold text-primary">{item.qty}</span>
                       </li>
