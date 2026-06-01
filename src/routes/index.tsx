@@ -1,7 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { useAuthStore } from "@/hooks/use-auth";
-import { useEffect } from "react";
 
 export const Route = createFileRoute("/")({
   component: LandingPage,
@@ -9,50 +7,45 @@ export const Route = createFileRoute("/")({
 
 function LandingPage() {
   const navigate = useNavigate();
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate({ to: "/dashboard", replace: true });
-    }
-  }, [isAuthenticated, navigate]);
 
   return (
     <div className="min-h-screen bg-[#F7F3EA] flex flex-col items-center justify-center p-6 text-center">
       <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mb-8">
         <span className="text-5xl">🧠</span>
       </div>
-      <h1 className="text-4xl md:text-5xl font-bold text-[#1F2937] mb-6 tracking-tight">
-        Desafio da Mente
+      
+      <h1 className="text-4xl md:text-5xl font-bold text-[#1F2937] mb-8 tracking-tight max-w-2xl leading-tight">
+        Você ainda se lembra do nome da sua primeira professora?
       </h1>
+      
+      <div className="space-y-6 mb-12 text-left max-w-md w-full">
+        {[
+          "✔ Do telefone da casa onde cresceu?",
+          "✔ Da primeira música que marcou sua vida?",
+        ].map((item) => (
+          <div key={item} className="flex items-center space-x-3 text-xl text-gray-700 font-medium">
+            <span>{item}</span>
+          </div>
+        ))}
+      </div>
+
       <p className="text-xl text-gray-600 mb-10 max-w-lg leading-relaxed">
-        O treino diário que mantém sua memória jovem e sua mente afiada. Feito com carinho para quem tem 50+.
+        Faça um teste rápido e descubra como está sua atenção e memória hoje.
       </p>
       
       <div className="space-y-4 w-full max-w-xs">
         <Button 
-          onClick={() => navigate({ to: "/login" })}
-          className="w-full bg-primary hover:bg-primary/90 text-white text-xl py-8 px-12 rounded-2xl shadow-lg transition-transform hover:scale-105 active:scale-95"
+          onClick={() => navigate({ to: "/game", search: { mode: 'trial' } })}
+          className="w-full bg-primary hover:bg-primary/90 text-white text-2xl py-10 px-12 rounded-2xl shadow-xl transition-transform hover:scale-105 active:scale-95 font-bold uppercase tracking-wider"
         >
-          COMEÇAR AGORA
+          FAZER TESTE
         </Button>
-        <p className="text-sm text-gray-400">Gratuito para começar • Sem anúncios</p>
+        <p className="text-sm text-gray-400">Teste gratuito de 2 minutos</p>
       </div>
 
-      <div className="mt-16 grid grid-cols-1 gap-4 w-full max-w-sm">
-        {[
-          "✨ Exercícios que nunca se repetem",
-          "🎯 Treino personalizado para você",
-          "📈 Acompanhe sua evolução real",
-        ].map((benefit) => (
-          <div key={benefit} className="p-4 bg-white/50 rounded-2xl text-left border border-white/20">
-            <span className="text-gray-700 font-medium">{benefit}</span>
-          </div>
-        ))}
+      <div className="mt-16 text-gray-400 text-sm">
+        Feito com carinho para quem tem 50+
       </div>
     </div>
   );
 }
-
-
-
