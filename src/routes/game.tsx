@@ -103,21 +103,30 @@ function Game() {
                   <span className="text-2xl font-bold text-[#D97706]">{timeLeft}</span>
                 </div>
               </div>
+              <p className="text-lg text-gray-600 mb-4 font-medium">Memorize estas palavras:</p>
               {words.map(w => <p key={w} className="text-3xl font-bold text-[#4A7C59] animate-in fade-in slide-in-from-bottom-2">{w}</p>)}
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-3">
-              {options.map(opt => (
-                <Button key={opt} onClick={() => { 
-                  if (words.includes(opt)) {
-                    setScore(s => s + 33);
-                    setCorrectCount(c => c + 1);
-                  }
-                  setExercise(2);
-                }} className="py-6 bg-background text-foreground hover:bg-secondary">
-                  {opt}
-                </Button>
-              ))}
+            <div className="space-y-6">
+              <p className="text-xl font-medium text-gray-700">Quais palavras você viu?</p>
+              <div className="grid grid-cols-2 gap-3">
+                {options.map(opt => (
+                  <Button 
+                    key={opt} 
+                    variant="outline"
+                    onClick={() => { 
+                      if (words.includes(opt)) {
+                        setScore(s => s + 33);
+                        setCorrectCount(c => c + 1);
+                      }
+                      setExercise(2);
+                    }} 
+                    className="py-8 text-lg bg-white border-2 border-gray-100 text-[#1F2937] hover:bg-secondary hover:text-white rounded-2xl shadow-sm transition-all"
+                  >
+                    {opt}
+                  </Button>
+                ))}
+              </div>
             </div>
           )}
         </Card>
@@ -125,7 +134,8 @@ function Game() {
 
       {exercise === 2 && (
         <Card className="w-full max-w-md p-8 bg-white rounded-3xl shadow-sm text-center">
-          <h2 className="text-2xl font-bold mb-6">Encontre a letra diferente</h2>
+          <h2 className="text-2xl font-bold mb-2">Atenção Visual</h2>
+          <p className="text-gray-600 mb-6">Clique na letra diferente entre as demais:</p>
           <div className="grid grid-cols-4 gap-4 mb-8">
             {letters.map((l, i) => (
               <Button key={i} onClick={() => {
@@ -144,8 +154,9 @@ function Game() {
 
       {exercise === 3 && (
         <Card className="w-full max-w-md p-8 bg-white rounded-3xl shadow-sm text-center">
-          <h2 className="text-2xl font-bold mb-6">Qual o próximo número?</h2>
-          <div className="text-4xl font-bold mb-8 text-[#4A7C59]">{sequence.join(", ")} , ?</div>
+          <h2 className="text-2xl font-bold mb-2">Qual o próximo número?</h2>
+          <p className="text-gray-600 mb-8">Identifique o padrão na sequência:</p>
+          <div className="text-5xl font-bold mb-10 text-[#4A7C59] tracking-wider">{sequence.join(", ")} , ?</div>
           <div className="grid grid-cols-2 gap-4">
             {logicOptions.map(num => (
               <Button 
