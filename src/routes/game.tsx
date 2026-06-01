@@ -146,7 +146,7 @@ function Game() {
 
   // Timer para memória
   useEffect(() => {
-    if (currentTask?.type === 'memory' && memState === 'showing') {
+    if (currentTask?.type?.startsWith('memory') && currentTask.type !== 'memory-sequence' && memState === 'showing') {
       if (timeLeft <= 0) {
         setMemState('choosing');
         return;
@@ -154,7 +154,7 @@ function Game() {
       const timer = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
       return () => clearInterval(timer);
     }
-  }, [currentTask, memState, timeLeft]);
+  }, [currentTask?.type, memState, timeLeft]);
 
   if (!currentTask) return null;
 
