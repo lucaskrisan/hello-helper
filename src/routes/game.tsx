@@ -11,7 +11,7 @@ export const Route = createFileRoute("/game")({
 
 function Game() {
   const navigate = useNavigate();
-  const [exercise, setExercise] = useState(1);
+  const [exercise, setExercise] = useState(0); // 0 = Intro, 1 = Memória, 2 = Atenção, 3 = Lógica
   const [score, setScore] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
   const [selectedWords, setSelectedWords] = useState<string[]>([]);
