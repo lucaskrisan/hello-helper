@@ -13,6 +13,7 @@ import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as GameRouteImport } from './routes/game'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as ConclusaoRouteImport } from './routes/conclusao'
 import { Route as IndexRouteImport } from './routes/index'
 
 const OnboardingRoute = OnboardingRouteImport.update({
@@ -35,6 +36,11 @@ const DashboardRoute = DashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ConclusaoRoute = ConclusaoRouteImport.update({
+  id: '/conclusao',
+  path: '/conclusao',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -43,6 +49,7 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/conclusao': typeof ConclusaoRoute
   '/dashboard': typeof DashboardRoute
   '/game': typeof GameRoute
   '/login': typeof LoginRoute
@@ -50,6 +57,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/conclusao': typeof ConclusaoRoute
   '/dashboard': typeof DashboardRoute
   '/game': typeof GameRoute
   '/login': typeof LoginRoute
@@ -58,6 +66,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/conclusao': typeof ConclusaoRoute
   '/dashboard': typeof DashboardRoute
   '/game': typeof GameRoute
   '/login': typeof LoginRoute
@@ -65,14 +74,28 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/game' | '/login' | '/onboarding'
+  fullPaths:
+    | '/'
+    | '/conclusao'
+    | '/dashboard'
+    | '/game'
+    | '/login'
+    | '/onboarding'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/game' | '/login' | '/onboarding'
-  id: '__root__' | '/' | '/dashboard' | '/game' | '/login' | '/onboarding'
+  to: '/' | '/conclusao' | '/dashboard' | '/game' | '/login' | '/onboarding'
+  id:
+    | '__root__'
+    | '/'
+    | '/conclusao'
+    | '/dashboard'
+    | '/game'
+    | '/login'
+    | '/onboarding'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ConclusaoRoute: typeof ConclusaoRoute
   DashboardRoute: typeof DashboardRoute
   GameRoute: typeof GameRoute
   LoginRoute: typeof LoginRoute
@@ -109,6 +132,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/conclusao': {
+      id: '/conclusao'
+      path: '/conclusao'
+      fullPath: '/conclusao'
+      preLoaderRoute: typeof ConclusaoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -121,6 +151,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ConclusaoRoute: ConclusaoRoute,
   DashboardRoute: DashboardRoute,
   GameRoute: GameRoute,
   LoginRoute: LoginRoute,
