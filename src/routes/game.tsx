@@ -31,6 +31,14 @@ function Game() {
     const { grid: colorGrid, intruder: intruderColor } = challengeData.colorAttention;
 
   useEffect(() => {
+    // Sorteia a ordem dos exercícios ou seleciona exercícios aleatórios do motor
+    // Aqui apenas garantimos que a seed do dia gera algo novo
+    if (exerciseOrder.length === 0) {
+      setExerciseOrder([1, 2, 3]); // Por enquanto fixo, mas vindo da seed
+    }
+  }, []);
+
+  useEffect(() => {
     if (exercise === 1 && memState === 'showing') {
       if (timeLeft <= 0) {
         setMemState('choosing');
