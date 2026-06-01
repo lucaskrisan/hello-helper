@@ -6,17 +6,21 @@ import { supabase } from "@/integrations/supabase/client";
 import { GAME_ASSETS } from "@/lib/game-engine";
 import { Settings, BarChart3, Home as HomeIcon, ShieldCheck } from "lucide-react";
 import { useAuthStore } from "@/hooks/use-auth";
+import { useTranslation } from "react-i18next";
+
 
 export const Route = createFileRoute("/dashboard")({
   component: Dashboard,
 });
 
 function Dashboard() {
+  const { t, i18n } = useTranslation();
   const [profile, setProfile] = useState<any>(null);
   const [streak, setStreak] = useState<any>(null);
   const [challenges, setChallenges] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
 
   useEffect(() => {
     async function loadData() {
@@ -76,8 +80,9 @@ function Dashboard() {
     <div className="min-h-screen bg-[#F7F3EA] p-6 max-w-2xl mx-auto pb-32">
       <header className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-[#1F2937]">Bom dia{profile?.display_name || profile?.name ? `, ${profile.display_name || profile.name}` : ""}! 👋</h1>
-          <p className="text-gray-600">Sua mente agradece o treino de hoje.</p>
+          <h1 className="text-2xl font-bold text-[#1F2937]">{t('welcome')}{profile?.display_name || profile?.name ? `, ${profile.display_name || profile.name}` : ""}! 👋</h1>
+          <p className="text-gray-600">{t('dashboard_subtitle', 'Sua mente agradece o treino de hoje.')}</p>
+
         </div>
         <div className="bg-white p-3 rounded-2xl shadow-sm flex items-center space-x-2 border border-white/50">
           <span className="text-2xl">🔥</span>
@@ -116,8 +121,9 @@ function Dashboard() {
         className="w-full py-8 sm:py-12 text-xl sm:text-2xl font-bold bg-primary hover:bg-primary/90 text-white rounded-[2rem] sm:rounded-[2.5rem] shadow-xl mb-8 sm:mb-12 transform transition-all hover:scale-[1.02] active:scale-95 flex flex-col space-y-1 relative overflow-hidden"
       >
         <div className="absolute inset-0 bg-white/10 opacity-0 hover:opacity-100 transition-opacity" />
-        <span className="relative z-10">INICIAR DESAFIO DO DIA</span>
-        <span className="text-xs sm:text-sm font-normal opacity-80 relative z-10">Treino completo para hoje • 24 etapas</span>
+        <span className="relative z-10">{t('start_challenge').toUpperCase()}</span>
+        <span className="text-xs sm:text-sm font-normal opacity-80 relative z-10">{t('daily_training_info', 'Treino completo para hoje • 24 etapas')}</span>
+
       </Button>
 
       <h3 className="text-xl font-bold mb-6 text-[#1F2937] flex items-center space-x-2">
@@ -162,21 +168,22 @@ function Dashboard() {
             className="flex flex-col items-center p-2 text-primary transition-transform active:scale-90"
           >
             <HomeIcon className="w-6 h-6 mb-1" />
-            <span className="text-[10px] font-bold uppercase tracking-wider">Início</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider">{t('home')}</span>
           </button>
           <button 
             onClick={() => navigate({ to: "/progresso" })} 
             className="flex flex-col items-center p-2 text-gray-400 hover:text-primary transition-all active:scale-90"
           >
             <BarChart3 className="w-6 h-6 mb-1" />
-            <span className="text-[10px] font-bold uppercase tracking-wider">Progresso</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider">{t('progress')}</span>
           </button>
           <button 
             onClick={() => navigate({ to: "/settings" })} 
             className="flex flex-col items-center p-2 text-gray-400 hover:text-primary transition-all active:scale-90"
           >
             <Settings className="w-6 h-6 mb-1" />
-            <span className="text-[10px] font-bold uppercase tracking-wider">Ajustes</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider">{t('settings')}</span>
+
           </button>
         </nav>
       </div>
