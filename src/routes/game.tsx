@@ -314,7 +314,7 @@ function Game() {
                       handleCorrect();
                     }
                   }}
-                  className={`h-28 rounded-3xl transition-all transform active:scale-95 ${
+                  className={`h-20 sm:h-28 rounded-2xl sm:rounded-3xl transition-all transform active:scale-95 ${
                     activeButton === i ? "brightness-125 scale-105 shadow-xl ring-4 ring-white" : "brightness-100 shadow-md"
                   }`}
                   style={{ backgroundColor: color }}
@@ -322,7 +322,7 @@ function Game() {
               ))}
             </div>
             {!isShowingSequence && userSequence.length > 0 && (
-              <p className="mt-6 text-primary font-bold">{userSequence.length} de {currentTask.sequence.length} cores</p>
+              <p className="mt-4 sm:mt-6 text-primary font-bold text-sm sm:text-base">{userSequence.length} de {currentTask.sequence.length} cores</p>
             )}
           </div>
         )}
