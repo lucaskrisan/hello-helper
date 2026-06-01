@@ -126,20 +126,31 @@ function Dashboard() {
       </div>
 
       {/* Navegação Inferior Fixa */}
-      <nav className="fixed bottom-6 left-6 right-6 bg-white/90 backdrop-blur-lg p-3 rounded-[2.5rem] shadow-2xl flex justify-around items-center border border-white/50 z-50">
-        <button onClick={() => navigate({ to: "/dashboard" })} className="flex flex-col items-center p-2 text-primary">
-          <HomeIcon className="w-6 h-6 mb-1" />
-          <span className="text-[10px] font-bold uppercase tracking-wider">Início</span>
-        </button>
-        <button onClick={() => navigate({ to: "/progresso" })} className="flex flex-col items-center p-2 text-gray-400 hover:text-primary transition-colors">
-          <BarChart3 className="w-6 h-6 mb-1" />
-          <span className="text-[10px] font-bold uppercase tracking-wider">Progresso</span>
-        </button>
-        <button onClick={() => navigate({ to: "/settings" })} className="flex flex-col items-center p-2 text-gray-400 hover:text-primary transition-colors">
-          <Settings className="w-6 h-6 mb-1" />
-          <span className="text-[10px] font-bold uppercase tracking-wider">Ajustes</span>
-        </button>
-      </nav>
+      <div className="fixed bottom-0 left-0 right-0 p-6 z-50 pointer-events-none">
+        <nav className="max-w-md mx-auto bg-white/90 backdrop-blur-lg p-3 rounded-[2.5rem] shadow-2xl flex justify-around items-center border border-white/50 pointer-events-auto">
+          <button 
+            onClick={() => navigate({ to: "/dashboard" })} 
+            className="flex flex-col items-center p-2 text-primary transition-transform active:scale-90"
+          >
+            <HomeIcon className="w-6 h-6 mb-1" />
+            <span className="text-[10px] font-bold uppercase tracking-wider">Início</span>
+          </button>
+          <button 
+            onClick={() => navigate({ to: "/progresso" })} 
+            className="flex flex-col items-center p-2 text-gray-400 hover:text-primary transition-all active:scale-90"
+          >
+            <BarChart3 className="w-6 h-6 mb-1" />
+            <span className="text-[10px] font-bold uppercase tracking-wider">Progresso</span>
+          </button>
+          <button 
+            onClick={() => navigate({ to: "/settings" })} 
+            className="flex flex-col items-center p-2 text-gray-400 hover:text-primary transition-all active:scale-90"
+          >
+            <Settings className="w-6 h-6 mb-1" />
+            <span className="text-[10px] font-bold uppercase tracking-wider">Ajustes</span>
+          </button>
+        </nav>
+      </div>
     </div>
   );
 }
