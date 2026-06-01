@@ -11,7 +11,7 @@ export const Route = createFileRoute("/game")({
 
 function Game() {
   const navigate = useNavigate();
-  const [exercise, setExercise] = useState(0); // 0 = Intro, 1 = Memória, 2 = Atenção, 3 = Lógica
+  const [exercise, setExercise] = useState(0); // 0 = Intro, 1 = Memória, 2 = Atenção, 3 = Lógica, 4 = Caça-Palavras
   const [score, setScore] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
   const [exerciseOrder, setExerciseOrder] = useState<number[]>([]);
@@ -20,15 +20,17 @@ function Game() {
   const [startTime] = useState(Date.now());
   const [timeLeft, setTimeLeft] = useState(10);
   const [memState, setMemState] = useState<'showing' | 'choosing'>('showing');
+  const [searchSelection, setSearchSelection] = useState<{r: number, c: number}[]>([]);
 
   // Gera o desafio único do dia baseado na data atual
   const today = new Date().toISOString().split('T')[0];
   const challengeData = useMemo(() => generateDailyChallenge(today), [today]);
 
-    const { words, options } = challengeData.memory;
-    const { grid, intruder } = challengeData.attention;
-    const { sequence, options: logicOptions, answer } = challengeData.logic;
-    const { grid: colorGrid, intruder: intruderColor } = challengeData.colorAttention;
+  const { words, options } = challengeData.memory;
+  const { grid, intruder } = challengeData.attention;
+  const { sequence, options: logicOptions, answer } = challengeData.logic;
+  const { grid: colorGrid, intruder: intruderColor } = challengeData.colorAttention;
+  const { grid: searchGrid, word: wordForSearch } = challengeData.wordSearch;
 
   useEffect(() => {
     // Sorteia a ordem dos exercícios ou seleciona exercícios aleatórios do motor
