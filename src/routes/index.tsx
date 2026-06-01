@@ -9,16 +9,16 @@ function LandingPage() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-[#F7F3EA] flex flex-col items-center justify-center p-6 text-center">
-      <h1 className="text-4xl md:text-5xl font-bold text-[#1F2937] mb-6">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 text-center">
+      <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
         Seu desafio mental de hoje está pronto.
       </h1>
-      <p className="text-xl text-[#1F2937] mb-10 max-w-lg">
+      <p className="text-xl text-foreground/80 mb-10 max-w-lg">
         Exercícios simples para memória, atenção e raciocínio, feitos para adultos 50+.
       </p>
       <Button 
         onClick={() => navigate({ to: "/login" })}
-        className="bg-[#4A7C59] hover:bg-[#3d694a] text-white text-lg py-6 px-10 rounded-full shadow-lg"
+        className="bg-primary hover:bg-primary/90 text-primary-foreground text-lg py-8 px-12 rounded-full shadow-lg transition-transform hover:scale-105 active:scale-95"
       >
         COMEÇAR AGORA
       </Button>
@@ -31,8 +31,8 @@ function LandingPage() {
           "Crie uma rotina saudável",
         ].map((benefit) => (
           <div key={benefit} className="flex items-center space-x-3 p-4 bg-white rounded-xl shadow-sm">
-            <div className="w-3 h-3 rounded-full bg-[#8AAE92]" />
-            <span className="text-[#1F2937] font-medium">{benefit}</span>
+            <div className="w-4 h-4 rounded-full bg-secondary" />
+            <span className="text-foreground font-semibold text-lg">{benefit}</span>
           </div>
         ))}
       </div>
