@@ -22,5 +22,13 @@
   "landing_subtitle": "Take a quick test and find out how your attention and memory are today.",
   "start_test": "TAKE TEST",
   "free_test_info": "2-minute free test",
-  "made_for_50plus": "Made with love for those 50+"
+  "made_for_50plus": "Made with love for those 50+",
+  "category_memory": "Memory",
+  "category_desc_memory": "Fixation exercises",
+  "category_attention": "Attention",
+  "category_desc_attention": "Focus and perception",
+  "category_logic": "Logic",
+  "category_desc_logic": "Logic and patterns",
+  "category_language": "Language",
+  "category_desc_language": "Words and orders"
 }

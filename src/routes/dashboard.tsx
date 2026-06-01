@@ -141,8 +141,8 @@ function Dashboard() {
               {cat.icon}
             </div>
             <div className="flex flex-col flex-1 min-w-0">
-              <span className="text-base sm:text-lg font-bold text-[#1F2937] truncate">{cat.name}</span>
-              <span className="text-xs sm:text-sm text-gray-500 font-normal line-clamp-1">{cat.description}</span>
+              <span className="text-base sm:text-lg font-bold text-[#1F2937] truncate">{t(`category_${cat.id}`, cat.name)}</span>
+              <span className="text-xs sm:text-sm text-gray-500 font-normal line-clamp-1">{t(`category_desc_${cat.id}`, cat.description)}</span>
             </div>
             <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-300 shrink-0">
               →
@@ -150,6 +150,7 @@ function Dashboard() {
           </Button>
         ))}
       </div>
+
 
       {(profile?.email === 'trafegocomkrisan@gmail.com' || localStorage.getItem('mente_ativa_is_super_admin') === 'true') && (
         <Button 

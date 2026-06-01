@@ -22,5 +22,13 @@
   "landing_subtitle": "Haz una prueba rápida y descubre cómo está tu atención y memoria hoy.",
   "start_test": "HACER PRUEBA",
   "free_test_info": "Prueba gratuita de 2 minutos",
-  "made_for_50plus": "Hecho con cariño para quienes tienen 50+"
+  "made_for_50plus": "Hecho con cariño para quienes tienen 50+",
+  "category_memory": "Memoria",
+  "category_desc_memory": "Ejercicios de fijación",
+  "category_attention": "Atención",
+  "category_desc_attention": "Enfoque y percepción",
+  "category_logic": "Razonamiento",
+  "category_desc_logic": "Lógica y patrones",
+  "category_language": "Lenguaje",
+  "category_desc_language": "Palabras y órdenes"
 }

@@ -22,5 +22,13 @@
   "landing_subtitle": "Faça um teste rápido e descubra como está sua atenção e memória hoje.",
   "start_test": "FAZER TESTE",
   "free_test_info": "Teste gratuito de 2 minutos",
-  "made_for_50plus": "Feito com carinho para quem tem 50+"
+  "made_for_50plus": "Feito com carinho para quem tem 50+",
+  "category_memory": "Memória",
+  "category_desc_memory": "Exercícios de fixação",
+  "category_attention": "Atenção",
+  "category_desc_attention": "Foco e percepção",
+  "category_logic": "Raciocínio",
+  "category_desc_logic": "Lógica e padrões",
+  "category_language": "Linguagem",
+  "category_desc_language": "Palavras e ordens"
 }
