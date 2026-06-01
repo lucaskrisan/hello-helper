@@ -125,16 +125,16 @@ function RootComponent() {
     const isLoginPage = router.state.location.pathname === '/login';
     const isLandingPage = router.state.location.pathname === '/';
     
-    // Se o usuário está autenticado e tenta acessar a landing page ou login, redireciona para o dashboard
+    // Se autenticado e em landing/login, vai para dashboard
     if (isAuthenticated && (isLoginPage || isLandingPage)) {
       navigate({ to: '/dashboard', replace: true });
     }
 
-    // Se o usuário NÃO está autenticado e tenta acessar áreas internas, redireciona para login
+    // Se não autenticado e em área protegida, vai para login
     if (!isAuthenticated && !isLoginPage && !isLandingPage) {
       navigate({ to: '/login', replace: true });
     }
-  }, [isAuthenticated, router.state.location.pathname, navigate]);
+  }, [isAuthenticated, router.state.location.pathname]);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -142,3 +142,4 @@ function RootComponent() {
     </QueryClientProvider>
   );
 }
+
