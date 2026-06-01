@@ -4,6 +4,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useNavigate,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
@@ -11,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { useAuthStore } from "../hooks/use-auth";
 
 function NotFoundComponent() {
   return (
@@ -115,10 +117,21 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const { isAuthenticated } = useAuthStore();
+  const navigate = useNavigate();
+  const router = useRouter();
+
+  useEffect(() => {
+    const isLoginPage = router.state.location.pathname === '/login';
+    const isLandingPage = router.state.location.pathname === '/';
+    
+    if (!isAuthenticated && !isLoginPage && !isLandingPage) {
+      navigate({ to: '/login' });
+    }
+  }, [isAuthenticated, router.state.location.pathname]);
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
     </QueryClientProvider>
   );
