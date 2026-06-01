@@ -75,10 +75,25 @@ export const generateDailyChallenge = (seed: string) => {
   const colorGrid = Array(16).fill(baseColor);
   colorGrid[Math.floor(random() * 16)] = intruderColor;
 
+  // 5. Gerar Caça-Palavras (Simplificado para 4x4 ou 5x5 para velhinhos)
+  const wordForSearch = selectedWords[0].toUpperCase();
+  const searchGridSize = 6;
+  const searchGrid = Array(searchGridSize).fill(null).map(() => 
+    Array(searchGridSize).fill(null).map(() => GAME_ASSETS.letters[Math.floor(random() * 26)])
+  );
+  
+  // Insere a palavra horizontalmente
+  const row = Math.floor(random() * searchGridSize);
+  const colStart = Math.floor(random() * (searchGridSize - wordForSearch.length + 1));
+  for (let i = 0; i < wordForSearch.length; i++) {
+    searchGrid[row][colStart + i] = wordForSearch[i];
+  }
+
   return {
     memory: { words: selectedWords, options: wordOptions },
     attention: { grid, intruder: intruderLetter },
     logic: { sequence, options: logicOptions, answer },
-    colorAttention: { grid: colorGrid, intruder: intruderColor }
+    colorAttention: { grid: colorGrid, intruder: intruderColor },
+    wordSearch: { grid: searchGrid, word: wordForSearch }
   };
 };
