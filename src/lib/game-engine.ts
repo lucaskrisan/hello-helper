@@ -15,9 +15,12 @@ export const GAME_ASSETS = {
   letters: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"],
   logicPatterns: [
     { name: "Addition", fn: (start: number, step: number) => [start, start + step, start + step * 2, start + step * 3, start + step * 4] },
-    { name: "Multiplication", fn: (start: number, step: number) => [start, start * step, start * step * step, start * step * step * step, start * step * step * step * step] },
-    { name: "Subtraction", fn: (start: number, step: number) => [start, start - step, start - step * 2, start - step * 3, start - step * 4] }
-  ]
+    { name: "Multiplication", fn: (start: number, step: number) => [start, start * step, start * (step * step), start * (step * step * step), start * (step * step * step * step)] },
+    { name: "Subtraction", fn: (start: number, step: number) => [start, start - step, start - step * 2, start - step * 3, start - step * 4] },
+    { name: "Fibonacci-ish", fn: (start: number, step: number) => [start, start + step, start + (start + step), (start + step) + (start + start + step), (start + (start + step)) + ((start + step) + (start + start + step))] }
+  ],
+  colors: ["#EF4444", "#3B82F6", "#10B981", "#F59E0B", "#8B5CF6", "#EC4899"],
+  shapes: ["square", "circle", "triangle"]
 };
 
 export const generateDailyChallenge = (seed: string) => {
