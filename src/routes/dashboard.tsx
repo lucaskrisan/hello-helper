@@ -16,30 +16,31 @@ function Dashboard() {
 
   useEffect(() => {
     async function loadData() {
+      // Usamos uma flag para evitar loops se o usuário for nulo no Supabase mas autenticado no Zustand
       const { data: { user } } = await supabase.auth.getUser();
       console.log('Dashboard user check:', user?.id);
-      if (!user) {
-        navigate({ to: "/login" });
-        return;
+      
+      if (user) {
+        const { data: prof, error: profError } = await supabase.from("profiles").select("*").eq("user_id", user.id).single();
+        console.log('Profile check:', { prof, error: profError });
+        if (!prof) {
+          navigate({ to: "/onboarding" });
+        } else {
+          setProfile(prof);
+          const { data: streak } = await supabase.from("streaks").select("*").eq("user_id", user.id).single();
+          const { data: challenges, count } = await supabase.from("daily_challenges").select("*", { count: 'exact' }).eq("user_id", user.id);
+          
+          const avgScore = count ? Math.round(challenges?.reduce((acc: number, curr: any) => acc + curr.score, 0) / count) : 0;
+          setStats({ 
+            streak: streak?.current_streak || 0, 
+            total: count || 0,
+            evolution: avgScore
+          });
+        }
       }
-      
-      const { data: prof, error: profError } = await supabase.from("profiles").select("*").eq("user_id", user.id).single();
-      console.log('Profile check:', { prof, error: profError });
-      if (!prof) navigate({ to: "/onboarding" });
-      else setProfile(prof);
-
-      const { data: streak } = await supabase.from("streaks").select("*").eq("user_id", user.id).single();
-      const { data: challenges, count } = await supabase.from("daily_challenges").select("*", { count: 'exact' }).eq("user_id", user.id);
-      
-      const avgScore = count ? Math.round(challenges?.reduce((acc: number, curr: any) => acc + curr.score, 0) / count) : 0;
-      setStats({ 
-        streak: streak?.current_streak || 0, 
-        total: count || 0,
-        evolution: avgScore
-      });
     }
     loadData();
-  }, []);
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-[#F7F3EA] p-6 max-w-lg mx-auto">
