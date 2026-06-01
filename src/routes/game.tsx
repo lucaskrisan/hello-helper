@@ -17,6 +17,7 @@ function Game() {
 
   // EXERCICIO 1: Memória
   const [memState, setMemState] = useState<'showing' | 'choosing'>('showing');
+  const [timeLeft, setTimeLeft] = useState(10);
   const words = ["Amizade", "Natureza", "Saúde", "Tempo", "Família"];
   const options = ["Amizade", "Natureza", "Saúde", "Tempo", "Família", "Cidade", "Viagem", "Festa"];
 
@@ -28,11 +29,17 @@ function Game() {
   const logicOptions = [9, 10, 11, 12];
 
   useEffect(() => {
-    if (exercise === 1) {
-      const timer = setTimeout(() => setMemState('choosing'), 10000);
-      return () => clearTimeout(timer);
+    if (exercise === 1 && memState === 'showing') {
+      if (timeLeft <= 0) {
+        setMemState('choosing');
+        return;
+      }
+      const timer = setInterval(() => {
+        setTimeLeft((prev) => prev - 1);
+      }, 1000);
+      return () => clearInterval(timer);
     }
-  }, [exercise]);
+  }, [exercise, memState, timeLeft]);
 
   const finishChallenge = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -69,8 +76,34 @@ function Game() {
           <h2 className="text-2xl font-bold mb-6">Memorize estas palavras</h2>
           {memState === 'showing' ? (
             <div className="space-y-4">
-              {words.map(w => <p key={w} className="text-3xl font-medium text-[#4A7C59]">{w}</p>)}
-              <p className="mt-8 text-sm text-gray-500">Memorize em 10 segundos...</p>
+              <div className="flex justify-center mb-6">
+                <div className="relative w-20 h-20 flex items-center justify-center">
+                  <svg className="absolute w-full h-full -rotate-90">
+                    <circle
+                      cx="40"
+                      cy="40"
+                      r="36"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                      fill="transparent"
+                      className="text-gray-100"
+                    />
+                    <circle
+                      cx="40"
+                      cy="40"
+                      r="36"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                      fill="transparent"
+                      strokeDasharray="226.2"
+                      strokeDashoffset={226.2 * (1 - timeLeft / 10)}
+                      className="text-[#D97706] transition-all duration-1000"
+                    />
+                  </svg>
+                  <span className="text-2xl font-bold text-[#D97706]">{timeLeft}</span>
+                </div>
+              </div>
+              {words.map(w => <p key={w} className="text-3xl font-bold text-[#4A7C59] animate-in fade-in slide-in-from-bottom-2">{w}</p>)}
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-3">
