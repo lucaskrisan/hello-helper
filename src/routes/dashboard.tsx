@@ -91,7 +91,7 @@ function Dashboard() {
           <span>📅</span>
           <span>Seu Progresso em {today.toLocaleDateString('pt-BR', { month: 'long' })}</span>
         </h2>
-        <div className="grid grid-cols-7 gap-2">
+        <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
           {Array.from({ length: daysInMonth }).map((_, i) => {
             const day = i + 1;
             const isToday = day === currentDay;
@@ -99,8 +99,8 @@ function Dashboard() {
             return (
               <div 
                 key={day} 
-                className={`h-11 flex items-center justify-center rounded-xl text-sm font-bold transition-all ${
-                  isToday ? "bg-primary text-white shadow-lg scale-110 ring-2 ring-primary/20" : 
+                className={`h-9 sm:h-11 flex items-center justify-center rounded-lg sm:rounded-xl text-xs sm:text-sm font-bold transition-all ${
+                  isToday ? "bg-primary text-white shadow-lg scale-105 sm:scale-110 ring-2 ring-primary/20" : 
                   isCompleted ? "bg-primary/20 text-primary" : "bg-gray-50 text-gray-300"
                 }`}
               >
@@ -113,11 +113,11 @@ function Dashboard() {
 
       <Button 
         onClick={() => navigate({ to: "/game", search: { mode: 'daily' } })}
-        className="w-full py-12 text-2xl font-bold bg-primary hover:bg-primary/90 text-white rounded-[2.5rem] shadow-xl mb-12 transform transition-all hover:scale-[1.02] active:scale-95 flex flex-col space-y-1 relative overflow-hidden"
+        className="w-full py-8 sm:py-12 text-xl sm:text-2xl font-bold bg-primary hover:bg-primary/90 text-white rounded-[2rem] sm:rounded-[2.5rem] shadow-xl mb-8 sm:mb-12 transform transition-all hover:scale-[1.02] active:scale-95 flex flex-col space-y-1 relative overflow-hidden"
       >
         <div className="absolute inset-0 bg-white/10 opacity-0 hover:opacity-100 transition-opacity" />
         <span className="relative z-10">INICIAR DESAFIO DO DIA</span>
-        <span className="text-sm font-normal opacity-80 relative z-10">Treino completo para hoje • 24 etapas</span>
+        <span className="text-xs sm:text-sm font-normal opacity-80 relative z-10">Treino completo para hoje • 24 etapas</span>
       </Button>
 
       <h3 className="text-xl font-bold mb-6 text-[#1F2937] flex items-center space-x-2">
@@ -129,16 +129,16 @@ function Dashboard() {
           <Button
             key={cat.id}
             onClick={() => navigate({ to: "/game", search: { mode: 'category', categoryId: cat.id } })}
-            className="h-auto p-5 bg-white hover:bg-gray-50 text-left justify-start border-none rounded-3xl shadow-sm flex items-center space-x-4 transition-all hover:translate-x-1 group"
+            className="h-auto p-4 sm:p-5 bg-white hover:bg-gray-50 text-left justify-start border-none rounded-2xl sm:rounded-3xl shadow-sm flex items-center space-x-3 sm:space-x-4 transition-all hover:translate-x-1 group"
           >
-            <div className="text-4xl p-4 rounded-2xl transition-transform group-hover:scale-110" style={{ backgroundColor: `${cat.color}15`, color: cat.color }}>
+            <div className="text-3xl sm:text-4xl p-3 sm:p-4 rounded-xl sm:rounded-2xl transition-transform group-hover:scale-110" style={{ backgroundColor: `${cat.color}15`, color: cat.color }}>
               {cat.icon}
             </div>
-            <div className="flex flex-col flex-1">
-              <span className="text-lg font-bold text-[#1F2937]">{cat.name}</span>
-              <span className="text-sm text-gray-500 font-normal">{cat.description}</span>
+            <div className="flex flex-col flex-1 min-w-0">
+              <span className="text-base sm:text-lg font-bold text-[#1F2937] truncate">{cat.name}</span>
+              <span className="text-xs sm:text-sm text-gray-500 font-normal line-clamp-1">{cat.description}</span>
             </div>
-            <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-300">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-300 shrink-0">
               →
             </div>
           </Button>
