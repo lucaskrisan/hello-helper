@@ -35,6 +35,7 @@ function AdminDashboard() {
         .maybeSingle();
 
       if (!profile?.is_admin && user.email !== 'trafegocomkrisan@gmail.com') {
+        console.log("Not admin, redirecting...");
         navigate({ to: "/dashboard", replace: true });
         return;
       }
@@ -43,9 +44,9 @@ function AdminDashboard() {
       
       // Load some basic stats
       const [usersCount, subCount, challengesCount] = await Promise.all([
-        supabase.from('profiles').select('*', { count: 'exact', head: true }),
-        supabase.from('profiles').select('*', { count: 'exact', head: true }), // Mocking subscriptions for now
-        supabase.from('daily_challenges').select('*', { count: 'exact', head: true }),
+        supabase.from('profiles').select('*', { count: 'exact', head: true }).limit(1),
+        supabase.from('profiles').select('*', { count: 'exact', head: true }).limit(1), // Mocking subscriptions for now
+        supabase.from('daily_challenges').select('*', { count: 'exact', head: true }).limit(1),
       ]);
 
       setStats({
