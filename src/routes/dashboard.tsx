@@ -91,7 +91,7 @@ function Dashboard() {
           <span>📅</span>
           <span>Seu Progresso em {today.toLocaleDateString('pt-BR', { month: 'long' })}</span>
         </h2>
-        <div className="grid grid-cols-7 gap-2">
+        <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
           {Array.from({ length: daysInMonth }).map((_, i) => {
             const day = i + 1;
             const isToday = day === currentDay;
@@ -99,8 +99,8 @@ function Dashboard() {
             return (
               <div 
                 key={day} 
-                className={`h-11 flex items-center justify-center rounded-xl text-sm font-bold transition-all ${
-                  isToday ? "bg-primary text-white shadow-lg scale-110 ring-2 ring-primary/20" : 
+                className={`h-9 sm:h-11 flex items-center justify-center rounded-lg sm:rounded-xl text-xs sm:text-sm font-bold transition-all ${
+                  isToday ? "bg-primary text-white shadow-lg scale-105 sm:scale-110 ring-2 ring-primary/20" : 
                   isCompleted ? "bg-primary/20 text-primary" : "bg-gray-50 text-gray-300"
                 }`}
               >
