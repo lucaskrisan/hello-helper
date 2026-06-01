@@ -11,7 +11,7 @@ export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
       isAuthenticated: false,
-      login: (email, pass) => {
+      login: (email: string, pass: string) => {
         if (email === 'cliente713@sonomilitar.com' && pass === 'c713') {
           set({ isAuthenticated: true });
           return true;
