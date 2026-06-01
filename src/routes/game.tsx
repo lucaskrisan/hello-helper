@@ -11,6 +11,7 @@ export const Route = createFileRoute("/game")({
 function Game() {
   const [exercise, setExercise] = useState(1);
   const [score, setScore] = useState(0);
+  const [correctCount, setCorrectCount] = useState(0);
   const [startTime] = useState(Date.now());
   const navigate = useNavigate();
 
@@ -37,14 +38,14 @@ function Game() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    const finalScore = score + 10; // Simplificado
+    const finalScore = score;
     const totalTime = Math.floor((Date.now() - startTime) / 1000);
 
     const { data: challenge } = await supabase.from("daily_challenges").insert({
       user_id: user.id,
       score: finalScore,
       total_questions: 3,
-      correct_answers: 3,
+      correct_answers: correctCount,
       total_time: totalTime,
     }).select().single();
 
@@ -71,7 +72,13 @@ function Game() {
           ) : (
             <div className="grid grid-cols-2 gap-3">
               {options.map(opt => (
-                <Button key={opt} onClick={() => setExercise(2)} className="py-6 bg-[#F7F3EA] text-[#1F2937] hover:bg-[#8AAE92]">
+                <Button key={opt} onClick={() => { 
+                  if (words.includes(opt)) {
+                    setScore(s => s + 33);
+                    setCorrectCount(c => c + 1);
+                  }
+                  setExercise(2);
+                }} className="py-6 bg-background text-foreground hover:bg-secondary">
                   {opt}
                 </Button>
               ))}
@@ -85,7 +92,13 @@ function Game() {
           <h2 className="text-2xl font-bold mb-6">Encontre a letra diferente</h2>
           <div className="grid grid-cols-4 gap-4 mb-8">
             {letters.map((l, i) => (
-              <Button key={i} onClick={() => l === 'B' && setExercise(3)} className="text-2xl h-16 bg-[#F7F3EA] text-[#1F2937]">
+              <Button key={i} onClick={() => {
+                if (l === 'B') {
+                  setScore(s => s + 33);
+                  setCorrectCount(c => c + 1);
+                }
+                setExercise(3);
+              }} className="text-2xl h-16 bg-background text-foreground">
                 {l}
               </Button>
             ))}
@@ -99,7 +112,13 @@ function Game() {
           <div className="text-4xl font-bold mb-8 text-[#4A7C59]">{sequence.join(", ")} , ?</div>
           <div className="grid grid-cols-2 gap-4">
             {logicOptions.map(num => (
-              <Button key={num} onClick={finishChallenge} className="py-6 text-xl bg-[#F7F3EA] text-[#1F2937]">
+              <Button key={num} onClick={() => {
+                if (num === 10) {
+                  setScore(s => s + 34);
+                  setCorrectCount(c => c + 1);
+                }
+                setTimeout(finishChallenge, 100);
+              }} className="py-6 text-xl bg-background text-foreground">
                 {num}
               </Button>
             ))}

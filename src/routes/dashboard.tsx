@@ -1,8 +1,9 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
+import { Settings } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard")({
   component: Dashboard,
@@ -26,17 +27,25 @@ function Dashboard() {
       else setProfile(prof);
 
       const { data: streak } = await supabase.from("streaks").select("*").eq("user_id", user.id).single();
-      const { count } = await supabase.from("daily_challenges").select("*", { count: 'exact', head: true }).eq("user_id", user.id);
+      const { data: challenges, count } = await supabase.from("daily_challenges").select("*", { count: 'exact' }).eq("user_id", user.id);
       
-      setStats({ streak: streak?.current_streak || 0, total: count || 0 });
+      const avgScore = count ? Math.round(challenges?.reduce((acc: number, curr: any) => acc + curr.score, 0) / count) : 0;
+      setStats({ 
+        streak: streak?.current_streak || 0, 
+        total: count || 0,
+        evolution: avgScore
+      });
     }
     loadData();
   }, []);
 
   return (
     <div className="min-h-screen bg-[#F7F3EA] p-6 max-w-lg mx-auto">
-      <header className="mb-8">
+      <header className="mb-8 flex justify-between items-center">
         <h1 className="text-3xl font-bold">Bom dia{profile?.name ? `, ${profile.name}` : ""}</h1>
+        <Link to="/settings" className="p-2 bg-white rounded-full shadow-sm text-primary">
+          <Settings className="w-6 h-6" />
+        </Link>
       </header>
 
       <Card className="p-8 bg-white mb-8 text-center rounded-3xl shadow-sm border-0">
@@ -51,12 +60,12 @@ function Dashboard() {
 
       <div className="grid grid-cols-2 gap-4">
         <Card className="p-4 bg-white text-center rounded-2xl border-0 shadow-sm">
-          <p className="text-[#8AAE92] font-medium">Sequência</p>
+          <p className="text-secondary font-medium">Sequência</p>
           <p className="text-3xl font-bold">{stats.streak} dias</p>
         </Card>
         <Card className="p-4 bg-white text-center rounded-2xl border-0 shadow-sm">
-          <p className="text-[#8AAE92] font-medium">Concluídos</p>
-          <p className="text-3xl font-bold">{stats.total}</p>
+          <p className="text-secondary font-medium">Média Acertos</p>
+          <p className="text-3xl font-bold">{stats.evolution}%</p>
         </Card>
       </div>
 
