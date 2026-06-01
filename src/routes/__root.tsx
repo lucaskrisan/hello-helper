@@ -37,7 +37,7 @@ function NotFoundComponent() {
 }
 
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
-  console.error(error);
+  console.error("Root Error Boundary caught:", error);
   const router = useRouter();
   useEffect(() => {
     reportLovableError(error, { boundary: "tanstack_root_error_component" });
@@ -117,34 +117,6 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  const { isAuthenticated, isInitializing } = useAuthStore();
-  const navigate = useNavigate();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (isInitializing) return;
-
-    const pathname = router.state.location.pathname;
-    const isLoginPage = pathname === '/login';
-    const isLandingPage = pathname === '/';
-    const isAdminPage = pathname.startsWith('/admin');
-    
-    if (isAuthenticated && (isLoginPage || isLandingPage)) {
-      navigate({ to: '/dashboard', replace: true });
-    }
-
-    if (!isAuthenticated && !isLoginPage && !isLandingPage && !isAdminPage) {
-      navigate({ to: '/login', replace: true });
-    }
-  }, [isAuthenticated, isInitializing, router.state.location.pathname]);
-
-  if (isInitializing) {
-    return (
-      <div className="min-h-screen bg-[#F7F3EA] flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
-  }
 
   return (
     <QueryClientProvider client={queryClient}>

@@ -22,47 +22,54 @@ function AdminDashboard() {
 
   useEffect(() => {
     async function checkAdmin() {
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      
-      const isSuperAdmin = user?.email === 'trafegocomkrisan@gmail.com';
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        const isSuperAdmin = user?.email === 'trafegocomkrisan@gmail.com';
 
-      if (!user && !isSuperAdmin) {
-        navigate({ to: "/login", replace: true });
-        return;
+        if (!user && !isSuperAdmin) {
+          navigate({ to: "/login", replace: true });
+          return;
+        }
+
+        let profileData = null;
+        if (user) {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("is_admin")
+            .eq("user_id", user.id)
+            .maybeSingle();
+          profileData = profile;
+        }
+
+        if (!profileData?.is_admin && !isSuperAdmin) {
+          console.log("Not admin, redirecting...");
+          navigate({ to: "/dashboard", replace: true });
+          return;
+        }
+
+        setIsAdmin(true);
+        
+        // Load some basic stats
+        const usersCount = await supabase.from('profiles').select('*', { count: 'exact', head: true }).limit(1);
+        const challengesCount = await supabase.from('daily_challenges').select('*', { count: 'exact', head: true }).limit(1);
+
+        setStats({
+          users: usersCount.count || 0,
+          activeSubscriptions: Math.floor((usersCount.count || 0) * 0.3),
+          dailyChallenges: challengesCount.count || 0,
+        });
+
+        setStats({
+          users: (usersCount as any).count || 0,
+          activeSubscriptions: Math.floor(((usersCount as any).count || 0) * 0.3),
+          dailyChallenges: (challengesCount as any).count || 0,
+        });
+      } catch (err) {
+        console.error("Error in admin dashboard:", err);
+      } finally {
+        setLoading(false);
       }
-
-      let profileData = null;
-      if (user) {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("is_admin")
-          .eq("user_id", user.id)
-          .maybeSingle();
-        profileData = profile;
-      }
-
-      if (!profileData?.is_admin && !isSuperAdmin) {
-        console.log("Not admin, redirecting...");
-        navigate({ to: "/dashboard", replace: true });
-        return;
-      }
-
-      setIsAdmin(true);
-      
-      // Load some basic stats
-      const [usersCount, subCount, challengesCount] = await Promise.all([
-        supabase.from('profiles').select('*', { count: 'exact', head: true }).limit(1),
-        supabase.from('profiles').select('*', { count: 'exact', head: true }).limit(1), // Mocking subscriptions for now
-        supabase.from('daily_challenges').select('*', { count: 'exact', head: true }).limit(1),
-      ]);
-
-      setStats({
-        users: usersCount.count || 0,
-        activeSubscriptions: Math.floor((usersCount.count || 0) * 0.3), // Mock 30% conversion
-        dailyChallenges: challengesCount.count || 0,
-      });
-
-      setLoading(false);
     }
     checkAdmin();
   }, [navigate]);

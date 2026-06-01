@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,6 +12,16 @@ function Onboarding() {
   const [step, setStep] = useState(1);
   const [data, setData] = useState({ age_range: "", main_goal: "" });
   const navigate = useNavigate();
+
+  useEffect(() => {
+    async function checkAuth() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        navigate({ to: "/login", replace: true });
+      }
+    }
+    checkAuth();
+  }, [navigate]);
 
   const handleFinish = async () => {
     const { data: { user } } = await supabase.auth.getUser();
