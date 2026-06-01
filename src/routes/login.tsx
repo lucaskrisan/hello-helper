@@ -19,7 +19,7 @@ function Login() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (login(email, password)) {
-      navigate({ to: "/dashboard" });
+      navigate({ to: "/dashboard", replace: true });
     } else {
       setError("Credenciais inválidas");
     }
