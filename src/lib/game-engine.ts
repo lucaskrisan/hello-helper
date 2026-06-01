@@ -51,15 +51,16 @@ export const generateTaskByCategory = (categoryId: string, seedOffset: number = 
 
   switch (categoryId) {
     case 'memory': {
-      // Alternar entre tipos de memória para nunca cansar
-      const subType = random() > 0.5 ? 'words' : 'sequence';
+      // Alternar entre 3 tipos de memória
+      const roll = random();
+      const subType = roll < 0.33 ? 'words' : roll < 0.66 ? 'sequence' : 'association';
       
       if (subType === 'words') {
         const shuffledWords = [...GAME_ASSETS.words].sort(() => random() - 0.5);
         const selectedWords = shuffledWords.slice(0, 5);
         const wordOptions = [...selectedWords, ...shuffledWords.slice(5, 10)].sort(() => random() - 0.5);
         return { type: 'memory-words', words: selectedWords, options: wordOptions };
-      } else {
+      } else if (subType === 'sequence') {
         // Sequência de cores (Genius)
         const sequenceLength = 4;
         const sequence = [];
@@ -67,6 +68,14 @@ export const generateTaskByCategory = (categoryId: string, seedOffset: number = 
           sequence.push(Math.floor(random() * 4)); // 4 cores
         }
         return { type: 'memory-sequence', sequence, colors: GAME_ASSETS.colors.slice(0, 4) };
+      } else {
+        // Associação de Itens e Cores
+        const items = ["Flor", "Vaso", "Relógio", "Livro", "Caneta"];
+        const selectedItem = items[Math.floor(random() * items.length)];
+        const selectedColor = GAME_ASSETS.colors[Math.floor(random() * GAME_ASSETS.colors.length)];
+        const options = GAME_ASSETS.colors.sort(() => random() - 0.5).slice(0, 4);
+        if (!options.includes(selectedColor)) options[0] = selectedColor;
+        return { type: 'memory-association', item: selectedItem, color: selectedColor, options: options.sort(() => random() - 0.5) };
       }
     }
     case 'attention': {
@@ -116,6 +125,7 @@ export const generateTaskByCategory = (categoryId: string, seedOffset: number = 
       return null;
   }
 };
+
 
 
 export const generateDailyChallenge = (seedStr: string) => {
