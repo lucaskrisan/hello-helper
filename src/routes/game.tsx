@@ -145,7 +145,7 @@ function Game() {
     setFeedback({ type: 'success', message: "Muito bem! Sua mente está despertando!" });
     setTimeout(() => {
       loadNextTask();
-    }, 1200);
+    }, 800);
   };
 
   const handleRetry = (msg?: string) => {
@@ -160,7 +160,7 @@ function Game() {
         setMemState('showing');
         setTimeLeft(15);
       }
-    }, 1500);
+    }, 1200);
   };
 
 
