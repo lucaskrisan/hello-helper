@@ -22,25 +22,26 @@ function Welcome() {
 
   useEffect(() => {
     async function handleAcesso() {
-      // 1. Tentar recuperar a sessão se o usuário acabou de pagar
-      // Em um cenário real, poderíamos usar o session_id para validar via Edge Function
-      // Mas para o MVP, vamos verificar se o usuário já está logado ou se existe uma sessão ativa
+      // 1. Tentar recuperar a sessão
       const { data: { session } } = await supabase.auth.getSession();
       
       if (session) {
         const { data: profile } = await supabase
           .from("profiles")
-          .select("name")
+          .select("name, is_premium")
           .eq("user_id", session.user.id)
           .maybeSingle();
         
-        setUserName(profile?.name || "Maria");
+        setUserName(profile?.name || "");
         setAuthenticated(true);
         setLoading(false);
+      } else if (session_id) {
+        // Se houver session_id mas não houver login, o webhook pode estar processando
+        // Vamos aguardar um pouco e tentar verificar se o perfil já foi marcado como premium
+        // ou se o usuário foi criado. No MVP, tentamos o login automático se o Stripe
+        // suportasse passar o e-mail de volta, mas aqui dependemos do Magic Link enviado por e-mail.
+        setLoading(false);
       } else {
-        // Se não houver sessão, mas houver session_id, poderíamos usar um 
-        // fallback de login por e-mail ou aguardar o webhook.
-        // Para o MVP, assumimos que o Stripe redireciona após o processamento.
         setLoading(false);
       }
     }

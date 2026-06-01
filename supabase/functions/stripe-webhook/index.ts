@@ -57,7 +57,25 @@ serve(async (req) => {
 
       if (profileError) throw profileError;
 
-      // 3. Log event
+      // 3. Enviar Magic Link para acesso imediato
+      const { error: linkError } = await supabaseClient.auth.admin.generateLink({
+        type: 'magiclink',
+        email: email,
+        options: { redirectTo: `${Deno.env.get("PUBLIC_URL")}/welcome?session_id=${sessionId}` }
+      });
+      
+      // Nota: Para enviar o e-mail de fato, você pode usar o Supabase Auth standard
+      // ou integrar com um serviço de e-mail (Resend, SendGrid) aqui.
+      // Por padrão, generateLink não envia o e-mail, apenas retorna o link.
+      // Vamos disparar um reset de senha ou convite que envia e-mail automaticamente se preferir,
+      // mas o ideal é usar a API de e-mail do Supabase.
+      
+      await supabaseClient.auth.admin.inviteUserByEmail(email, {
+        data: { is_premium: true },
+        redirectTo: `${Deno.env.get("PUBLIC_URL")}/welcome?session_id=${sessionId}`
+      });
+
+      // 4. Log event
       await supabaseClient.from("payment_events").insert({
         external_id: sessionId,
         user_id: user.id,
@@ -68,7 +86,7 @@ serve(async (req) => {
         raw_payload: session
       });
 
-      console.log(`User ${email} is now premium.`);
+      console.log(`User ${email} is now premium and invited.`);
     }
 
     return new Response(JSON.stringify({ received: true }), {
