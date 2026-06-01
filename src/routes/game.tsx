@@ -24,9 +24,10 @@ function Game() {
   const today = new Date().toISOString().split('T')[0];
   const challengeData = useMemo(() => generateDailyChallenge(today), [today]);
 
-  const { words, options } = challengeData.memory;
-  const { grid, intruder } = challengeData.attention;
-  const { sequence, options: logicOptions, answer } = challengeData.logic;
+    const { words, options } = challengeData.memory;
+    const { grid, intruder } = challengeData.attention;
+    const { sequence, options: logicOptions, answer } = challengeData.logic;
+    const { grid: colorGrid, intruder: intruderColor } = challengeData.colorAttention;
 
   useEffect(() => {
     if (exercise === 1 && memState === 'showing') {
