@@ -3,6 +3,15 @@ import { ES_POOLS, EN_POOLS } from './content-pools-i18n';
 import { supabase } from '@/integrations/supabase/client';
 import i18n from '@/i18n/config';
 
+const getSlug = (text: string) => {
+  return text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '');
+};
+
+const getLocalizedCategoryName = (category: string) => {
+  const slug = getSlug(category);
+  return i18n.t(`pool_${slug}`, { defaultValue: category });
+};
+
 const getActivePools = (): Record<string, ContentItem[]> => {
   const lang = (typeof window !== 'undefined' && i18n.language) || 'pt';
   if (lang.startsWith('es')) return ES_POOLS;
@@ -122,14 +131,19 @@ export const generateTaskByCategory = async (
         const items = await getAvailableItems(catKey, count, random, usedIds);
         const words = items.map(i => i.word);
         const itemIds = items.map(i => i.id);
-        const categoryName = items[0].category;
+        const categoryName = getLocalizedCategoryName(items[0].category);
         
         const allWords = pools[catKey].map(i => i.word);
         const options = [...words, ...allWords.filter(w => !words.includes(w)).sort(() => random() - 0.5).slice(0, 5)].sort(() => random() - 0.5);
         
         return { type: 'memory-words', words, options, level, categoryName, itemIds };
       } else {
-        const items = ["Pão", "Leite", "Café", "Maçã", "Arroz", "Feijão", "Açúcar", "Ovo"];
+        const items = i18n.language.startsWith('es') 
+          ? ["Pan", "Leche", "Café", "Manzana", "Arroz", "Frijol", "Azúcar", "Huevo"]
+          : i18n.language.startsWith('en')
+          ? ["Bread", "Milk", "Coffee", "Apple", "Rice", "Beans", "Sugar", "Egg"]
+          : ["Pão", "Leite", "Café", "Maçã", "Arroz", "Feijão", "Açúcar", "Ovo"];
+          
         const count = level === 'easy' ? 2 : level === 'medium' ? 3 : 5;
         const selected = [...items].sort(() => random() - 0.5).slice(0, count).map(name => ({
           item: name,
@@ -137,7 +151,14 @@ export const generateTaskByCategory = async (
         }));
         const correct = selected[Math.floor(random() * selected.length)];
         const options = [correct.qty, (correct.qty + 1) % 10 || 1, (correct.qty + 2) % 10 || 2].sort(() => random() - 0.5);
-        return { type: 'memory-shopping', list: selected, question: `Quantos(as) ${correct.item} estavam na lista?`, answer: correct.qty, options, level };
+        return { 
+          type: 'memory-shopping', 
+          list: selected, 
+          question: i18n.t('ex_shopping_question', { item: correct.item }), 
+          answer: correct.qty, 
+          options, 
+          level 
+        };
       }
     }
 
@@ -157,7 +178,7 @@ export const generateTaskByCategory = async (
         const categories = Object.keys(pools);
         const catKey = categories[Math.floor(random() * categories.length)];
         const items = await getAvailableItems(catKey, 4, random, usedIds);
-        const categoryName = items[0].category;
+        const categoryName = getLocalizedCategoryName(items[0].category);
         const otherCatKey = categories.find(c => c !== catKey)!;
         const intruderItems = await getAvailableItems(otherCatKey, 1, random, usedIds);
         const intruder = intruderItems[0];
@@ -199,12 +220,12 @@ export const generateTaskByCategory = async (
         let finalIsTrue = isTrue;
         
         if (isTrue) {
-          statement = `"${item.word}" faz parte do grupo: ${item.category}?`;
+          statement = i18n.t('ex_belongs_to', { word: item.word, category: getLocalizedCategoryName(item.category) });
         } else {
           const otherCats = categories.filter(c => c !== cat);
           const randomOtherCatKey = otherCats[Math.floor(random() * otherCats.length)];
-          const otherCatName = pools[randomOtherCatKey][0].category;
-          statement = `"${item.word}" faz parte do grupo: ${otherCatName}?`;
+          const otherCatName = getLocalizedCategoryName(pools[randomOtherCatKey][0].category);
+          statement = i18n.t('ex_belongs_to', { word: item.word, category: otherCatName });
           finalIsTrue = false;
         }
         
@@ -223,7 +244,7 @@ export const generateTaskByCategory = async (
         const cat = categories[Math.floor(random() * categories.length)];
         const items = await getAvailableItems(cat, 4, random, usedIds);
         const words = items.map(i => i.word);
-        const answer = [...words].sort((a, b) => a.localeCompare(b, 'pt-BR'));
+        const answer = [...words].sort((a, b) => a.localeCompare(b, i18n.language));
         return { type: 'alphabetical-order', words, answer, level, itemIds: items.map(i => i.id), category: cat };
       }
     }
