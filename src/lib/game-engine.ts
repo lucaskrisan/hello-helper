@@ -178,7 +178,7 @@ export const generateTaskByCategory = async (
         const categories = Object.keys(pools);
         const catKey = categories[Math.floor(random() * categories.length)];
         const items = await getAvailableItems(catKey, 4, random, usedIds);
-        const categoryName = items[0].category;
+        const categoryName = getLocalizedCategoryName(items[0].category);
         const otherCatKey = categories.find(c => c !== catKey)!;
         const intruderItems = await getAvailableItems(otherCatKey, 1, random, usedIds);
         const intruder = intruderItems[0];
