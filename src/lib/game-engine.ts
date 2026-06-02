@@ -3,6 +3,15 @@ import { ES_POOLS, EN_POOLS } from './content-pools-i18n';
 import { supabase } from '@/integrations/supabase/client';
 import i18n from '@/i18n/config';
 
+const getSlug = (text: string) => {
+  return text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '');
+};
+
+const getLocalizedCategoryName = (category: string) => {
+  const slug = getSlug(category);
+  return i18n.t(`pool_${slug}`, { defaultValue: category });
+};
+
 const getActivePools = (): Record<string, ContentItem[]> => {
   const lang = (typeof window !== 'undefined' && i18n.language) || 'pt';
   if (lang.startsWith('es')) return ES_POOLS;
