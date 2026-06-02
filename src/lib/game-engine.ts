@@ -10,6 +10,7 @@ const getActivePools = (): Record<string, ContentItem[]> => {
   return PT_POOLS;
 };
 
+
 const localizedCategories = () => {
   const lang = i18n.language || 'pt';
   const labels: Record<string, { name: string; desc: string }> = {
@@ -89,7 +90,8 @@ export const getAvailableItems = async (
   random: () => number, 
   usedIds: string[] = []
 ): Promise<ContentItem[]> => {
-  const pool = CONTENT_POOLS[category] || CONTENT_POOLS['culinaria'];
+  const pools = getActivePools();
+  const pool = pools[category] || pools['culinaria'] || Object.values(pools)[0];
   
   let available = pool.filter(item => !usedIds.includes(item.id));
   
@@ -113,7 +115,8 @@ export const generateTaskByCategory = async (
     case 'memory': {
       const roll = random();
       if (roll < 0.5) {
-        const categories = Object.keys(CONTENT_POOLS);
+        const pools = getActivePools();
+        const categories = Object.keys(pools);
         const catKey = categories[Math.floor(random() * categories.length)];
         const count = level === 'easy' ? 3 : level === 'medium' ? 5 : 7;
         const items = await getAvailableItems(catKey, count, random, usedIds);
@@ -121,7 +124,7 @@ export const generateTaskByCategory = async (
         const itemIds = items.map(i => i.id);
         const categoryName = items[0].category;
         
-        const allWords = CONTENT_POOLS[catKey].map(i => i.word);
+        const allWords = pools[catKey].map(i => i.word);
         const options = [...words, ...allWords.filter(w => !words.includes(w)).sort(() => random() - 0.5).slice(0, 5)].sort(() => random() - 0.5);
         
         return { type: 'memory-words', words, options, level, categoryName, itemIds };
@@ -150,7 +153,8 @@ export const generateTaskByCategory = async (
         grid[pos] = letters[intruderIdx];
         return { type: 'attention-letter', grid, intruder: letters[intruderIdx], cols: Math.sqrt(size), level };
       } else {
-        const categories = Object.keys(CONTENT_POOLS);
+        const pools = getActivePools();
+        const categories = Object.keys(pools);
         const catKey = categories[Math.floor(random() * categories.length)];
         const items = await getAvailableItems(catKey, 4, random, usedIds);
         const categoryName = items[0].category;
@@ -182,7 +186,8 @@ export const generateTaskByCategory = async (
 
     case 'language': {
       const roll = random();
-      const categories = Object.keys(CONTENT_POOLS);
+      const pools = getActivePools();
+      const categories = Object.keys(pools);
       const cat = categories[Math.floor(random() * categories.length)];
       
       if (roll < 0.5) {
@@ -198,7 +203,7 @@ export const generateTaskByCategory = async (
         } else {
           const otherCats = categories.filter(c => c !== cat);
           const randomOtherCatKey = otherCats[Math.floor(random() * otherCats.length)];
-          const otherCatName = CONTENT_POOLS[randomOtherCatKey][0].category;
+          const otherCatName = pools[randomOtherCatKey][0].category;
           statement = `"${item.word}" faz parte do grupo: ${otherCatName}?`;
           finalIsTrue = false;
         }
@@ -213,7 +218,8 @@ export const generateTaskByCategory = async (
           category: cat 
         };
       } else {
-        const categories = Object.keys(CONTENT_POOLS);
+        const pools = getActivePools();
+        const categories = Object.keys(pools);
         const cat = categories[Math.floor(random() * categories.length)];
         const items = await getAvailableItems(cat, 4, random, usedIds);
         const words = items.map(i => i.word);
