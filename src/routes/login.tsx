@@ -5,12 +5,14 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useAuthStore } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
+import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/login")({
   component: Login,
 });
 
 function Login() {
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -67,15 +69,15 @@ function Login() {
     <div className="min-h-screen bg-[#2D3A2F] flex items-center justify-center p-4 sm:p-6">
       <Card className="w-full max-w-md p-6 sm:p-8 bg-white/5 backdrop-blur-md border-0 shadow-2xl rounded-3xl">
         <div className="text-center mb-8 sm:mb-10">
-          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Desafio da Mente</h1>
-          <p className="text-white/60 text-sm sm:text-base">Entre para continuar seu treino</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">{t('login_title')}</h1>
+          <p className="text-white/60 text-sm sm:text-base">{t('login_subtitle')}</p>
         </div>
         
         <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
           <div className="space-y-2">
             <Input
               type="email"
-              placeholder="E-mail"
+              placeholder={t('login_email')}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="bg-white/10 border-0 text-white placeholder:text-white/40 h-12 sm:h-14 rounded-2xl px-6 focus-visible:ring-1 focus-visible:ring-[#4CAF50] text-sm sm:text-base"
@@ -85,7 +87,7 @@ function Login() {
           <div className="space-y-2">
             <Input
               type="password"
-              placeholder="Senha"
+              placeholder={t('login_password')}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="bg-white/10 border-0 text-white placeholder:text-white/40 h-12 sm:h-14 rounded-2xl px-6 focus-visible:ring-1 focus-visible:ring-[#4CAF50] text-sm sm:text-base"
@@ -100,7 +102,7 @@ function Login() {
             disabled={loading}
             className="w-full h-12 sm:h-14 text-base sm:text-lg font-bold bg-[#4CAF50] hover:bg-[#45a049] text-white rounded-2xl transition-all shadow-lg mt-2"
           >
-            {loading ? "CARREGANDO..." : "ENTRAR"}
+            {loading ? t('login_loading') : t('login_submit')}
           </Button>
         </form>
       </Card>

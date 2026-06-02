@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Check, Star, Mail } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
+import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/conclusao")({
   component: Conclusion,
@@ -19,6 +20,7 @@ export const Route = createFileRoute("/conclusao")({
 function Conclusion() {
   const navigate = useNavigate();
   const search = useSearch({ from: "/conclusao" });
+  const { t } = useTranslation();
   const { score, time } = search;
   const [step, setStep] = useState<'report' | 'explanation' | 'offer'>('report');
 
@@ -39,33 +41,33 @@ function Conclusion() {
     return (
       <div className="min-h-screen bg-[#F7F3EA] p-4 flex flex-col items-center justify-center">
         <Card className="w-full max-w-md p-6 sm:p-8 bg-white rounded-3xl shadow-sm text-center">
-          <h1 className="text-3xl font-bold mb-6 text-[#1F2937]">Seu Perfil Cognitivo</h1>
+          <h1 className="text-3xl font-bold mb-6 text-[#1F2937]">{t('conclusion_profile_title')}</h1>
           
           <div className="space-y-6 mb-8 text-left">
             <div className="flex justify-between items-center p-3 bg-gray-50 rounded-xl border border-gray-100">
-              <span className="font-medium">Memória</span>
+              <span className="font-medium">{t('conclusion_memory')}</span>
               {renderStars(Math.max(1, Math.floor((score / 20) - (time > 120 ? 1 : 0))))}
             </div>
             <div className="flex justify-between items-center p-3 bg-gray-50 rounded-xl border border-gray-100">
-              <span className="font-medium">Atenção</span>
+              <span className="font-medium">{t('conclusion_attention')}</span>
               {renderStars(Math.max(1, Math.floor(score / 20)))}
             </div>
             <div className="flex justify-between items-center p-3 bg-gray-50 rounded-xl border border-gray-100">
-              <span className="font-medium">Raciocínio</span>
+              <span className="font-medium">{t('conclusion_logic')}</span>
               {renderStars(Math.max(1, Math.floor(score / 20)))}
             </div>
             <div className="flex justify-between items-center p-3 bg-gray-50 rounded-xl border border-gray-100">
-              <span className="font-medium">Velocidade Mental</span>
+              <span className="font-medium">{t('conclusion_speed')}</span>
               {renderStars(time < 60 ? 5 : time < 100 ? 4 : time < 150 ? 3 : 2)}
             </div>
           </div>
 
           <div className="bg-orange-50 p-6 rounded-2xl mb-8 text-left border-l-4 border-orange-500">
             <p className="text-orange-900 font-medium leading-relaxed">
-              Você está indo bem em atenção e raciocínio. Mas sua memória e velocidade mental podem ser mais estimuladas no dia a dia.
+              {t('conclusion_diagnosis')}
             </p>
             <p className="text-orange-900 font-bold mt-4 italic">
-              Muitas pessoas só percebem isso quando começam a esquecer pequenas coisas da rotina.
+              {t('conclusion_warning')}
             </p>
           </div>
 
@@ -73,7 +75,7 @@ function Conclusion() {
             onClick={() => setStep('explanation')}
             className="w-full py-10 text-xl font-bold bg-primary hover:bg-primary/90 text-white rounded-2xl shadow-lg transition-transform hover:scale-105 active:scale-95 uppercase"
           >
-            CONTINUAR TREINANDO
+            {t('conclusion_continue')}
           </Button>
         </Card>
       </div>
@@ -84,34 +86,34 @@ function Conclusion() {
     return (
       <div className="min-h-screen bg-[#F7F3EA] p-4 flex flex-col items-center justify-center">
         <Card className="w-full max-w-md p-6 sm:p-8 bg-white rounded-3xl shadow-sm text-center">
-          <h1 className="text-3xl font-bold mb-6 text-[#1F2937]">O que isso significa?</h1>
+          <h1 className="text-3xl font-bold mb-6 text-[#1F2937]">{t('conclusion_what_means_title')}</h1>
           
           <div className="space-y-4 text-left mb-8">
             <p className="text-gray-700 leading-relaxed text-lg">
-              Sua atenção está em um bom nível. Sua memória apresentou espaço para evolução.
+              {t('conclusion_explain_1')}
             </p>
             <p className="text-gray-700 leading-relaxed text-lg">
-              Isso não significa que exista um problema. Significa apenas que sua mente, como qualquer outra parte do corpo, pode ser estimulada e treinada.
+              {t('conclusion_explain_2')}
             </p>
             <p className="text-gray-700 leading-relaxed text-lg font-medium">
-              A maioria das pessoas nunca faz isso.
+              {t('conclusion_explain_3')}
             </p>
           </div>
 
           <div className="bg-green-50 p-6 rounded-2xl mb-8 text-left">
-            <p className="font-bold text-green-800 mb-4">Nos próximos 30 dias você receberá:</p>
+            <p className="font-bold text-green-800 mb-4">{t('conclusion_next_30')}</p>
             <ul className="space-y-3">
               <li className="flex items-center gap-2 text-green-900">
-                <Check className="w-5 h-5" /> Um desafio novo por dia
+                <Check className="w-5 h-5" /> {t('conclusion_b1')}
               </li>
               <li className="flex items-center gap-2 text-green-900">
-                <Check className="w-5 h-5" /> Exercícios progressivos
+                <Check className="w-5 h-5" /> {t('conclusion_b2')}
               </li>
               <li className="flex items-center gap-2 text-green-900">
-                <Check className="w-5 h-5" /> Acompanhamento da sua evolução
+                <Check className="w-5 h-5" /> {t('conclusion_b3')}
               </li>
               <li className="flex items-center gap-2 text-green-900">
-                <Check className="w-5 h-5" /> Novos desafios de memória e atenção
+                <Check className="w-5 h-5" /> {t('conclusion_b4')}
               </li>
             </ul>
           </div>
@@ -120,7 +122,7 @@ function Conclusion() {
             onClick={() => setStep('offer')}
             className="w-full py-10 text-xl font-bold bg-primary hover:bg-primary/90 text-white rounded-2xl shadow-lg transition-transform hover:scale-105 active:scale-95 uppercase"
           >
-            VER MEU PLANO
+            {t('conclusion_see_plan')}
           </Button>
         </Card>
       </div>
@@ -132,20 +134,20 @@ function Conclusion() {
       <Card className="w-full max-w-md p-6 sm:p-8 bg-white rounded-3xl shadow-xl text-center relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-2 bg-primary"></div>
         
-        <h2 className="text-2xl font-bold mb-2">Treine sua mente todos os dias</h2>
-        <p className="text-gray-600 mb-8">Acesso completo a todos os exercícios e acompanhamento de evolução por 1 ano.</p>
+        <h2 className="text-2xl font-bold mb-2">{t('offer_title')}</h2>
+        <p className="text-gray-600 mb-8">{t('offer_subtitle')}</p>
 
         <div className="mb-8 p-8 border-2 border-primary bg-primary/5 rounded-3xl text-center">
-          <p className="text-sm text-primary font-bold uppercase tracking-wider mb-2">Oferta Única de Lançamento</p>
+          <p className="text-sm text-primary font-bold uppercase tracking-wider mb-2">{t('offer_badge')}</p>
           <div className="flex items-center justify-center gap-2 mb-2">
-            <span className="text-gray-400 line-through text-lg">US$ 49,90</span>
-            <span className="text-4xl font-black text-[#1F2937]">US$ 19,90</span>
+            <span className="text-gray-400 line-through text-lg">US$ 49.90</span>
+            <span className="text-4xl font-black text-[#1F2937]">US$ 19.90</span>
           </div>
-          <p className="text-xs text-gray-500">Pagamento único • Sem mensalidades</p>
+          <p className="text-xs text-gray-500">{t('offer_one_time')}</p>
         </div>
 
         <ul className="space-y-4 mb-8 text-left px-2">
-          {["Novos desafios diários", "Relatórios detalhados", "Acesso ilimitado", "Garantia total de 7 dias"].map(b => (
+          {[t('offer_b1'), t('offer_b2'), t('offer_b3'), t('offer_b4')].map(b => (
             <li key={b} className="flex items-center space-x-3 text-gray-700">
               <Check className="w-5 h-5 text-green-500 shrink-0" />
               <span className="text-base font-medium">{b}</span>
@@ -161,7 +163,7 @@ function Conclusion() {
           }}
           className="w-full py-8 text-2xl font-black bg-primary hover:bg-primary/90 text-white rounded-2xl shadow-xl transition-transform hover:scale-105 active:scale-95"
         >
-          GARANTIR MEU ACESSO
+          {t('offer_cta')}
         </Button>
         
         <div className="mt-6 flex items-center justify-center gap-4 grayscale opacity-50">
