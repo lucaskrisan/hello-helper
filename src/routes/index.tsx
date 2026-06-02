@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { trackEvent } from "@/lib/analytics";
 import { useTranslation } from "react-i18next";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 
 export const Route = createFileRoute("/")({
@@ -19,7 +20,11 @@ function LandingPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#F7F3EA] flex flex-col items-center justify-center p-6 text-center">
+    <div className="min-h-screen bg-[#F7F3EA] flex flex-col items-center justify-center p-6 text-center relative">
+      <div className="absolute top-4 right-4 z-50">
+        <LanguageSwitcher />
+      </div>
+
       <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mb-8">
         <span className="text-5xl">🧠</span>
       </div>
