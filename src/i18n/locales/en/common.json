@@ -1,5 +1,6 @@
 {
   "language": "Language",
+  "select_language": "Select language",
   "country": "Country",
   "save": "Save",
   "cancel": "Cancel",
