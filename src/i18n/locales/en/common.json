@@ -16,9 +16,9 @@
   "landing_item_1": "✔ The phone number of the house where you grew up?",
   "landing_item_2": "✔ The first song that marked your life?",
   "landing_subtitle": "Take a quick test and find out how your attention and memory are today.",
-  "landing_cta": "TAKE TEST",
-  "landing_free_info": "Free 2-minute test",
-  "landing_footer": "Made with love for those 50+",
+  "start_test": "TAKE TEST",
+  "free_test_info": "Free 2-minute test",
+  "made_for_50plus": "Made with love for those 50+",
 
   "login_title": "Mind Challenge",
   "login_subtitle": "Log in to continue your training",
