@@ -29,7 +29,7 @@ const generateItems = (
 // ============================================================================
 
 const ES_WORDS: WordsByCategory = {
-  Biblia: [
+  'Bíblia': [
     'Génesis', 'Éxodo', 'Levítico', 'Números', 'Deuteronomio', 'Josué', 'Jueces', 'Rut', 'Samuel', 'Reyes',
     'Crónicas', 'Esdras', 'Nehemías', 'Ester', 'Job', 'Salmos', 'Proverbios', 'Eclesiastés', 'Isaías', 'Jeremías',
     'Lamentaciones', 'Ezequiel', 'Daniel', 'Oseas', 'Joel', 'Amós', 'Abdías', 'Jonás', 'Miqueas', 'Nahum',
@@ -41,7 +41,7 @@ const ES_WORDS: WordsByCategory = {
     'Amor', 'Esperanza', 'Fe', 'Oración', 'Ayuno', 'Diezmo', 'Ofrenda', 'Parábola', 'Milagro', 'Sanidad',
     'Resurrección', 'Pentecostés', 'Sinagoga', 'Bautismo', 'Cena', 'Cayado', 'Arpa', 'Corona', 'Trono', 'Altar',
   ],
-  Cocina: [
+  'Culinária': [
     'Arroz', 'Frijol', 'Pasta', 'Carne', 'Pollo', 'Pescado', 'Huevo', 'Ensalada', 'Tomate', 'Lechuga',
     'Cebolla', 'Ajo', 'Papa', 'Zanahoria', 'Calabaza', 'Chile', 'Pimiento', 'Aguacate', 'Betabel', 'Repollo',
     'Espinaca', 'Brócoli', 'Coliflor', 'Maíz', 'Arveja', 'Lenteja', 'Garbanzo', 'Soya', 'Trigo', 'Azúcar',
@@ -65,7 +65,7 @@ const ES_WORDS: WordsByCategory = {
     'Atacama', 'Patagonia', 'Pampa', 'Caribe', 'Océano', 'Atlántico', 'Pacífico', 'Índico', 'Mediterráneo', 'Continente',
     'Isla', 'Península', 'Ecuador', 'Trópico', 'Polo', 'Norte', 'Sur', 'Este', 'Oeste', 'Cordillera',
   ],
-  Salud: [
+  'Saúde': [
     'Corazón', 'Pulmón', 'Cerebro', 'Hígado', 'Riñón', 'Estómago', 'Intestino', 'Piel', 'Hueso', 'Músculo',
     'Sangre', 'Célula', 'Neurona', 'Arteria', 'Vena', 'Vitamina', 'Proteína', 'Calcio', 'Hierro', 'Magnesio',
     'Ejercicio', 'Caminata', 'Natación', 'Yoga', 'Sueño', 'Descanso', 'Agua', 'Hidratación', 'Higiene', 'Prevención',
@@ -77,7 +77,7 @@ const ES_WORDS: WordsByCategory = {
     'Fruta', 'Verdura', 'Cereal', 'Grano', 'Natural', 'Orgánico', 'Integral', 'Fibra', 'Antioxidante', 'Suplemento',
     'Aire', 'Sol', 'Naturaleza', 'Paz', 'Mente', 'Cuerpo', 'Equilibrio', 'Armonía', 'Amor', 'Felicidad',
   ],
-  Animales: [
+  'Animais': [
     'Perro', 'Gato', 'Caballo', 'Vaca', 'Toro', 'Cerdo', 'Oveja', 'Cabra', 'Gallina', 'Pato',
     'León', 'Tigre', 'Elefante', 'Jirafa', 'Cebra', 'Hipopótamo', 'Rinoceronte', 'Oso', 'Lobo', 'Zorro',
     'Mono', 'Gorila', 'Chimpancé', 'Canguro', 'Koala', 'Panda', 'Águila', 'Halcón', 'Búho', 'Colibrí',
@@ -113,7 +113,7 @@ const ES_WORDS: WordsByCategory = {
     'Mochila', 'Bolsa', 'Cartera', 'Lentes', 'Reloj de pulsera', 'Paraguas', 'Maletín', 'Caja', 'Cesto', 'Basurero',
     'Peine', 'Cepillo', 'Secador', 'Toalla', 'Jabón', 'Champú', 'Cepillo de dientes', 'Pasta', 'Hilo dental', 'Rasuradora',
   ],
-  Profesiones: [
+  'Profissões': [
     'Profesor', 'Médico', 'Enfermero', 'Dentista', 'Veterinario', 'Ingeniero', 'Arquitecto', 'Abogado', 'Juez', 'Policía',
     'Bombero', 'Militar', 'Piloto', 'Marinero', 'Chofer', 'Camionero', 'Taxista', 'Cartero', 'Barrendero', 'Jardinero',
     'Albañil', 'Carpintero', 'Electricista', 'Plomero', 'Pintor', 'Mecánico', 'Soldador', 'Ebanista', 'Herrero', 'Minero',
@@ -137,7 +137,7 @@ const ES_WORDS: WordsByCategory = {
     'Añoranza', 'Recuerdo', 'Álbum', 'Retrato', 'Regalo', 'Viaje', 'Paseo', 'Almuerzo', 'Cena', 'Desayuno',
     'Seguridad', 'Confianza', 'Lealtad', 'Amistad', 'Gratitud', 'Paciencia', 'Perdón', 'Unión', 'Fuerza', 'Pilar',
   ],
-  Ciudades: [
+  'Cidades': [
     'Buenos Aires', 'Ciudad de México', 'Bogotá', 'Lima', 'Santiago', 'Caracas', 'Quito', 'La Paz', 'Asunción', 'Montevideo',
     'Guadalajara', 'Monterrey', 'Puebla', 'Tijuana', 'León', 'Mérida', 'Cancún', 'Acapulco', 'Veracruz', 'Oaxaca',
     'Córdoba', 'Rosario', 'Mendoza', 'La Plata', 'Mar del Plata', 'Salta', 'Tucumán', 'San Juan', 'Bariloche', 'Ushuaia',
@@ -152,7 +152,7 @@ const ES_WORDS: WordsByCategory = {
 };
 
 const EN_WORDS: WordsByCategory = {
-  Bible: [
+  'Bíblia': [
     'Genesis', 'Exodus', 'Leviticus', 'Numbers', 'Deuteronomy', 'Joshua', 'Judges', 'Ruth', 'Samuel', 'Kings',
     'Chronicles', 'Ezra', 'Nehemiah', 'Esther', 'Job', 'Psalms', 'Proverbs', 'Ecclesiastes', 'Isaiah', 'Jeremiah',
     'Lamentations', 'Ezekiel', 'Daniel', 'Hosea', 'Joel', 'Amos', 'Obadiah', 'Jonah', 'Micah', 'Nahum',
@@ -164,7 +164,7 @@ const EN_WORDS: WordsByCategory = {
     'Love', 'Hope', 'Faith', 'Prayer', 'Fasting', 'Tithe', 'Offering', 'Parable', 'Miracle', 'Healing',
     'Resurrection', 'Pentecost', 'Synagogue', 'Baptism', 'Supper', 'Staff', 'Harp', 'Crown', 'Throne', 'Altar',
   ],
-  Cooking: [
+  'Culinária': [
     'Rice', 'Beans', 'Pasta', 'Beef', 'Chicken', 'Fish', 'Egg', 'Salad', 'Tomato', 'Lettuce',
     'Onion', 'Garlic', 'Potato', 'Carrot', 'Pumpkin', 'Pepper', 'Avocado', 'Beet', 'Cabbage', 'Spinach',
     'Broccoli', 'Cauliflower', 'Corn', 'Pea', 'Lentil', 'Chickpea', 'Soy', 'Wheat', 'Sugar', 'Salt',
@@ -176,7 +176,7 @@ const EN_WORDS: WordsByCategory = {
     'Thyme', 'Parsley', 'Cilantro', 'Mint', 'Ginger', 'Saffron', 'Mustard', 'Mayo', 'Vinegar', 'Soy sauce',
     'Pancake', 'Burger', 'Pizza', 'Sandwich', 'Steak', 'Bacon', 'Sausage', 'Toast', 'Donut', 'Muffin',
   ],
-  Geography: [
+  'Geografia': [
     'USA', 'Canada', 'Mexico', 'Brazil', 'Argentina', 'Chile', 'Peru', 'Colombia', 'Venezuela', 'Cuba',
     'UK', 'Ireland', 'France', 'Spain', 'Portugal', 'Italy', 'Germany', 'Switzerland', 'Austria', 'Belgium',
     'Netherlands', 'Sweden', 'Norway', 'Denmark', 'Finland', 'Greece', 'Russia', 'China', 'Japan', 'India',
@@ -188,7 +188,7 @@ const EN_WORDS: WordsByCategory = {
     'Indian Ocean', 'Arctic', 'Mediterranean', 'Caribbean', 'Continent', 'Island', 'Peninsula', 'Equator', 'Tropic', 'Pole',
     'North', 'South', 'East', 'West', 'Mountain', 'Valley', 'River', 'Lake', 'Forest', 'Beach',
   ],
-  Health: [
+  'Saúde': [
     'Heart', 'Lung', 'Brain', 'Liver', 'Kidney', 'Stomach', 'Intestine', 'Skin', 'Bone', 'Muscle',
     'Blood', 'Cell', 'Neuron', 'Artery', 'Vein', 'Vitamin', 'Protein', 'Calcium', 'Iron', 'Magnesium',
     'Exercise', 'Walking', 'Swimming', 'Yoga', 'Sleep', 'Rest', 'Water', 'Hydration', 'Hygiene', 'Prevention',
@@ -200,7 +200,7 @@ const EN_WORDS: WordsByCategory = {
     'Fruit', 'Vegetable', 'Cereal', 'Grain', 'Natural', 'Organic', 'Whole', 'Fiber', 'Antioxidant', 'Supplement',
     'Air', 'Sun', 'Nature', 'Peace', 'Mind', 'Body', 'Balance', 'Harmony', 'Love', 'Happiness',
   ],
-  Animals: [
+  'Animais': [
     'Dog', 'Cat', 'Horse', 'Cow', 'Bull', 'Pig', 'Sheep', 'Goat', 'Hen', 'Duck',
     'Lion', 'Tiger', 'Elephant', 'Giraffe', 'Zebra', 'Hippo', 'Rhino', 'Bear', 'Wolf', 'Fox',
     'Monkey', 'Gorilla', 'Chimp', 'Kangaroo', 'Koala', 'Panda', 'Eagle', 'Hawk', 'Owl', 'Hummingbird',
@@ -212,7 +212,7 @@ const EN_WORDS: WordsByCategory = {
     'Ostrich', 'Peacock', 'Turkey', 'Goose', 'Quail', 'Pheasant', 'Toucan', 'Pelican', 'Seagull', 'Albatross',
     'Scorpion', 'Centipede', 'Snail', 'Worm', 'Jellyfish', 'Starfish', 'Coral', 'Sponge', 'Seahorse', 'Seal',
   ],
-  History: [
+  'História': [
     'Egypt', 'Greece', 'Rome', 'Empire', 'Kingdom', 'King', 'Queen', 'Prince', 'Princess', 'Castle',
     'Knight', 'Sword', 'Shield', 'War', 'Battle', 'Peace', 'Treaty', 'Revolution', 'Independence', 'Freedom',
     'Discovery', 'Navigation', 'Caravel', 'Map', 'Compass', 'Pyramid', 'Pharaoh', 'Sphinx', 'Temple', 'Arena',
