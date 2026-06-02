@@ -131,7 +131,7 @@ export const generateTaskByCategory = async (
         const items = await getAvailableItems(catKey, count, random, usedIds);
         const words = items.map(i => i.word);
         const itemIds = items.map(i => i.id);
-        const categoryName = items[0].category;
+        const categoryName = getLocalizedCategoryName(items[0].category);
         
         const allWords = pools[catKey].map(i => i.word);
         const options = [...words, ...allWords.filter(w => !words.includes(w)).sort(() => random() - 0.5).slice(0, 5)].sort(() => random() - 0.5);
@@ -220,11 +220,11 @@ export const generateTaskByCategory = async (
         let finalIsTrue = isTrue;
         
         if (isTrue) {
-          statement = i18n.t('ex_belongs_to', { word: item.word, category: item.category });
+          statement = i18n.t('ex_belongs_to', { word: item.word, category: getLocalizedCategoryName(item.category) });
         } else {
           const otherCats = categories.filter(c => c !== cat);
           const randomOtherCatKey = otherCats[Math.floor(random() * otherCats.length)];
-          const otherCatName = pools[randomOtherCatKey][0].category;
+          const otherCatName = getLocalizedCategoryName(pools[randomOtherCatKey][0].category);
           statement = i18n.t('ex_belongs_to', { word: item.word, category: otherCatName });
           finalIsTrue = false;
         }
