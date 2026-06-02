@@ -224,7 +224,7 @@ const EN_WORDS: WordsByCategory = {
     'Columbus', 'Magellan', 'Marco Polo', 'Napoleon', 'Caesar', 'Alexander', 'Churchill', 'Stalin', 'Mao', 'De Gaulle',
     'Gandhi', 'Mandela', 'MLK', 'Einstein', 'Da Vinci', 'Galileo', 'Newton', 'Darwin', 'Marx', 'Freud',
   ],
-  Objects: [
+  'Objetos': [
     'Chair', 'Table', 'Bed', 'Wardrobe', 'Sofa', 'Shelf', 'Rug', 'Curtain', 'Lamp', 'Nightstand',
     'Fridge', 'Stove', 'Microwave', 'Blender', 'Mixer', 'Coffee maker', 'Toaster', 'Filter', 'Pot', 'Pan',
     'Plate', 'Glass', 'Cutlery', 'Fork', 'Knife', 'Spoon', 'Cup', 'Mug', 'Jar', 'Bowl',
@@ -236,7 +236,7 @@ const EN_WORDS: WordsByCategory = {
     'Backpack', 'Bag', 'Wallet', 'Glasses', 'Watch', 'Umbrella', 'Briefcase', 'Box', 'Basket', 'Trash can',
     'Comb', 'Brush', 'Dryer', 'Towel', 'Soap', 'Shampoo', 'Toothbrush', 'Toothpaste', 'Floss', 'Razor',
   ],
-  Professions: [
+  'Profissões': [
     'Teacher', 'Doctor', 'Nurse', 'Dentist', 'Vet', 'Engineer', 'Architect', 'Lawyer', 'Judge', 'Police',
     'Firefighter', 'Soldier', 'Pilot', 'Sailor', 'Driver', 'Trucker', 'Cab driver', 'Postman', 'Janitor', 'Gardener',
     'Mason', 'Carpenter', 'Electrician', 'Plumber', 'Painter', 'Mechanic', 'Welder', 'Cabinetmaker', 'Blacksmith', 'Miner',
@@ -248,7 +248,7 @@ const EN_WORDS: WordsByCategory = {
     'Athlete', 'Coach', 'Referee', 'Lifeguard', 'Tour guide', 'Flight attendant', 'Receptionist', 'Cashier', 'Operator', 'Guard',
     'Seamstress', 'Tailor', 'Shoemaker', 'Barber', 'Hairdresser', 'Manicurist', 'Esthetician', 'Makeup artist', 'Craftsman', 'Stylist',
   ],
-  Family: [
+  'Família': [
     'Father', 'Mother', 'Son', 'Daughter', 'Brother', 'Sister', 'Grandfather', 'Grandmother', 'Grandson', 'Granddaughter',
     'Great-grandfather', 'Great-grandmother', 'Great-grandson', 'Great-granddaughter', 'Uncle', 'Aunt', 'Nephew', 'Niece', 'Cousin', 'Cousin',
     'Father-in-law', 'Mother-in-law', 'Son-in-law', 'Daughter-in-law', 'Brother-in-law', 'Sister-in-law', 'Stepfather', 'Stepmother', 'Stepson', 'Stepdaughter',
@@ -260,7 +260,7 @@ const EN_WORDS: WordsByCategory = {
     'Longing', 'Memory', 'Album', 'Portrait', 'Gift', 'Trip', 'Outing', 'Lunch', 'Dinner', 'Breakfast',
     'Safety', 'Trust', 'Loyalty', 'Friendship', 'Gratitude', 'Patience', 'Forgiveness', 'Union', 'Strength', 'Pillar',
   ],
-  Cities: [
+  'Cidades': [
     'New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix', 'Philadelphia', 'San Antonio', 'San Diego', 'Dallas', 'San Jose',
     'Austin', 'Jacksonville', 'Fort Worth', 'Columbus', 'Charlotte', 'San Francisco', 'Indianapolis', 'Seattle', 'Denver', 'Washington',
     'Boston', 'Nashville', 'Baltimore', 'Oklahoma City', 'Las Vegas', 'Portland', 'Detroit', 'Memphis', 'Louisville', 'Milwaukee',
