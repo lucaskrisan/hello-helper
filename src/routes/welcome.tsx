@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { CheckCircle2, Sparkles } from "lucide-react";
 import { useAuthStore } from "@/hooks/use-auth";
+import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/welcome")({
   component: Welcome,
@@ -16,6 +17,7 @@ export const Route = createFileRoute("/welcome")({
 function Welcome() {
   const { session_id } = useSearch({ from: "/welcome" });
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [userName, setUserName] = useState("");
   const setAuthenticated = useAuthStore(state => state.setAuthenticated);
@@ -53,7 +55,7 @@ function Welcome() {
       <div className="min-h-screen bg-[#F7F3EA] flex items-center justify-center p-6 text-center">
         <div className="space-y-4">
           <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-gray-600 font-medium">Liberando seu acesso premium...</p>
+          <p className="text-gray-600 font-medium">{t('loading')}</p>
         </div>
       </div>
     );
@@ -70,30 +72,29 @@ function Welcome() {
         </div>
         
         <h1 className="text-3xl font-bold mb-4 flex items-center justify-center gap-2">
-          🎉 Bem-vinda{userName ? `, ${userName}` : ""}!
+          {t('welcome_title')}{userName ? `, ${userName}` : ""}!
           <Sparkles className="w-6 h-6 text-yellow-500" />
         </h1>
         
         <p className="text-xl text-gray-700 mb-8 leading-relaxed">
-          Seu acesso já está liberado. <br />
-          Seu primeiro desafio está pronto para começar.
+          {t('welcome_subtitle')}
         </p>
 
         <div className="bg-[#F7F3EA] p-6 rounded-2xl mb-8 text-left border-l-4 border-primary">
-          <p className="text-sm font-bold text-primary uppercase mb-1">Dica de hoje</p>
-          <p className="text-gray-700 italic">"O segredo para uma mente afiada é a consistência. 5 minutos por dia mudam tudo."</p>
+          <p className="text-sm font-bold text-primary uppercase mb-1">{t('welcome_tip_title')}</p>
+          <p className="text-gray-700 italic">{t('welcome_tip')}</p>
         </div>
 
         <Button 
           onClick={() => navigate({ to: "/game", search: { mode: 'daily' } })}
           className="w-full py-10 text-2xl font-black bg-primary hover:bg-primary/90 text-white rounded-2xl shadow-xl transition-transform hover:scale-105 active:scale-95 uppercase tracking-wide"
         >
-          COMEÇAR AGORA
+          {t('welcome_start')}
         </Button>
       </Card>
       
       <p className="mt-8 text-gray-400 text-sm italic">
-        A Dona Maria está orgulhosa de você. 🧠
+        {t('welcome_footer', 'A Dona Maria está orgulhosa de você. 🧠')}
       </p>
     </div>
   );
