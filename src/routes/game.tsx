@@ -7,6 +7,7 @@ import { generateTaskByCategory, generateDailyChallenge, GAME_ASSETS } from "@/l
 import { toast } from "sonner";
 import { ChevronLeft, Trophy, Brain, Timer, Hourglass, Check, X } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
+import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/game")({
   component: Game,
@@ -21,6 +22,7 @@ export const Route = createFileRoute("/game")({
 function Game() {
   const navigate = useNavigate();
   const search = useSearch({ from: "/game" });
+  const { t } = useTranslation();
   
   const [currentTask, setCurrentTask] = useState<any>(null);
   const [tasks, setTasks] = useState<any[]>([]);
@@ -109,7 +111,7 @@ function Game() {
         setTaskIndex(1);
       } catch (err) {
         console.error("Error loading tasks:", err);
-        toast.error("Erro ao carregar os exercícios. Tente novamente.");
+        toast.error(t('game_error_loading'));
       } finally {
         setIsLoading(false);
       }
@@ -150,7 +152,7 @@ function Game() {
       import("@/lib/game-engine").then(m => m.saveToHistory(currentTask.itemId, currentTask.categoryName || currentTask.category || "unknown"));
     }
 
-    setFeedback({ type: 'success', message: "Muito bem! Sua mente está despertando!" });
+    setFeedback({ type: 'success', message: t('game_feedback_success_msg') });
     setTimeout(() => {
       loadNextTask();
     }, 800);
@@ -160,7 +162,7 @@ function Game() {
     setErrorCount(e => e + 1);
     setFeedback({ 
       type: 'retry', 
-      message: msg || "Vamos tentar de novo? Com calma a mente grava tudo." 
+      message: msg || t('game_feedback_retry_msg') 
     });
     setTimeout(() => {
       setFeedback({ type: null, message: "" });
@@ -215,7 +217,7 @@ function Game() {
       <div className="min-h-screen bg-[#F7F3EA] flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-gray-500 font-medium">Preparando seu treino cerebral...</p>
+          <p className="text-gray-500 font-medium">{t('game_loading')}</p>
         </div>
       </div>
     );
@@ -229,7 +231,7 @@ function Game() {
         </Button>
         <div className="bg-white px-3 py-1.5 rounded-full shadow-sm flex items-center space-x-2 flex-1 justify-center">
           <Brain className="w-4 h-4 text-primary" />
-          <span className="font-bold text-gray-700 text-sm">Etapa {taskIndex}/{tasks.length || (search.mode === 'trial' ? '5' : '10')}</span>
+          <span className="font-bold text-gray-700 text-sm">{t('game_step', { current: taskIndex, total: tasks.length || (search.mode === 'trial' ? '5' : '10') })}</span>
         </div>
         <div className="bg-white px-3 py-1.5 rounded-full shadow-sm flex items-center space-x-1.5 shrink-0">
           <Trophy className="w-4 h-4 text-yellow-500" />
@@ -250,7 +252,7 @@ function Game() {
           }`}>
             <div className="flex flex-col items-center">
               <span className="text-6xl mb-4">{feedback.type === 'success' ? "🌟" : "💡"}</span>
-              <h3 className="text-3xl font-bold mb-2">{feedback.type === 'success' ? "Muito bem!" : "Vamos tentar?"}</h3>
+              <h3 className="text-3xl font-bold mb-2">{feedback.type === 'success' ? t('game_feedback_success_title') : t('game_feedback_retry_title')}</h3>
               <p className="text-xl opacity-90">{feedback.message}</p>
             </div>
           </div>
@@ -258,8 +260,8 @@ function Game() {
         
         {currentTask.type === 'memory-shopping' && (
           <div className="text-center">
-            <h2 className="text-2xl font-bold mb-2">Lista de Compras</h2>
-            <p className="text-gray-500 mb-6">Memorize os itens e as quantidades.</p>
+            <h2 className="text-2xl font-bold mb-2">{t('ex_shopping_title')}</h2>
+            <p className="text-gray-500 mb-6">{t('ex_shopping_subtitle')}</p>
             {memState === 'showing' ? (
               <div className="space-y-4">
                 <div className="text-3xl font-bold text-orange-600 mb-6">{timeLeft}s</div>
@@ -276,12 +278,12 @@ function Game() {
                   variant="outline"
                   className="w-full border-orange-200 text-orange-700 hover:bg-orange-50 font-bold py-6 rounded-xl"
                 >
-                  JÁ DECOREI
+                  {t('ex_memorized')}
                 </Button>
               </div>
             ) : (
               <div className="space-y-8">
-                <p className="text-2xl font-bold text-gray-700">{currentTask.question}</p>
+                <p className="text-2xl font-bold text-gray-700">{t('ex_shopping_question', { item: currentTask.question.match(/Quantos\(as\) (.*) estavam na lista\?/)?.[1] || currentTask.answer })}</p>
                 <div className="grid grid-cols-3 gap-4">
                   {currentTask.options.map((opt: number) => (
                     <Button 
@@ -300,8 +302,8 @@ function Game() {
 
         {currentTask.type === 'memory-words' && (
           <div className="text-center">
-            <h2 className="text-2xl font-bold mb-2">Memorize as palavras</h2>
-            <p className="text-gray-500 mb-6">Foque nestas palavras da categoria <span className="text-primary font-bold uppercase">{currentTask.categoryName}</span>.</p>
+            <h2 className="text-2xl font-bold mb-2">{t('ex_memorize_words_title')}</h2>
+            <p className="text-gray-500 mb-6">{t('ex_memorize_words_subtitle')} <span className="text-primary font-bold uppercase">{currentTask.categoryName}</span>.</p>
             {memState === 'showing' ? (
               <div className="space-y-4">
                 <div className="text-3xl font-bold text-orange-600 mb-6">{timeLeft}s</div>
@@ -313,7 +315,7 @@ function Game() {
                   variant="outline"
                   className="w-full border-green-200 text-[#4A7C59] hover:bg-green-50 font-bold py-6 rounded-xl"
                 >
-                  ESTOU PRONTO
+                  {t('ex_ready')}
                 </Button>
               </div>
             ) : (
@@ -334,7 +336,7 @@ function Game() {
                   const correct = selectedWords.filter(w => currentTask.words.includes(w)).length;
                   if (correct >= currentTask.words.length - 1) handleCorrect();
                   else handleRetry();
-                }} className="col-span-2 mt-4 bg-orange-500 py-6 text-xl font-bold">CONFERIR</Button>
+                }} className="col-span-2 mt-4 bg-orange-500 py-6 text-xl font-bold">{t('ex_check')}</Button>
               </div>
             )}
           </div>
@@ -342,8 +344,8 @@ function Game() {
 
         {currentTask.type === 'attention-letter' && (
           <div className="text-center">
-            <h2 className="text-2xl font-bold mb-4">Atenção Visual</h2>
-            <p className="text-gray-500 mb-8">Encontre o intruso no quadro abaixo.</p>
+            <h2 className="text-2xl font-bold mb-4">{t('ex_attention_title')}</h2>
+            <p className="text-gray-500 mb-8">{t('ex_attention_subtitle')}</p>
             <div className="grid gap-3 mx-auto max-w-[300px]" style={{ gridTemplateColumns: `repeat(${currentTask.cols}, 1fr)` }}>
               {currentTask.grid.map((item: string, i: number) => (
                 <Button key={i} onClick={() => item === currentTask.intruder ? handleCorrect() : handleRetry()} className="h-12 text-xl font-bold bg-gray-50 text-gray-700 border-2">
@@ -356,8 +358,8 @@ function Game() {
 
         {currentTask.type === 'word-intruder' && (
           <div className="text-center">
-            <h2 className="text-2xl font-bold mb-4">Palavra Intrusa</h2>
-            <p className="text-gray-500 mb-8">Qual destas palavras NÃO pertence à categoria <span className="font-bold text-primary">{currentTask.categoryName}</span>?</p>
+            <h2 className="text-2xl font-bold mb-4">{t('ex_intruder_title')}</h2>
+            <p className="text-gray-500 mb-8">{t('ex_intruder_subtitle')} <span className="font-bold text-primary">{currentTask.categoryName}</span>?</p>
             <div className="space-y-3">
               {currentTask.options.map((opt: any) => (
                 <Button key={opt.word} onClick={() => opt.word === currentTask.intruder ? handleCorrect() : handleRetry()} className="w-full py-6 text-xl bg-white text-gray-700 border-2">
@@ -370,19 +372,19 @@ function Game() {
 
         {currentTask.type === 'true-false' && (
           <div className="text-center">
-            <h2 className="text-2xl font-bold mb-4">Verdadeiro ou Falso?</h2>
+            <h2 className="text-2xl font-bold mb-4">{t('ex_true_false_title')}</h2>
             <p className="text-2xl font-medium text-gray-700 mb-12">"{currentTask.statement}"</p>
             <div className="flex gap-4">
-              <Button onClick={() => currentTask.isTrue ? handleCorrect() : handleRetry()} className="flex-1 py-10 bg-green-500 text-white text-2xl font-bold"><Check className="mr-2" /> VERDADE</Button>
-              <Button onClick={() => !currentTask.isTrue ? handleCorrect() : handleRetry()} className="flex-1 py-10 bg-red-500 text-white text-2xl font-bold"><X className="mr-2" /> FALSO</Button>
+              <Button onClick={() => currentTask.isTrue ? handleCorrect() : handleRetry()} className="flex-1 py-10 bg-green-500 text-white text-2xl font-bold"><Check className="mr-2" /> {t('ex_true')}</Button>
+              <Button onClick={() => !currentTask.isTrue ? handleCorrect() : handleRetry()} className="flex-1 py-10 bg-red-500 text-white text-2xl font-bold"><X className="mr-2" /> {t('ex_false')}</Button>
             </div>
           </div>
         )}
 
         {currentTask.type === 'logic-change' && (
           <div className="text-center">
-            <h2 className="text-2xl font-bold mb-4">Cálculo de Troco</h2>
-            <p className="text-xl text-gray-600 mb-8">Você comprou um item por <span className="font-bold">R${currentTask.price}</span> e pagou com uma nota de <span className="font-bold">R${currentTask.paid}</span>. Quanto recebe de troco?</p>
+            <h2 className="text-2xl font-bold mb-4">{t('ex_change_title')}</h2>
+            <p className="text-xl text-gray-600 mb-8">{t('ex_change_question', { currency: 'R$', price: currentTask.price, paid: currentTask.paid })}</p>
             <div className="grid grid-cols-2 gap-4">
               {currentTask.options.map((opt: number) => (
                 <Button key={opt} onClick={() => opt === currentTask.answer ? handleCorrect() : handleRetry()} className="py-8 text-3xl font-bold bg-white text-gray-700 border-2">
@@ -395,15 +397,15 @@ function Game() {
 
         {currentTask.type === 'alphabetical-order' && (
           <div className="text-center">
-            <h2 className="text-2xl font-bold mb-4">Ordem Alfabética</h2>
-            <p className="text-gray-500 mb-8">Coloque as palavras na ordem correta (A-Z).</p>
+            <h2 className="text-2xl font-bold mb-4">{t('ex_alpha_title')}</h2>
+            <p className="text-gray-500 mb-8">{t('ex_alpha_subtitle')}</p>
             <div className="space-y-2">
               {currentTask.words.map((word: string) => (
                 <Button key={word} onClick={() => {
                   const newSeq = [...userSequence, word];
                   setUserSequence(newSeq);
                   if (currentTask.answer[newSeq.length - 1] !== word) {
-                    handleRetry("A ordem não está certa. Vamos começar de novo?");
+                    handleRetry(t('game_order_wrong'));
                     setUserSequence([]);
                   } else if (newSeq.length === currentTask.words.length) {
                     handleCorrect();
