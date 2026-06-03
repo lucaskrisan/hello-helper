@@ -18,7 +18,13 @@ export const countryToLanguage = (country: string): 'pt' | 'es' | 'en' => {
 
 const fetchCountryByIp = async (): Promise<string | null> => {
   try {
-    const res = await fetch('https://ipapi.co/json/', { cache: 'no-store' });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2000); // 2s timeout
+    const res = await fetch('https://ipapi.co/json/', { 
+      cache: 'no-store',
+      signal: controller.signal 
+    });
+    clearTimeout(timeoutId);
     if (!res.ok) return null;
     const data = await res.json();
     return data?.country_code || null;

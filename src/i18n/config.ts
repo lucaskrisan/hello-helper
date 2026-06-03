@@ -12,7 +12,7 @@ if (!i18n.isInitialized) {
       es: { common: es },
       en: { common: en },
     },
-    lng: 'pt',
+    // Removido 'lng' fixo para permitir que o initLocale() decida sem conflito inicial
     fallbackLng: 'pt',
     ns: ['common'],
     defaultNS: 'common',
