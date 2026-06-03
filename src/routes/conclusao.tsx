@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Check, Star, Mail } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { useTranslation } from "react-i18next";
+import { getCurrencySymbol } from "@/i18n/detect-country";
+
 
 export const Route = createFileRoute("/conclusao")({
   component: Conclusion,
