@@ -8,6 +8,7 @@
   "back": "Back",
   "loading": "Loading...",
   "logout": "Log out",
+  "user": "User",
 
   "nav_home": "Home",
   "nav_progress": "Progress",
@@ -63,6 +64,7 @@
   "game_feedback_retry_title": "Let's try again?",
   "game_feedback_retry_msg": "Let's try again. With calm, the mind records everything.",
   "game_order_wrong": "The order is not right. Shall we start again?",
+  "game_motivational": "Your mind is getting stronger every minute...",
 
   "ex_shopping_title": "Shopping List",
   "ex_shopping_subtitle": "Memorize the items and their quantities.",

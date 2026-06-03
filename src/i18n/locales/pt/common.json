@@ -8,6 +8,7 @@
   "back": "Voltar",
   "loading": "Carregando...",
   "logout": "Sair da conta",
+  "user": "Usuário",
 
   "nav_home": "Início",
   "nav_progress": "Progresso",
@@ -63,6 +64,7 @@
   "game_feedback_retry_title": "Vamos tentar?",
   "game_feedback_retry_msg": "Vamos tentar de novo? Com calma a mente grava tudo.",
   "game_order_wrong": "A ordem não está certa. Vamos começar de novo?",
+  "game_motivational": "Sua mente está ficando mais forte a cada minuto...",
 
   "ex_shopping_title": "Lista de Compras",
   "ex_shopping_subtitle": "Memorize os itens e as quantidades.",

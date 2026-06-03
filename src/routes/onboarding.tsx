@@ -33,7 +33,7 @@ function Onboarding() {
         name: defaultName,
         age_range: data.age_range,
         main_goal: data.main_goal,
-      });
+      }, { onConflict: "user_id" });
       navigate({ to: "/dashboard", replace: true });
     }
   };

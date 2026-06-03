@@ -57,7 +57,12 @@ function Dashboard() {
   const today = new Date();
   const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
   const currentDay = today.getDate();
-  const completedDays = challenges.map(c => new Date(c.created_at).getDate());
+  const completedDays = challenges
+    .filter(c => {
+      const d = new Date(c.date || c.completed_at);
+      return !isNaN(d.getTime()) && d.getFullYear() === today.getFullYear() && d.getMonth() === today.getMonth();
+    })
+    .map(c => new Date(c.date || c.completed_at).getDate());
 
   if (loading) {
     return (

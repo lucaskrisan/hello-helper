@@ -89,15 +89,7 @@ function AdminDashboard() {
     setLoading(true);
     try {
       // 1. Basic Stats — fetch challenges with user_id for reuse in user enrichment
-      const [
-        { count: totalUsers },
-        { count: premiumUsers },
-        { data: challengesAll },
-        { data: paymentsData },
-        { data: profiles },
-        { data: events },
-        { data: history },
-      ] = await Promise.all([
+      const results = await Promise.allSettled([
         supabase.from('profiles').select('*', { count: 'exact', head: true }),
         supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('is_premium', true),
         supabase.from('daily_challenges').select('user_id, score, total_time'),
@@ -106,6 +98,19 @@ function AdminDashboard() {
         supabase.from('funnel_events').select('event_name, created_at').order('created_at', { ascending: false }),
         supabase.from('exercise_history').select('category'),
       ]);
+
+      const getValue = <T,>(i: number, key: string): T | null => {
+        const r = results[i];
+        return r.status === 'fulfilled' ? (r.value as any)[key] ?? null : null;
+      };
+
+      const totalUsers = getValue<number>(0, 'count');
+      const premiumUsers = getValue<number>(1, 'count');
+      const challengesAll = getValue<any[]>(2, 'data');
+      const paymentsData = getValue<any[]>(3, 'data');
+      const profiles = getValue<any[]>(4, 'data');
+      const events = getValue<any[]>(5, 'data');
+      const history = getValue<any[]>(6, 'data');
 
       const avgScore = challengesAll?.length ? challengesAll.reduce((acc, c) => acc + (c.score || 0), 0) / challengesAll.length : 0;
       const avgTime = challengesAll?.length ? challengesAll.reduce((acc, c) => acc + (c.total_time || 0), 0) / challengesAll.length : 0;

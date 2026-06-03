@@ -23,31 +23,35 @@ function Welcome() {
   const setAuthenticated = useAuthStore(state => state.setAuthenticated);
 
   useEffect(() => {
-    async function handleAcesso() {
-      // 1. Tentar recuperar a sessão
+    let attempts = 0;
+    const MAX_ATTEMPTS = 8;
+    const DELAY_MS = 2000;
+
+    async function tryGetSession(): Promise<void> {
       const { data: { session } } = await supabase.auth.getSession();
-      
+
       if (session) {
         const { data: profile } = await supabase
           .from("profiles")
           .select("name, is_premium")
           .eq("user_id", session.user.id)
           .maybeSingle();
-        
+
         setUserName(profile?.name || "");
         setAuthenticated(true);
         setLoading(false);
-      } else if (session_id) {
-        // Se houver session_id mas não houver login, o webhook pode estar processando
-        // Vamos aguardar um pouco e tentar verificar se o perfil já foi marcado como premium
-        // ou se o usuário foi criado. No MVP, tentamos o login automático se o Stripe
-        // suportasse passar o e-mail de volta, mas aqui dependemos do Magic Link enviado por e-mail.
-        setLoading(false);
+        return;
+      }
+
+      attempts += 1;
+      if (session_id && attempts < MAX_ATTEMPTS) {
+        setTimeout(tryGetSession, DELAY_MS);
       } else {
         setLoading(false);
       }
     }
-    handleAcesso();
+
+    tryGetSession();
   }, [session_id, setAuthenticated]);
 
   if (loading) {

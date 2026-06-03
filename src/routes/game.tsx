@@ -63,7 +63,9 @@ function Game() {
 
     if (user) {
       const todayStr = new Date().toISOString().split('T')[0];
-      const yesterdayStr = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+      const yest = new Date();
+      yest.setDate(yest.getDate() - 1);
+      const yesterdayStr = yest.toISOString().split('T')[0];
 
       await supabase.from("daily_challenges").insert({
         user_id: user.id,
@@ -135,6 +137,16 @@ function Game() {
             await generateTaskByCategory('language', 40, 'medium', usedIds),
             await generateTaskByCategory('memory', 50, 'medium', usedIds),
           ];
+        } else if (search.mode === 'category' && search.categoryId) {
+          trackEvent('category_started', { category: search.categoryId });
+          const seed = Date.now();
+          newTasks = await Promise.all([
+            generateTaskByCategory(search.categoryId, seed, 'easy', usedIds),
+            generateTaskByCategory(search.categoryId, seed + 100, 'easy', usedIds),
+            generateTaskByCategory(search.categoryId, seed + 200, 'medium', usedIds),
+            generateTaskByCategory(search.categoryId, seed + 300, 'medium', usedIds),
+            generateTaskByCategory(search.categoryId, seed + 400, 'hard', usedIds),
+          ]);
         } else {
           const daily = await generateDailyChallenge(new Date().toISOString().split('T')[0]);
           newTasks = daily.tasks;
@@ -373,7 +385,8 @@ function Game() {
                 ))}
                 <Button onClick={() => {
                   const correct = selectedWords.filter(w => currentTask.words.includes(w)).length;
-                  if (correct >= currentTask.words.length - 1) handleCorrect();
+                  const wrongPicks = selectedWords.filter(w => !currentTask.words.includes(w)).length;
+                  if (correct === currentTask.words.length && wrongPicks === 0) handleCorrect();
                   else handleRetry();
                 }} className="col-span-2 mt-4 bg-orange-500 py-6 text-xl font-bold">{t('ex_check')}</Button>
               </div>
@@ -491,7 +504,7 @@ function Game() {
       </Card>
       <div className="mt-8 flex items-center space-x-2 text-gray-400">
         <Timer className="w-5 h-5" />
-        <span className="italic">Sua mente está ficando mais forte a cada minuto...</span>
+        <span className="italic">{t('game_motivational')}</span>
       </div>
     </div>
   );
