@@ -76,7 +76,7 @@ function LandingPage() {
         <div className="mt-16 text-gray-400 font-medium animate-fade-in" style={{ animationDelay: '1s' }}>
           {t('made_for_50plus')}
         </div>
-      </div>
+      </main>
 
       {/* Background decoration */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 rounded-full blur-3xl -z-10" />
