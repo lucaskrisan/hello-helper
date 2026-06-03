@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Check } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { getCurrencySymbol } from "@/i18n/detect-country";
+
 
 export const Route = createFileRoute("/premium")({
   component: Premium,
