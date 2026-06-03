@@ -14,19 +14,19 @@ export function LanguageSwitcher() {
   const { i18n, t } = useTranslation();
 
   const languages = [
-    { code: "pt", label: "Português", flag: "🇧🇷", country: "Brasil" },
-    { code: "es", label: "Español", flag: "🇲🇽", country: "América Latina" },
-    { code: "en", label: "English", flag: "🇺🇸", country: "USA / Other" },
+    { code: "pt", label: "Português", flag: "🇧🇷", country: "Brasil", countryCode: "BR" },
+    { code: "es", label: "Español", flag: "🇲🇽", country: "América Latina", countryCode: "MX" },
+    { code: "en", label: "English", flag: "🇺🇸", country: "USA / Other", countryCode: "US" },
   ];
 
   const currentLanguage = languages.find(l => l.code === i18n.language) || languages[0];
 
-  const changeLanguage = (lng: string) => {
-    i18n.changeLanguage(lng);
-    localStorage.setItem('i18nextLng', lng);
+  const changeLanguage = (lng: string, countryCode: string) => {
+    setLocaleManually(countryCode);
     // Dispara um evento para atualizar outros componentes se necessário
     window.dispatchEvent(new Event('languageChange'));
   };
+
 
   return (
     <DropdownMenu>
