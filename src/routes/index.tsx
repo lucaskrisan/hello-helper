@@ -30,9 +30,7 @@ function LandingPage() {
 
       {/* Header com seletor de idioma - Elegante e discreto */}
       <header className="w-full max-w-5xl flex justify-center md:justify-end mb-8 md:mb-12 animate-fade-in relative z-50">
-        <div className="bg-white/90 backdrop-blur-md p-1.5 rounded-full shadow-sm border border-gray-100 flex items-center gap-2">
-          <LanguageSwitcher />
-        </div>
+        <LanguageSwitcher />
       </header>
 
       <main className="flex-1 flex flex-col items-center justify-center w-full max-w-4xl mx-auto">

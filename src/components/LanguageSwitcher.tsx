@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Languages, ChevronDown } from "lucide-react";
+import { Globe, ChevronDown } from "lucide-react";
 
 export function LanguageSwitcher() {
   const { i18n, t } = useTranslation();
@@ -33,13 +33,16 @@ export function LanguageSwitcher() {
       <DropdownMenuTrigger asChild>
         <Button 
           variant="ghost" 
-          className="hover:bg-primary/5 rounded-full px-3 py-2 h-auto flex items-center gap-2 transition-all hover:scale-105 active:scale-95 group border border-gray-100 shadow-sm"
+          className="hover:bg-gray-50 border border-gray-200 rounded-full px-4 py-2 h-10 flex items-center gap-2 transition-all hover:shadow-sm active:scale-95 group bg-white"
         >
           <div className="flex items-center gap-2">
-            <span className="text-xl md:text-2xl filter drop-shadow-sm">{currentLanguage.flag}</span>
-            <span className="font-semibold text-gray-700 text-sm md:text-base hidden sm:inline-block">{currentLanguage.label}</span>
+            <Globe className="h-4 w-4 text-primary/60 group-hover:text-primary transition-colors" />
+            <div className="flex items-center gap-1.5">
+              <span className="text-lg leading-none">{currentLanguage.flag}</span>
+              <span className="font-medium text-gray-600 text-sm hidden xs:inline-block">{currentLanguage.label}</span>
+            </div>
           </div>
-          <ChevronDown className="h-3 w-3 md:h-4 md:w-4 text-gray-400 group-hover:text-primary transition-colors" />
+          <ChevronDown className="h-3 w-3 text-gray-400 group-hover:text-primary transition-colors ml-0.5" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[220px] p-2 rounded-2xl border border-gray-100 shadow-xl z-[100] animate-in fade-in zoom-in-95 duration-200">
