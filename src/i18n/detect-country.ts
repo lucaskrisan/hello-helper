@@ -9,6 +9,28 @@ const HISPANIC_COUNTRIES = new Set([
   'CR', 'PA', 'DO', 'CU', 'GT', 'HN', 'SV', 'NI', 'PR', 'ES',
 ]);
 
+const COUNTRY_CURRENCY: Record<string, string> = {
+  BR: 'R$',
+  ES: '€',
+  PE: 'S/',
+  BO: 'Bs.',
+  PY: '₲',
+  MX: '$',
+  AR: '$',
+  CL: '$',
+  CO: '$',
+  UY: '$',
+  US: '$',
+};
+
+export const getCurrencySymbol = (country?: string | null): string => {
+  if (country) return COUNTRY_CURRENCY[country.toUpperCase()] || '$';
+  
+  const stored = typeof window !== 'undefined' ? localStorage.getItem(COUNTRY_CACHE_KEY) : null;
+  return COUNTRY_CURRENCY[stored?.toUpperCase() || 'BR'] || '$';
+};
+
+
 export const countryToLanguage = (country: string): 'pt' | 'es' | 'en' => {
   const c = country?.toUpperCase();
   if (c === 'BR' || c === 'PT') return 'pt';
