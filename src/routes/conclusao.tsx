@@ -142,9 +142,10 @@ function Conclusion() {
         <div className="mb-8 p-8 border-2 border-primary bg-primary/5 rounded-3xl text-center">
           <p className="text-sm text-primary font-bold uppercase tracking-wider mb-2">{t('offer_badge')}</p>
           <div className="flex items-center justify-center gap-2 mb-2">
-            <span className="text-gray-400 line-through text-lg">US$ 49.90</span>
-            <span className="text-4xl font-black text-[#1F2937]">US$ 19.90</span>
+            <span className="text-gray-400 line-through text-lg">{getCurrencySymbol()} 49.90</span>
+            <span className="text-4xl font-black text-[#1F2937]">{getCurrencySymbol()} 19.90</span>
           </div>
+
           <p className="text-xs text-gray-500">{t('offer_one_time')}</p>
         </div>
 
