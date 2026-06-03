@@ -32,7 +32,7 @@ function LandingPage() {
       <header className="w-full max-w-5xl flex justify-center md:justify-end mb-8 md:mb-12 animate-fade-in relative z-50">
         <div className="flex flex-row items-center gap-2 md:gap-3 bg-white/80 backdrop-blur-sm p-2 md:p-3 rounded-2xl md:rounded-3xl border-2 border-primary/10 shadow-lg">
           <span className="hidden xs:inline-block text-[10px] md:text-sm font-black text-primary uppercase tracking-wider px-2">
-            {t('select_language')}:
+            {t('common:select_language')}:
           </span>
           <LanguageSwitcher />
         </div>
@@ -44,7 +44,7 @@ function LandingPage() {
         </div>
         
         <h1 className="text-3xl sm:text-4xl md:text-6xl font-black text-[#1F2937] mb-6 md:mb-8 tracking-tight max-w-3xl leading-[1.1] animate-fade-up">
-          {t('landing_title')}
+          {t('common:landing_title')}
         </h1>
         
         <div className="space-y-4 md:space-y-6 mb-8 md:mb-12 text-left max-w-md w-full animate-fade-up px-2" style={{ animationDelay: '0.2s' }}>

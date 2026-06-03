@@ -41,7 +41,7 @@ export const countryToLanguage = (country: string): 'pt' | 'es' | 'en' => {
 const fetchCountryByIp = async (): Promise<string | null> => {
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 2000); // 2s timeout
+    const timeoutId = setTimeout(() => controller.abort(), 1500); // Mais agressivo: 1.5s
     const res = await fetch('https://ipapi.co/json/', { 
       cache: 'no-store',
       signal: controller.signal 
@@ -50,7 +50,8 @@ const fetchCountryByIp = async (): Promise<string | null> => {
     if (!res.ok) return null;
     const data = await res.json();
     return data?.country_code || null;
-  } catch {
+  } catch (err) {
+    console.warn("Country detection failed, falling back to browser language");
     return null;
   }
 };
@@ -82,14 +83,21 @@ export const initLocale = async () => {
   if (typeof window === 'undefined' || initialized) return;
   initialized = true;
 
-  // 1) Preferência salva do usuário logado (DB) tem prioridade máxima
+  // 1) Cache local - Prioridade absoluta para velocidade
+  const stored = getStoredCountry();
+  if (stored) {
+    applyLocale(stored);
+    return;
+  }
+
+  // 2) Preferência salva no DB (apenas se logado e rápido)
   try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) {
       const { data: prefs } = await supabase
         .from('user_preferences')
-        .select('country, language')
-        .eq('user_id', user.id)
+        .select('country')
+        .eq('user_id', session.user.id)
         .maybeSingle();
       if (prefs?.country) {
         applyLocale(prefs.country);
@@ -97,13 +105,6 @@ export const initLocale = async () => {
       }
     }
   } catch {}
-
-  // 2) Cache local
-  const stored = getStoredCountry();
-  if (stored) {
-    applyLocale(stored);
-    return;
-  }
 
   // 3) Detecção por IP
   const country = await fetchCountryByIp();
