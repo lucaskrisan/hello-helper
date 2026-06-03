@@ -1,4 +1,6 @@
 import { useTranslation } from "react-i18next";
+import { setLocaleManually } from "@/i18n/detect-country";
+
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
