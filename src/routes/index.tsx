@@ -28,12 +28,9 @@ function LandingPage() {
         </div>
       ) : null}
 
-      {/* Header com seletor de idioma - Destaque visual */}
+      {/* Header com seletor de idioma - Elegante e discreto */}
       <header className="w-full max-w-5xl flex justify-center md:justify-end mb-8 md:mb-12 animate-fade-in relative z-50">
-        <div className="flex flex-row items-center gap-2 md:gap-3 bg-white/80 backdrop-blur-sm p-2 md:p-3 rounded-2xl md:rounded-3xl border-2 border-primary/10 shadow-lg">
-          <span className="hidden xs:inline-block text-[10px] md:text-sm font-black text-primary uppercase tracking-wider px-2">
-            {t('common:select_language')}:
-          </span>
+        <div className="bg-white/90 backdrop-blur-md p-1.5 rounded-full shadow-sm border border-gray-100 flex items-center gap-2">
           <LanguageSwitcher />
         </div>
       </header>
