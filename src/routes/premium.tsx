@@ -56,11 +56,12 @@ function Premium() {
 
         <div className="space-y-4">
           <Button className="w-full py-8 text-xl font-bold bg-[#4A7C59] hover:bg-[#3d694a] rounded-2xl">
-            {t('premium_annual')} - US$29.90
+            {t('premium_annual')} - {getCurrencySymbol()}29.90
           </Button>
           <Button variant="outline" className="w-full py-8 text-xl font-bold border-2 border-[#4A7C59] text-[#4A7C59] hover:bg-[#F7F3EA] rounded-2xl">
-            {t('premium_monthly')} - US$4.90
+            {t('premium_monthly')} - {getCurrencySymbol()}4.90
           </Button>
+
         </div>
       </Card>
       
