@@ -61,7 +61,7 @@ function LandingPage() {
         <div className="space-y-4 w-full max-w-xs animate-fade-up px-4" style={{ animationDelay: '0.6s' }}>
           <Button 
             onClick={() => navigate({ to: "/game", search: { mode: 'trial' } })}
-            className="w-full bg-primary hover:bg-primary/90 text-white text-xl md:text-2xl py-8 md:py-10 px-8 rounded-full shadow-xl transition-all hover:scale-[1.03] active:scale-95 font-black uppercase tracking-widest h-auto border-b-4 border-primary-dark"
+            className="w-full bg-primary hover:bg-primary/90 text-white text-xl md:text-2xl py-8 md:py-10 px-8 rounded-full shadow-lg transition-all hover:scale-[1.02] active:scale-95 font-bold uppercase tracking-widest h-auto border-b-4 border-black/10"
           >
             {t('common:start_test')}
           </Button>
