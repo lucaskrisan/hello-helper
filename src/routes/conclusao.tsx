@@ -158,11 +158,15 @@ function Conclusion() {
           ))}
         </ul>
 
-        <Button 
+        <Button
           onClick={() => {
             trackEvent('checkout_clicked');
-            const stripeUrl = import.meta.env.VITE_STRIPE_PAYMENT_LINK || "https://buy.stripe.com/test_6oEbMh9708pI5EYeUV";
-            window.location.href = stripeUrl; 
+            const stripeUrl = import.meta.env.VITE_STRIPE_PAYMENT_LINK;
+            if (!stripeUrl) {
+              console.error("VITE_STRIPE_PAYMENT_LINK is not configured.");
+              return;
+            }
+            window.location.href = stripeUrl;
           }}
           className="w-full py-8 md:py-10 text-xl md:text-2xl font-black bg-primary hover:bg-primary/90 text-white rounded-2xl md:rounded-[2.5rem] shadow-xl transition-all hover:scale-105 active:scale-95 h-auto uppercase tracking-widest"
         >

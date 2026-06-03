@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
+import type { ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,31 +20,43 @@ export const Route = createFileRoute("/admin")({
   component: AdminDashboard,
 });
 
+interface AdminStats {
+  totalUsers: number;
+  premiumUsers: number;
+  freeUsers: number;
+  totalRevenue: number;
+  revenue7d: number;
+  revenue30d: number;
+  challengesCompleted: number;
+  avgScore: string;
+  avgTime: number;
+}
+
+interface EnrichedUser {
+  name: string;
+  user_id: string;
+  is_premium: boolean;
+  created_at: string;
+  last_sign_in_at: string | null;
+  challengesCount: number;
+  avgScore: string;
+  totalPaid: number;
+}
+
 function AdminDashboard() {
   const [isAdmin, setIsAdmin] = useState(false);
-  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState<any>({});
-  const [users, setUsers] = useState<any[]>([]);
+  const [stats, setStats] = useState<AdminStats>({} as AdminStats);
+  const [users, setUsers] = useState<EnrichedUser[]>([]);
   const [payments, setPayments] = useState<any[]>([]);
-  const [funnel, setFunnel] = useState<any[]>([]);
-  const [exerciseStats, setExerciseStats] = useState<any[]>([]);
+  const [funnel, setFunnel] = useState<{ name: string; count: number }[]>([]);
+  const [exerciseStats, setExerciseStats] = useState<{ name: string; shown: number }[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
     async function checkAdminAndLoadData() {
       try {
-        const superAdminFlag = localStorage.getItem('mente_ativa_is_super_admin') === 'true';
         const { data: { user } } = await supabase.auth.getUser();
-        
-        const isMasterEmail = user?.email === 'trafegocomkrisan@gmail.com';
-        
-        if (superAdminFlag || isMasterEmail) {
-          setIsAdmin(true);
-          setIsSuperAdmin(true);
-          await loadAllData();
-          return;
-        }
 
         if (!user) {
           navigate({ to: "/login", replace: true });
@@ -75,24 +88,35 @@ function AdminDashboard() {
   async function loadAllData() {
     setLoading(true);
     try {
-      // 1. Basic Stats
-      const { count: totalUsers } = await supabase.from('profiles').select('*', { count: 'exact', head: true });
-      const { count: premiumUsers } = await supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('is_premium', true);
-      const { data: challenges } = await supabase.from('daily_challenges').select('score, total_time');
-      const { data: paymentsData } = await supabase.from('payment_events').select('*').order('created_at', { ascending: false });
-      
-      const avgScore = challenges?.length ? (challenges.reduce((acc, c) => acc + (c.score || 0), 0) / challenges.length) : 0;
-      const avgTime = challenges?.length ? (challenges.reduce((acc, c) => acc + (c.total_time || 0), 0) / challenges.length) : 0;
-      
-      // Revenue calculations
+      // 1. Basic Stats — fetch challenges with user_id for reuse in user enrichment
+      const [
+        { count: totalUsers },
+        { count: premiumUsers },
+        { data: challengesAll },
+        { data: paymentsData },
+        { data: profiles },
+        { data: events },
+        { data: history },
+      ] = await Promise.all([
+        supabase.from('profiles').select('*', { count: 'exact', head: true }),
+        supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('is_premium', true),
+        supabase.from('daily_challenges').select('user_id, score, total_time'),
+        supabase.from('payment_events').select('*').order('created_at', { ascending: false }),
+        supabase.from('profiles').select('name, user_id, is_premium, created_at, last_sign_in_at'),
+        supabase.from('funnel_events').select('event_name, created_at').order('created_at', { ascending: false }),
+        supabase.from('exercise_history').select('category'),
+      ]);
+
+      const avgScore = challengesAll?.length ? challengesAll.reduce((acc, c) => acc + (c.score || 0), 0) / challengesAll.length : 0;
+      const avgTime = challengesAll?.length ? challengesAll.reduce((acc, c) => acc + (c.total_time || 0), 0) / challengesAll.length : 0;
+
       const now = new Date();
       const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
       const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-      
+
       const totalRevenue = (paymentsData || []).reduce((acc, p) => acc + (p.amount_total || 0), 0) / 100;
       const revenue7d = (paymentsData || []).filter(p => new Date(p.created_at) > sevenDaysAgo).reduce((acc, p) => acc + (p.amount_total || 0), 0) / 100;
       const revenue30d = (paymentsData || []).filter(p => new Date(p.created_at) > thirtyDaysAgo).reduce((acc, p) => acc + (p.amount_total || 0), 0) / 100;
-
 
       setStats({
         totalUsers: totalUsers || 0,
@@ -101,32 +125,37 @@ function AdminDashboard() {
         totalRevenue,
         revenue7d,
         revenue30d,
-        challengesCompleted: challenges?.length || 0,
+        challengesCompleted: challengesAll?.length || 0,
         avgScore: avgScore.toFixed(1),
         avgTime: Math.floor(avgTime),
       });
 
-      // 2. Users Table
-      const { data: profiles } = await supabase
-        .from('profiles')
-        .select('name, user_id, is_premium, created_at, last_sign_in_at');
-      
-      const enrichedUsers = await Promise.all((profiles || []).map(async (p) => {
-        const { count } = await supabase.from('daily_challenges').select('*', { count: 'exact', head: true }).eq('user_id', p.user_id);
-        const { data: userChallenges } = await supabase.from('daily_challenges').select('score').eq('user_id', p.user_id);
-        const { data: userPayments } = await supabase.from('payment_events').select('amount_total').eq('user_id', p.user_id);
-        
-        const avgUserScore = userChallenges?.length ? userChallenges.reduce((acc, c) => acc + (c.score || 0), 0) / userChallenges.length : 0;
-        const totalPaid = (userPayments || []).reduce((acc, pay) => acc + (pay.amount_total || 0), 0) / 100;
+      // 2. Users Table — group challenges/payments in memory to avoid N+1 queries
+      const challengesByUser: Record<string, { score: number; total_time: number }[]> = {};
+      (challengesAll || []).forEach(c => {
+        const uid = c.user_id as string;
+        if (!challengesByUser[uid]) challengesByUser[uid] = [];
+        challengesByUser[uid].push(c);
+      });
 
-        
-        // Try to get email from auth.users via a separate query if possible, or just use name for now
-        return { ...p, challengesCount: count || 0, avgScore: avgUserScore.toFixed(1), totalPaid };
-      }));
+      const paymentsByUser: Record<string, { amount_total: number }[]> = {};
+      (paymentsData || []).forEach(p => {
+        if (p.user_id) {
+          if (!paymentsByUser[p.user_id]) paymentsByUser[p.user_id] = [];
+          paymentsByUser[p.user_id].push(p);
+        }
+      });
+
+      const enrichedUsers: EnrichedUser[] = (profiles || []).map(p => {
+        const userChallenges = challengesByUser[p.user_id] || [];
+        const userPayments = paymentsByUser[p.user_id] || [];
+        const avgUserScore = userChallenges.length ? userChallenges.reduce((acc, c) => acc + (c.score || 0), 0) / userChallenges.length : 0;
+        const totalPaid = userPayments.reduce((acc, pay) => acc + (pay.amount_total || 0), 0) / 100;
+        return { ...p, challengesCount: userChallenges.length, avgScore: avgUserScore.toFixed(1), totalPaid };
+      });
       setUsers(enrichedUsers);
 
       // 3. Funnel
-      const { data: events } = await supabase.from('funnel_events').select('*').order('created_at', { ascending: false });
       const funnelCounts = {
         landing_view: events?.filter(e => e.event_name === 'landing_view').length || 0,
         test_started: events?.filter(e => e.event_name === 'test_started').length || 0,
@@ -142,25 +171,23 @@ function AdminDashboard() {
       setPayments(paymentsData || []);
 
       // 5. Exercise Stats
-      const { data: history } = await supabase.from('exercise_history').select('*');
-      const grouped = history?.reduce((acc: any, curr: any) => {
+      const grouped: Record<string, { name: string; shown: number }> = {};
+      (history || []).forEach(curr => {
         const key = curr.category || 'unknown';
-        if (!acc[key]) acc[key] = { name: key, shown: 0, correct: 0 };
-        acc[key].shown += 1;
-        // Logic to track correct/wrong could be added to exercise_history table or inferred
-        return acc;
-      }, {}) || {};
+        if (!grouped[key]) grouped[key] = { name: key, shown: 0 };
+        grouped[key].shown += 1;
+      });
       setExerciseStats(Object.values(grouped));
 
     } catch (err) {
-      toast.error("Erro ao carregar dados do admin.");
+      toast.error("Failed to load admin data.");
       console.error(err);
     } finally {
       setLoading(false);
     }
   }
 
-  if (loading && !isAdmin) return <div className="p-8 text-center">Verificando permissões...</div>;
+  if (loading) return <div className="p-8 text-center">Verificando permissões...</div>;
   if (!isAdmin) return null;
 
   return (
@@ -371,7 +398,14 @@ function AdminDashboard() {
   );
 }
 
-function StatCard({ title, value, sub, icon }: any) {
+interface StatCardProps {
+  title: string;
+  value: string | number;
+  sub: string;
+  icon: ReactNode;
+}
+
+function StatCard({ title, value, sub, icon }: StatCardProps) {
   return (
     <Card className="p-6">
       <div className="flex justify-between items-start mb-4">

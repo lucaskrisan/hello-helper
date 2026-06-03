@@ -22,13 +22,7 @@ function Login() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      // Se for o Super Admin, vai para o painel, senão vai para o dashboard
-      const isSuperAdmin = localStorage.getItem('mente_ativa_is_super_admin') === 'true';
-      if (isSuperAdmin) {
-        navigate({ to: "/admin", replace: true });
-      } else {
-        navigate({ to: "/dashboard", replace: true });
-      }
+      navigate({ to: "/dashboard", replace: true });
     }
   }, [isAuthenticated, navigate]);
 
@@ -36,23 +30,6 @@ function Login() {
     e.preventDefault();
     setLoading(true);
     setError("");
-
-    // Login de Super Admin
-    if (email === 'trafegocomkrisan@gmail.com') {
-      useAuthStore.getState().setAuthenticated(true);
-      localStorage.setItem('mente_ativa_is_super_admin', 'true');
-      navigate({ to: "/admin", replace: true });
-      setLoading(false);
-      return;
-    }
-
-    // Primeiro tentamos o login mock para manter a facilidade de acesso
-    if (email === 'cliente713@sonomilitar.com' && password === 'c713') {
-      useAuthStore.getState().setAuthenticated(true);
-      navigate({ to: "/dashboard", replace: true });
-      setLoading(false);
-      return;
-    }
 
     const { error: signInError } = await supabase.auth.signInWithPassword({
       email,

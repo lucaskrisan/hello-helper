@@ -33,10 +33,16 @@ function Progress() {
     loadStats();
   }, []);
 
-  const chartData = history.slice(-7).map(h => ({
-    date: new Date(h.date).toLocaleDateString(i18n.language, { day: '2-digit', month: '2-digit' }),
-    score: h.score
-  }));
+  const chartData = history.slice(-7).map(h => {
+    const dateValue = h.created_at || h.date;
+    const parsed = dateValue ? new Date(dateValue) : null;
+    return {
+      date: parsed && !isNaN(parsed.getTime())
+        ? parsed.toLocaleDateString(i18n.language, { day: '2-digit', month: '2-digit' })
+        : '?',
+      score: h.score ?? 0,
+    };
+  });
 
   return (
     <div className="min-h-screen bg-[#F7F3EA] p-4 sm:p-6 md:p-8 max-w-2xl mx-auto overflow-x-hidden">

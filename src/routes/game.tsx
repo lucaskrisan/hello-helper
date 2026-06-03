@@ -45,13 +45,26 @@ function Game() {
   const [globalTimeLeft, setGlobalTimeLeft] = useState(300);
   const [isLoading, setIsLoading] = useState(true);
 
+  const isFinishedRef = useRef(false);
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => { isMountedRef.current = false; };
+  }, []);
 
   const finishChallenge = useCallback(async () => {
+    if (isFinishedRef.current) return;
+    isFinishedRef.current = true;
+
     const { data: { user } } = await supabase.auth.getUser();
     const finalScore = Math.min(100, Math.round(scoreRef.current));
     const totalTime = Math.floor((Date.now() - startTime) / 1000);
-    
+
     if (user) {
+      const todayStr = new Date().toISOString().split('T')[0];
+      const yesterdayStr = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+
       await supabase.from("daily_challenges").insert({
         user_id: user.id,
         score: finalScore,
@@ -59,16 +72,36 @@ function Game() {
         correct_answers: correctCountRef.current,
         total_time: totalTime,
       });
+
+      // Update streak — only if this is the first challenge today
+      const { data: existingStreak } = await supabase
+        .from("streaks")
+        .select("*")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      const lastDate = existingStreak?.last_challenge_date;
+      if (lastDate !== todayStr) {
+        const currentStreak = existingStreak?.current_streak || 0;
+        const newStreak = lastDate === yesterdayStr ? currentStreak + 1 : 1;
+        const bestStreak = Math.max(existingStreak?.best_streak || 0, newStreak);
+        await supabase.from("streaks").upsert(
+          { user_id: user.id, current_streak: newStreak, best_streak: bestStreak, last_challenge_date: todayStr },
+          { onConflict: "user_id" }
+        );
+      }
     }
-    
+
     if (search.mode === 'trial') {
       trackEvent('test_completed', { score: finalScore, time: totalTime });
     } else {
       trackEvent('daily_challenge_completed', { score: finalScore, time: totalTime });
     }
-    
-    navigate({ to: "/conclusao", search: { score: finalScore, time: totalTime }, replace: true });
-  }, [startTime, navigate]);
+
+    if (isMountedRef.current) {
+      navigate({ to: "/conclusao", search: { score: finalScore, time: totalTime }, replace: true });
+    }
+  }, [startTime, navigate, search.mode]);
 
 
   const loadNextTask = useCallback(async (forceTasks?: any[]) => {
@@ -124,7 +157,7 @@ function Game() {
     setTimeLeft(15);
     setUserSequence([]);
     setFeedback({ type: null, message: "" });
-  }, [search.mode, finishChallenge, score, correctCount, tasks.length]);
+  }, [search.mode, finishChallenge, tasks, taskIndex]);
 
 
   useEffect(() => {
@@ -148,10 +181,14 @@ function Game() {
     // Save to history if it has itemIds
     if (currentTask?.itemIds) {
       currentTask.itemIds.forEach((id: string) => {
-        import("@/lib/game-engine").then(m => m.saveToHistory(id, currentTask.categoryName || currentTask.category || "unknown"));
+        import("@/lib/game-engine")
+          .then(m => m.saveToHistory(id, currentTask.categoryName || currentTask.category || "unknown"))
+          .catch(console.error);
       });
     } else if (currentTask?.itemId) {
-      import("@/lib/game-engine").then(m => m.saveToHistory(currentTask.itemId, currentTask.categoryName || currentTask.category || "unknown"));
+      import("@/lib/game-engine")
+        .then(m => m.saveToHistory(currentTask.itemId, currentTask.categoryName || currentTask.category || "unknown"))
+        .catch(console.error);
     }
 
     setFeedback({ type: 'success', message: t('game_feedback_success_msg') });
@@ -192,7 +229,7 @@ function Game() {
   }, []); // Sem dependências para não reiniciar o timer
 
   useEffect(() => {
-    if (globalTimeLeft === 0 && !isLoading) {
+    if (globalTimeLeft === 0 && !isLoading && isMountedRef.current) {
       finishChallenge();
     }
   }, [globalTimeLeft, isLoading, finishChallenge]);
@@ -285,7 +322,7 @@ function Game() {
               </div>
             ) : (
               <div className="space-y-8">
-                <p className="text-2xl font-bold text-gray-700">{t('ex_shopping_question', { item: currentTask.question.match(/Quantos\(as\) (.*) estavam na lista\?/)?.[1] || currentTask.answer })}</p>
+                <p className="text-2xl font-bold text-gray-700">{t('ex_shopping_question', { item: currentTask.list?.find((it: any) => it.qty === currentTask.answer)?.item ?? currentTask.answer })}</p>
                 <div className="grid grid-cols-3 gap-4">
                   {currentTask.options.map((opt: number) => (
                     <Button 
@@ -436,8 +473,8 @@ function Game() {
 
         {currentTask.type === 'logic' && (
           <div className="text-center">
-            <h2 className="text-2xl font-bold mb-4">Sequência Numérica</h2>
-            <p className="text-gray-500 mb-8">Qual o próximo número da sequência?</p>
+            <h2 className="text-2xl font-bold mb-4">{t('ex_sequence_title')}</h2>
+            <p className="text-gray-500 mb-8">{t('ex_sequence_subtitle')}</p>
             <div className="flex justify-center items-center gap-4 mb-12">
               {currentTask.sequence.map((n: number) => <span key={n} className="text-3xl font-bold text-gray-400">{n} →</span>)}
               <span className="text-4xl font-bold text-primary animate-pulse">?</span>

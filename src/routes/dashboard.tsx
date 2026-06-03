@@ -5,7 +5,6 @@ import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { GAME_ASSETS } from "@/lib/game-engine";
 import { Settings, BarChart3, Home as HomeIcon, ShieldCheck } from "lucide-react";
-import { useAuthStore } from "@/hooks/use-auth";
 import { useTranslation } from "react-i18next";
 
 
@@ -25,35 +24,27 @@ function Dashboard() {
   useEffect(() => {
     async function loadData() {
       setLoading(true);
-      const isAuthenticatedMock = useAuthStore.getState().isAuthenticated;
       const { data: { user } } = await supabase.auth.getUser();
 
-      if (!user && !isAuthenticatedMock) {
+      if (!user) {
         navigate({ to: "/login", replace: true });
         return;
       }
 
-      let currentProfile: any = null;
-      let currentStreak: any = { current_streak: 0 };
-      let currentChallengesList: any[] = [];
-
-      if (user) {
-        const { data: prof } = await supabase.from("profiles").select("*").eq("user_id", user.id).maybeSingle();
-        if (!prof) {
-          navigate({ to: "/onboarding", replace: true });
-          return;
-        }
-        currentProfile = { ...prof, email: user.email };
-
-        const [{ data: str }, { data: challs }] = await Promise.all([
-          supabase.from("streaks").select("*").eq("user_id", user.id).maybeSingle(),
-          supabase.from("daily_challenges").select("*").eq("user_id", user.id).order('created_at', { ascending: false })
-        ]);
-        currentStreak = str || currentStreak;
-        currentChallengesList = challs || [];
-      } else {
-        currentProfile = { name: "Mente Ativa", display_name: "Explorador" };
+      const { data: prof } = await supabase.from("profiles").select("*").eq("user_id", user.id).maybeSingle();
+      if (!prof) {
+        navigate({ to: "/onboarding", replace: true });
+        return;
       }
+
+      const [{ data: str }, { data: challs }] = await Promise.all([
+        supabase.from("streaks").select("*").eq("user_id", user.id).maybeSingle(),
+        supabase.from("daily_challenges").select("*").eq("user_id", user.id).order('created_at', { ascending: false })
+      ]);
+
+      const currentProfile = { ...prof, email: user.email };
+      const currentStreak = str || { current_streak: 0 };
+      const currentChallengesList = challs || [];
 
       setProfile(currentProfile);
       setStreak(currentStreak);
@@ -151,8 +142,8 @@ function Dashboard() {
       </div>
 
 
-      {(profile?.email === 'trafegocomkrisan@gmail.com' || localStorage.getItem('mente_ativa_is_super_admin') === 'true') && (
-        <Button 
+      {profile?.is_admin && (
+        <Button
           onClick={() => navigate({ to: "/admin" })}
           className="w-full mt-4 bg-gray-900 hover:bg-gray-800 text-white rounded-2xl py-4 flex items-center justify-center gap-2"
         >

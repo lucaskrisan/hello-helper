@@ -22,6 +22,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   logout: async () => {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('mente_ativa_auth');
+      localStorage.removeItem('mente_ativa_is_super_admin');
     }
     await supabase.auth.signOut();
     set({ isAuthenticated: false, isInitializing: false });

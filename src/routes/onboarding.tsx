@@ -24,11 +24,13 @@ function Onboarding() {
   }, [navigate]);
 
   const handleFinish = async () => {
+    if (!data.age_range || !data.main_goal) return;
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
+      const defaultName = user.email?.split('@')[0]?.replace(/[^a-zA-Z0-9]/g, ' ') || 'Usuário';
       await supabase.from("profiles").upsert({
         user_id: user.id,
-        name: user.email?.split('@')[0], // Nome padrão baseado no email
+        name: defaultName,
         age_range: data.age_range,
         main_goal: data.main_goal,
       });
