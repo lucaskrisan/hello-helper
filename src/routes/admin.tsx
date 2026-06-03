@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/table";
 import { toast } from "sonner";
 import { CONTENT_POOLS } from "@/lib/content-pools";
+import { ES_POOLS, EN_POOLS } from "@/lib/content-pools-i18n";
 
 export const Route = createFileRoute("/admin")({
   component: AdminDashboard,
@@ -56,6 +57,7 @@ function AdminDashboard() {
   const [selectedPayment, setSelectedPayment] = useState<any>(null);
   const [contentSearch, setContentSearch] = useState("");
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+  const [contentLang, setContentLang] = useState<'pt' | 'es' | 'en'>('pt');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -214,7 +216,8 @@ function AdminDashboard() {
     toast.success(!current ? `${label} concedido` : `${label} removido`);
   };
 
-  const contentEntries = Object.entries(CONTENT_POOLS);
+  const activePool = contentLang === 'es' ? ES_POOLS : contentLang === 'en' ? EN_POOLS : CONTENT_POOLS;
+  const contentEntries = Object.entries(activePool);
   const filteredContent = contentSearch.trim()
     ? contentEntries.map(([key, items]) => ({
         key,
@@ -480,6 +483,20 @@ function AdminDashboard() {
           </TabsContent>
 
           <TabsContent value="content">
+            <div className="flex gap-2 mb-4">
+              {(['pt', 'es', 'en'] as const).map(lang => (
+                <button
+                  key={lang}
+                  onClick={() => { setContentLang(lang); setContentSearch(""); setExpandedCategory(null); }}
+                  className={`px-4 py-2 rounded-lg text-sm font-bold border transition-colors ${contentLang === lang ? 'bg-primary text-white border-primary' : 'bg-white text-gray-600 border-gray-200 hover:border-primary'}`}
+                >
+                  {lang === 'pt' ? '🇧🇷 Português' : lang === 'es' ? '🇲🇽 Español' : '🇺🇸 English'}
+                </button>
+              ))}
+              <span className="ml-auto text-xs text-gray-400 self-center">
+                {contentEntries.reduce((acc, [, items]) => acc + items.length, 0)} palavras total
+              </span>
+            </div>
             <div className="mb-6">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
