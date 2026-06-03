@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Languages, ChevronDown } from "lucide-react";
+import { Globe, ChevronDown } from "lucide-react";
 
 export function LanguageSwitcher() {
   const { i18n, t } = useTranslation();
@@ -32,45 +32,40 @@ export function LanguageSwitcher() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button 
-          variant="outline" 
-          className="bg-white border-2 border-primary/20 hover:border-primary/50 rounded-xl md:rounded-2xl px-3 md:px-4 py-3 md:py-6 h-auto flex items-center gap-2 md:gap-3 shadow-md transition-all hover:scale-105 active:scale-95 group"
+          variant="ghost" 
+          className="hover:bg-gray-50 border border-gray-200 rounded-full px-4 py-2 h-10 flex items-center gap-2 transition-all hover:shadow-md active:scale-95 group bg-white/80 backdrop-blur-sm shadow-sm"
         >
-          <div className="flex flex-col items-start">
-            <span className="text-[10px] md:text-xs font-black text-primary uppercase tracking-tighter leading-none mb-0.5 md:mb-1">
-              {t('common:language')}
-            </span>
-            <div className="flex items-center gap-1.5 md:gap-2">
-              <span className="text-xl md:text-2xl">{currentLanguage.flag}</span>
-              <span className="font-bold text-gray-800 text-sm md:text-lg">{currentLanguage.label}</span>
+          <div className="flex items-center gap-2">
+            <Globe className="h-4 w-4 text-primary/60 group-hover:text-primary transition-colors" />
+            <div className="flex items-center gap-1.5">
+              <span className="text-lg leading-none">{currentLanguage.flag}</span>
+              <span className="font-medium text-gray-600 text-sm hidden xs:inline-block">{currentLanguage.label}</span>
             </div>
           </div>
-          <ChevronDown className="h-4 w-4 md:h-5 md:w-5 text-gray-400 group-hover:text-primary transition-colors" />
+          <ChevronDown className="h-3 w-3 text-gray-400 group-hover:text-primary transition-colors ml-0.5" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[280px] p-3 rounded-2xl border-2 shadow-2xl z-[100]">
-        <div className="text-sm font-black text-gray-400 px-3 py-2 uppercase tracking-widest mb-2 border-b">
-          {t('common:select_language')}
-        </div>
-        <div className="grid gap-2">
+      <DropdownMenuContent align="end" className="w-[220px] p-2 rounded-2xl border border-gray-100 shadow-xl z-[100] animate-in fade-in zoom-in-95 duration-200">
+        <div className="grid gap-1">
           {languages.map((lang) => (
             <DropdownMenuItem
               key={lang.code}
               onClick={() => changeLanguage(lang.code, lang.countryCode)}
-              className={`flex items-center justify-between p-4 rounded-xl cursor-pointer transition-all border-2 ${
+              className={`flex items-center justify-between px-3 py-2.5 rounded-xl cursor-pointer transition-all ${
                 i18n.language === lang.code 
-                  ? "bg-primary/10 border-primary text-primary shadow-sm" 
-                  : "bg-gray-50 border-transparent hover:border-gray-200 hover:bg-white"
+                  ? "bg-primary/10 text-primary font-semibold" 
+                  : "hover:bg-gray-50 text-gray-700"
               }`}
             >
-              <div className="flex items-center gap-4">
-                <span className="text-3xl">{lang.flag}</span>
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">{lang.flag}</span>
                 <div className="flex flex-col">
-                  <span className="text-lg font-bold leading-none mb-1">{lang.label}</span>
-                  <span className="text-xs font-medium text-gray-500">{lang.country}</span>
+                  <span className="text-sm">{lang.label}</span>
+                  <span className="text-[10px] opacity-60 uppercase tracking-tighter">{lang.country}</span>
                 </div>
               </div>
               {i18n.language === lang.code && (
-                <div className="w-3 h-3 bg-primary rounded-full animate-pulse" />
+                <div className="w-1.5 h-1.5 bg-primary rounded-full" />
               )}
             </DropdownMenuItem>
           ))}

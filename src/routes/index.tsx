@@ -22,20 +22,15 @@ function LandingPage() {
   return (
     <div className="min-h-screen bg-[#F7F3EA] flex flex-col items-center px-4 py-8 md:p-12 text-center relative overflow-hidden">
       {/* Overlay de carregamento para evitar flashes de conteúdo não traduzido */}
-      {!t('landing_title') || t('landing_title') === 'landing_title' ? (
+      {!t('common:landing_title') || t('common:landing_title') === 'landing_title' ? (
         <div className="fixed inset-0 bg-[#F7F3EA] z-[9999] flex items-center justify-center">
           <div className="animate-pulse text-primary font-bold">Carregando...</div>
         </div>
       ) : null}
 
-      {/* Header com seletor de idioma - Destaque visual */}
+      {/* Header com seletor de idioma - Elegante e discreto */}
       <header className="w-full max-w-5xl flex justify-center md:justify-end mb-8 md:mb-12 animate-fade-in relative z-50">
-        <div className="flex flex-row items-center gap-2 md:gap-3 bg-white/80 backdrop-blur-sm p-2 md:p-3 rounded-2xl md:rounded-3xl border-2 border-primary/10 shadow-lg">
-          <span className="hidden xs:inline-block text-[10px] md:text-sm font-black text-primary uppercase tracking-wider px-2">
-            {t('common:select_language')}:
-          </span>
-          <LanguageSwitcher />
-        </div>
+        <LanguageSwitcher />
       </header>
 
       <main className="flex-1 flex flex-col items-center justify-center w-full max-w-4xl mx-auto">
@@ -49,8 +44,8 @@ function LandingPage() {
         
         <div className="space-y-4 md:space-y-6 mb-8 md:mb-12 text-left max-w-md w-full animate-fade-up px-2" style={{ animationDelay: '0.2s' }}>
           {[
-            t('landing_item_1'),
-            t('landing_item_2'),
+            t('common:landing_item_1'),
+            t('common:landing_item_2'),
           ].map((item) => (
             <div key={item} className="flex items-start space-x-3 text-lg sm:text-xl md:text-2xl text-gray-700 font-semibold bg-white/50 p-4 md:p-5 rounded-2xl shadow-sm border border-white transition-transform hover:scale-[1.02]">
               <span className="shrink-0 text-primary mt-1">✨</span>
@@ -60,21 +55,20 @@ function LandingPage() {
         </div>
 
         <p className="text-lg sm:text-xl md:text-2xl text-gray-600 mb-8 md:mb-10 max-w-lg leading-relaxed animate-fade-up px-4" style={{ animationDelay: '0.4s' }}>
-          {t('landing_subtitle')}
+          {t('common:landing_subtitle')}
         </p>
         
         <div className="space-y-4 w-full max-w-xs animate-fade-up px-4" style={{ animationDelay: '0.6s' }}>
           <Button 
             onClick={() => navigate({ to: "/game", search: { mode: 'trial' } })}
-            className="w-full bg-primary hover:bg-primary/90 text-white text-xl md:text-2xl py-8 md:py-10 px-8 rounded-2xl md:rounded-3xl shadow-[0_10px_40px_-10px_rgba(var(--primary),0.5)] transition-all hover:scale-105 active:scale-95 font-black uppercase tracking-widest h-auto"
+            className="w-full bg-primary hover:bg-primary/90 text-white text-xl md:text-2xl py-6 md:py-8 px-8 rounded-full shadow-lg transition-all hover:scale-[1.02] active:scale-95 font-bold uppercase tracking-widest h-auto border-b-4 border-black/10"
           >
-            {t('start_test')}
+            {t('common:start_test')}
           </Button>
-          <p className="text-sm md:text-base font-medium text-gray-500">{t('free_test_info')}</p>
+          <p className="text-sm md:text-base font-medium text-gray-500">{t('common:free_test_info')}</p>
         </div>
-
         <div className="mt-16 text-gray-400 font-medium animate-fade-in" style={{ animationDelay: '1s' }}>
-          {t('made_for_50plus')}
+          {t('common:made_for_50plus')}
         </div>
       </main>
 
