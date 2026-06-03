@@ -33,7 +33,7 @@ export function LanguageSwitcher() {
       <DropdownMenuTrigger asChild>
         <Button 
           variant="ghost" 
-          className="hover:bg-gray-50 border border-gray-200 rounded-full px-4 py-2 h-10 flex items-center gap-2 transition-all hover:shadow-sm active:scale-95 group bg-white"
+          className="hover:bg-gray-50 border border-gray-200 rounded-full px-4 py-2 h-10 flex items-center gap-2 transition-all hover:shadow-md active:scale-95 group bg-white/80 backdrop-blur-sm shadow-sm"
         >
           <div className="flex items-center gap-2">
             <Globe className="h-4 w-4 text-primary/60 group-hover:text-primary transition-colors" />
