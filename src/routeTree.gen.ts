@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WelcomeRouteImport } from './routes/welcome'
+import { Route as SetupAdminRouteImport } from './routes/setup-admin'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ProgressoRouteImport } from './routes/progresso'
 import { Route as PremiumRouteImport } from './routes/premium'
@@ -24,6 +25,11 @@ import { Route as IndexRouteImport } from './routes/index'
 const WelcomeRoute = WelcomeRouteImport.update({
   id: '/welcome',
   path: '/welcome',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SetupAdminRoute = SetupAdminRouteImport.update({
+  id: '/setup-admin',
+  path: '/setup-admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SettingsRoute = SettingsRouteImport.update({
@@ -88,6 +94,7 @@ export interface FileRoutesByFullPath {
   '/premium': typeof PremiumRoute
   '/progresso': typeof ProgressoRoute
   '/settings': typeof SettingsRoute
+  '/setup-admin': typeof SetupAdminRoute
   '/welcome': typeof WelcomeRoute
 }
 export interface FileRoutesByTo {
@@ -101,6 +108,7 @@ export interface FileRoutesByTo {
   '/premium': typeof PremiumRoute
   '/progresso': typeof ProgressoRoute
   '/settings': typeof SettingsRoute
+  '/setup-admin': typeof SetupAdminRoute
   '/welcome': typeof WelcomeRoute
 }
 export interface FileRoutesById {
@@ -115,6 +123,7 @@ export interface FileRoutesById {
   '/premium': typeof PremiumRoute
   '/progresso': typeof ProgressoRoute
   '/settings': typeof SettingsRoute
+  '/setup-admin': typeof SetupAdminRoute
   '/welcome': typeof WelcomeRoute
 }
 export interface FileRouteTypes {
@@ -130,6 +139,7 @@ export interface FileRouteTypes {
     | '/premium'
     | '/progresso'
     | '/settings'
+    | '/setup-admin'
     | '/welcome'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -143,6 +153,7 @@ export interface FileRouteTypes {
     | '/premium'
     | '/progresso'
     | '/settings'
+    | '/setup-admin'
     | '/welcome'
   id:
     | '__root__'
@@ -156,6 +167,7 @@ export interface FileRouteTypes {
     | '/premium'
     | '/progresso'
     | '/settings'
+    | '/setup-admin'
     | '/welcome'
   fileRoutesById: FileRoutesById
 }
@@ -170,6 +182,7 @@ export interface RootRouteChildren {
   PremiumRoute: typeof PremiumRoute
   ProgressoRoute: typeof ProgressoRoute
   SettingsRoute: typeof SettingsRoute
+  SetupAdminRoute: typeof SetupAdminRoute
   WelcomeRoute: typeof WelcomeRoute
 }
 
@@ -180,6 +193,13 @@ declare module '@tanstack/react-router' {
       path: '/welcome'
       fullPath: '/welcome'
       preLoaderRoute: typeof WelcomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/setup-admin': {
+      id: '/setup-admin'
+      path: '/setup-admin'
+      fullPath: '/setup-admin'
+      preLoaderRoute: typeof SetupAdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/settings': {
@@ -266,6 +286,7 @@ const rootRouteChildren: RootRouteChildren = {
   PremiumRoute: PremiumRoute,
   ProgressoRoute: ProgressoRoute,
   SettingsRoute: SettingsRoute,
+  SetupAdminRoute: SetupAdminRoute,
   WelcomeRoute: WelcomeRoute,
 }
 export const routeTree = rootRouteImport
