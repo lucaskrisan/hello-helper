@@ -55,7 +55,7 @@ export function LanguageSwitcher() {
           {languages.map((lang) => (
             <DropdownMenuItem
               key={lang.code}
-              onClick={() => changeLanguage(lang.code)}
+              onClick={() => changeLanguage(lang.code, lang.countryCode)}
               className={`flex items-center justify-between p-4 rounded-xl cursor-pointer transition-all border-2 ${
                 i18n.language === lang.code 
                   ? "bg-primary/10 border-primary text-primary shadow-sm" 
