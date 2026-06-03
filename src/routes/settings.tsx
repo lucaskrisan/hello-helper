@@ -68,10 +68,10 @@ function Settings() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F3EA] p-6 max-w-lg mx-auto">
-      <header className="mb-8 flex items-center">
-        <Button variant="ghost" onClick={() => navigate({ to: "/dashboard" })} className="mr-4">←</Button>
-        <h1 className="text-3xl font-bold">{t('settings_title')}</h1>
+    <div className="min-h-screen bg-[#F7F3EA] p-4 sm:p-6 md:p-8 max-w-xl mx-auto overflow-x-hidden">
+      <header className="mb-6 md:mb-10 flex items-center">
+        <Button variant="ghost" onClick={() => navigate({ to: "/dashboard" })} className="mr-3 md:mr-4 rounded-full w-10 h-10 p-0 bg-white shadow-sm border border-gray-100">←</Button>
+        <h1 className="text-2xl md:text-3xl font-black text-[#1F2937]">{t('settings_title')}</h1>
       </header>
 
       <Card className="bg-white rounded-3xl border-0 shadow-sm p-4 space-y-2 mb-8">

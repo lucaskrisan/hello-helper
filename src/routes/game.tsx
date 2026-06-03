@@ -216,38 +216,38 @@ function Game() {
 
   if (isLoading || !currentTask) {
     return (
-      <div className="min-h-screen bg-[#F7F3EA] flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-gray-500 font-medium">{t('game_loading')}</p>
+      <div className="min-h-screen bg-[#F7F3EA] flex items-center justify-center p-6 text-center">
+        <div className="flex flex-col items-center gap-6 max-w-xs">
+          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-gray-600 font-bold text-xl leading-relaxed">{t('game_loading')}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F3EA] p-4 flex flex-col items-center">
-      <div className="w-full max-w-md flex justify-between items-center mb-4 gap-2">
-        <Button variant="ghost" onClick={() => navigate({ to: "/" })} className="rounded-full w-10 h-10 p-0 bg-white shadow-sm shrink-0">
-          <ChevronLeft className="w-5 h-5" />
+    <div className="min-h-screen bg-[#F7F3EA] p-4 md:p-8 flex flex-col items-center overflow-x-hidden">
+      <div className="w-full max-w-lg flex justify-between items-center mb-6 gap-2 md:gap-4">
+        <Button variant="ghost" onClick={() => navigate({ to: "/" })} className="rounded-full w-10 h-10 md:w-12 md:h-12 p-0 bg-white shadow-sm shrink-0 border border-gray-100">
+          <ChevronLeft className="w-5 h-5 md:w-6 md:h-6" />
         </Button>
-        <div className="bg-white px-3 py-1.5 rounded-full shadow-sm flex items-center space-x-2 flex-1 justify-center">
-          <Brain className="w-4 h-4 text-primary" />
-          <span className="font-bold text-gray-700 text-sm">{t('game_step', { current: taskIndex, total: tasks.length || (search.mode === 'trial' ? '5' : '10') })}</span>
+        <div className="bg-white px-3 py-2 md:px-4 md:py-2.5 rounded-full shadow-sm flex items-center space-x-2 flex-1 justify-center border border-gray-100">
+          <Brain className="w-4 h-4 md:w-5 md:h-5 text-primary" />
+          <span className="font-bold text-gray-700 text-xs md:text-sm whitespace-nowrap">{t('game_step', { current: taskIndex, total: tasks.length || (search.mode === 'trial' ? '5' : '10') })}</span>
         </div>
-        <div className="bg-white px-3 py-1.5 rounded-full shadow-sm flex items-center space-x-1.5 shrink-0">
-          <Trophy className="w-4 h-4 text-yellow-500" />
-          <span className="font-bold text-gray-700 text-sm">{Math.round(score)}</span>
+        <div className="bg-white px-3 py-2 md:px-4 md:py-2.5 rounded-full shadow-sm flex items-center space-x-1.5 shrink-0 border border-gray-100">
+          <Trophy className="w-4 h-4 md:w-5 md:h-5 text-yellow-500" />
+          <span className="font-bold text-gray-700 text-xs md:text-sm">{Math.round(score)}</span>
         </div>
-        <div className="bg-white px-3 py-1.5 rounded-full shadow-sm flex items-center space-x-1.5 shrink-0">
-          <Hourglass className={`w-4 h-4 ${globalTimeLeft < 60 ? 'text-red-500 animate-pulse' : 'text-primary'}`} />
-          <span className={`font-mono font-bold text-sm ${globalTimeLeft < 60 ? 'text-red-500' : 'text-gray-700'}`}>
+        <div className="bg-white px-3 py-2 md:px-4 md:py-2.5 rounded-full shadow-sm flex items-center space-x-1.5 shrink-0 border border-gray-100">
+          <Hourglass className={`w-4 h-4 md:w-5 md:h-5 ${globalTimeLeft < 60 ? 'text-red-500 animate-pulse' : 'text-primary'}`} />
+          <span className={`font-mono font-bold text-xs md:text-sm ${globalTimeLeft < 60 ? 'text-red-500' : 'text-gray-700'}`}>
             {formatTime(globalTimeLeft)}
           </span>
         </div>
       </div>
 
-      <Card className="w-full max-w-md p-6 bg-white rounded-[2rem] shadow-sm border-none min-h-[500px] flex flex-col justify-center relative overflow-hidden">
+      <Card className="w-full max-w-lg p-6 md:p-10 bg-white rounded-[2rem] md:rounded-[3rem] shadow-xl border-none min-h-[450px] sm:min-h-[500px] md:min-h-[600px] flex flex-col justify-center relative overflow-hidden">
         {feedback.type && (
           <div className={`absolute inset-0 z-10 flex items-center justify-center p-8 text-center animate-in fade-in zoom-in duration-300 ${
             feedback.type === 'success' ? "bg-primary/95 text-white" : "bg-orange-500/95 text-white"
@@ -348,9 +348,13 @@ function Game() {
           <div className="text-center">
             <h2 className="text-2xl font-bold mb-4">{t('ex_attention_title')}</h2>
             <p className="text-gray-500 mb-8">{t('ex_attention_subtitle')}</p>
-            <div className="grid gap-3 mx-auto max-w-[300px]" style={{ gridTemplateColumns: `repeat(${currentTask.cols}, 1fr)` }}>
+            <div className="grid gap-2 md:gap-3 mx-auto max-w-full" style={{ gridTemplateColumns: `repeat(${currentTask.cols}, 1fr)` }}>
               {currentTask.grid.map((item: string, i: number) => (
-                <Button key={i} onClick={() => item === currentTask.intruder ? handleCorrect() : handleRetry()} className="h-12 text-xl font-bold bg-gray-50 text-gray-700 border-2">
+                <Button 
+                  key={i} 
+                  onClick={() => item === currentTask.intruder ? handleCorrect() : handleRetry()} 
+                  className="h-10 sm:h-12 md:h-16 text-lg md:text-2xl font-black bg-gray-50 text-gray-700 border-2 hover:bg-white hover:border-primary/30 transition-all active:scale-90"
+                >
                   {item}
                 </Button>
               ))}

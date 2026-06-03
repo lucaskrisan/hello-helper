@@ -62,8 +62,8 @@ function Welcome() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F3EA] p-6 flex flex-col items-center justify-center">
-      <Card className="w-full max-w-md p-8 bg-white rounded-[2.5rem] shadow-2xl text-center border-none relative overflow-hidden">
+    <div className="min-h-screen bg-[#F7F3EA] p-4 sm:p-6 md:p-8 flex flex-col items-center justify-center overflow-x-hidden">
+      <Card className="w-full max-w-md p-6 sm:p-10 bg-white rounded-[2.5rem] sm:rounded-[3rem] shadow-2xl text-center border-none relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-2 bg-green-500"></div>
         <div className="mb-6 flex justify-center">
           <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center">
@@ -87,7 +87,7 @@ function Welcome() {
 
         <Button 
           onClick={() => navigate({ to: "/game", search: { mode: 'daily' } })}
-          className="w-full py-10 text-2xl font-black bg-primary hover:bg-primary/90 text-white rounded-2xl shadow-xl transition-transform hover:scale-105 active:scale-95 uppercase tracking-wide"
+          className="w-full py-8 md:py-10 text-xl md:text-2xl font-black bg-primary hover:bg-primary/90 text-white rounded-2xl md:rounded-[2rem] shadow-xl transition-all hover:scale-105 active:scale-95 uppercase tracking-widest h-auto"
         >
           {t('welcome_start')}
         </Button>

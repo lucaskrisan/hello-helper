@@ -41,9 +41,9 @@ function Conclusion() {
 
   if (step === 'report') {
     return (
-      <div className="min-h-screen bg-[#F7F3EA] p-4 flex flex-col items-center justify-center">
-        <Card className="w-full max-w-md p-6 sm:p-8 bg-white rounded-3xl shadow-sm text-center">
-          <h1 className="text-3xl font-bold mb-6 text-[#1F2937]">{t('conclusion_profile_title')}</h1>
+      <div className="min-h-screen bg-[#F7F3EA] p-4 sm:p-6 md:p-8 flex flex-col items-center justify-center">
+        <Card className="w-full max-w-md p-6 sm:p-10 bg-white rounded-[2rem] sm:rounded-[3rem] shadow-xl text-center border-none">
+          <h1 className="text-2xl sm:text-3xl font-black mb-6 text-[#1F2937] leading-tight">{t('conclusion_profile_title')}</h1>
           
           <div className="space-y-6 mb-8 text-left">
             <div className="flex justify-between items-center p-3 bg-gray-50 rounded-xl border border-gray-100">
@@ -75,7 +75,7 @@ function Conclusion() {
 
           <Button 
             onClick={() => setStep('explanation')}
-            className="w-full py-10 text-xl font-bold bg-primary hover:bg-primary/90 text-white rounded-2xl shadow-lg transition-transform hover:scale-105 active:scale-95 uppercase"
+            className="w-full py-8 md:py-10 text-xl font-black bg-primary hover:bg-primary/90 text-white rounded-2xl md:rounded-[2rem] shadow-xl transition-all hover:scale-105 active:scale-95 uppercase tracking-widest h-auto"
           >
             {t('conclusion_continue')}
           </Button>
@@ -86,9 +86,9 @@ function Conclusion() {
 
   if (step === 'explanation') {
     return (
-      <div className="min-h-screen bg-[#F7F3EA] p-4 flex flex-col items-center justify-center">
-        <Card className="w-full max-w-md p-6 sm:p-8 bg-white rounded-3xl shadow-sm text-center">
-          <h1 className="text-3xl font-bold mb-6 text-[#1F2937]">{t('conclusion_what_means_title')}</h1>
+      <div className="min-h-screen bg-[#F7F3EA] p-4 sm:p-6 md:p-8 flex flex-col items-center justify-center">
+        <Card className="w-full max-w-md p-6 sm:p-10 bg-white rounded-[2rem] sm:rounded-[3rem] shadow-xl text-center border-none">
+          <h1 className="text-2xl sm:text-3xl font-black mb-6 text-[#1F2937] leading-tight">{t('conclusion_what_means_title')}</h1>
           
           <div className="space-y-4 text-left mb-8">
             <p className="text-gray-700 leading-relaxed text-lg">
@@ -122,7 +122,7 @@ function Conclusion() {
 
           <Button 
             onClick={() => setStep('offer')}
-            className="w-full py-10 text-xl font-bold bg-primary hover:bg-primary/90 text-white rounded-2xl shadow-lg transition-transform hover:scale-105 active:scale-95 uppercase"
+            className="w-full py-8 md:py-10 text-xl font-black bg-primary hover:bg-primary/90 text-white rounded-2xl md:rounded-[2rem] shadow-xl transition-all hover:scale-105 active:scale-95 uppercase tracking-widest h-auto"
           >
             {t('conclusion_see_plan')}
           </Button>
@@ -132,9 +132,9 @@ function Conclusion() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F3EA] p-4 flex flex-col items-center justify-center">
-      <Card className="w-full max-w-md p-6 sm:p-8 bg-white rounded-3xl shadow-xl text-center relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-2 bg-primary"></div>
+    <div className="min-h-screen bg-[#F7F3EA] p-4 sm:p-6 md:p-8 flex flex-col items-center justify-center">
+      <Card className="w-full max-w-md p-6 sm:p-10 bg-white rounded-[2.5rem] sm:rounded-[3.5rem] shadow-2xl text-center relative overflow-hidden border-none">
+        <div className="absolute top-0 left-0 w-full h-3 bg-primary"></div>
         
         <h2 className="text-2xl font-bold mb-2">{t('offer_title')}</h2>
         <p className="text-gray-600 mb-8">{t('offer_subtitle')}</p>
@@ -164,7 +164,7 @@ function Conclusion() {
             const stripeUrl = import.meta.env.VITE_STRIPE_PAYMENT_LINK || "https://buy.stripe.com/test_6oEbMh9708pI5EYeUV";
             window.location.href = stripeUrl; 
           }}
-          className="w-full py-8 text-2xl font-black bg-primary hover:bg-primary/90 text-white rounded-2xl shadow-xl transition-transform hover:scale-105 active:scale-95"
+          className="w-full py-8 md:py-10 text-xl md:text-2xl font-black bg-primary hover:bg-primary/90 text-white rounded-2xl md:rounded-[2.5rem] shadow-xl transition-all hover:scale-105 active:scale-95 h-auto uppercase tracking-widest"
         >
           {t('offer_cta')}
         </Button>

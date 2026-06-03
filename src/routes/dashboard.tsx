@@ -77,11 +77,11 @@ function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F3EA] p-6 max-w-2xl mx-auto pb-32">
-      <header className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-[#1F2937]">{t('dashboard_greeting')}{profile?.display_name || profile?.name ? `, ${profile.display_name || profile.name}` : ""}! 👋</h1>
-          <p className="text-gray-600">{t('dashboard_subtitle')}</p>
+    <div className="min-h-screen bg-[#F7F3EA] p-4 sm:p-6 md:p-8 max-w-2xl mx-auto pb-32 overflow-x-hidden">
+      <header className="flex justify-between items-start md:items-center mb-8 gap-4">
+        <div className="flex-1">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-[#1F2937] leading-tight">{t('dashboard_greeting')}{profile?.display_name || profile?.name ? `, ${profile.display_name || profile.name}` : ""}! 👋</h1>
+          <p className="text-gray-500 text-sm sm:text-base font-medium mt-1">{t('dashboard_subtitle')}</p>
 
         </div>
         <div className="bg-white p-3 rounded-2xl shadow-sm flex items-center space-x-2 border border-white/50">
@@ -118,12 +118,11 @@ function Dashboard() {
 
       <Button 
         onClick={() => navigate({ to: "/game", search: { mode: 'daily' } })}
-        className="w-full py-8 sm:py-12 text-xl sm:text-2xl font-bold bg-primary hover:bg-primary/90 text-white rounded-[2rem] sm:rounded-[2.5rem] shadow-xl mb-8 sm:mb-12 transform transition-all hover:scale-[1.02] active:scale-95 flex flex-col space-y-1 relative overflow-hidden"
+        className="w-full py-10 sm:py-12 md:py-14 text-xl sm:text-2xl md:text-3xl font-black bg-primary hover:bg-primary/90 text-white rounded-[2rem] sm:rounded-[3rem] shadow-xl mb-8 sm:mb-12 transform transition-all hover:scale-[1.02] active:scale-95 flex flex-col space-y-2 relative overflow-hidden h-auto uppercase tracking-wider"
       >
         <div className="absolute inset-0 bg-white/10 opacity-0 hover:opacity-100 transition-opacity" />
         <span className="relative z-10">{t('dashboard_start_challenge')}</span>
-        <span className="text-xs sm:text-sm font-normal opacity-80 relative z-10">{t('dashboard_start_info')}</span>
-
+        <span className="text-xs sm:text-sm font-medium opacity-80 relative z-10 normal-case">{t('dashboard_start_info')}</span>
       </Button>
 
       <h3 className="text-xl font-bold mb-6 text-[#1F2937] flex items-center space-x-2">
