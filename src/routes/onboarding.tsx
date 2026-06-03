@@ -37,8 +37,8 @@ function Onboarding() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F3EA] flex items-center justify-center p-6">
-      <Card className="w-full max-w-md p-8 bg-white shadow-xl rounded-2xl">
+    <div className="min-h-screen bg-[#F7F3EA] p-4 sm:p-6 md:p-8 flex items-center justify-center">
+      <Card className="w-full max-w-md p-6 sm:p-10 bg-white shadow-2xl rounded-[2rem] sm:rounded-[3rem] border-none">
         {step === 1 ? (
           <div>
             <h2 className="text-2xl font-bold mb-6">Qual sua faixa de idade?</h2>

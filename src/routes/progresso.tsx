@@ -39,10 +39,10 @@ function Progress() {
   }));
 
   return (
-    <div className="min-h-screen bg-[#F7F3EA] p-6 max-w-lg mx-auto">
-      <header className="mb-8 flex items-center">
-        <Button variant="ghost" onClick={() => navigate({ to: "/dashboard" })} className="mr-4">←</Button>
-        <h1 className="text-3xl font-bold">{t('progress_title')}</h1>
+    <div className="min-h-screen bg-[#F7F3EA] p-4 sm:p-6 md:p-8 max-w-2xl mx-auto overflow-x-hidden">
+      <header className="mb-6 md:mb-10 flex items-center">
+        <Button variant="ghost" onClick={() => navigate({ to: "/dashboard" })} className="mr-3 md:mr-4 rounded-full w-10 h-10 p-0 bg-white shadow-sm border border-gray-100">←</Button>
+        <h1 className="text-2xl md:text-3xl font-black text-[#1F2937]">{t('progress_title')}</h1>
       </header>
 
       <div className="grid grid-cols-2 gap-4 mb-8">

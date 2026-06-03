@@ -247,7 +247,7 @@ function Game() {
         </div>
       </div>
 
-      <Card className="w-full max-w-lg p-6 md:p-10 bg-white rounded-[2rem] md:rounded-[3rem] shadow-xl border-none min-h-[500px] md:min-h-[600px] flex flex-col justify-center relative overflow-hidden">
+      <Card className="w-full max-w-lg p-6 md:p-10 bg-white rounded-[2rem] md:rounded-[3rem] shadow-xl border-none min-h-[450px] sm:min-h-[500px] md:min-h-[600px] flex flex-col justify-center relative overflow-hidden">
         {feedback.type && (
           <div className={`absolute inset-0 z-10 flex items-center justify-center p-8 text-center animate-in fade-in zoom-in duration-300 ${
             feedback.type === 'success' ? "bg-primary/95 text-white" : "bg-orange-500/95 text-white"
