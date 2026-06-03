@@ -151,6 +151,13 @@
   "welcome_tip": "The secret to a sharp mind is consistency. 5 minutes a day changes everything.",
   "welcome_start": "START NOW",
 
+  "onboarding_age_title": "What is your age range?",
+  "onboarding_goal_title": "What is your main goal?",
+  "onboarding_goal_1": "Improve my memory",
+  "onboarding_goal_2": "Improve my concentration",
+  "onboarding_goal_3": "Keep my mind active",
+  "onboarding_goal_4": "Create a daily routine",
+
   "country_BR": "Brazil",
   "country_MX": "Mexico",
   "country_AR": "Argentina",

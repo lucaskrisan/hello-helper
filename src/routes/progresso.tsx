@@ -24,7 +24,7 @@ function Progress() {
         return;
       }
 
-      const { data: streak } = await supabase.from("streaks").select("*").eq("user_id", user.id).single();
+      const { data: streak } = await supabase.from("streaks").select("*").eq("user_id", user.id).maybeSingle();
       const { data: challenges } = await supabase.from("daily_challenges").select("*").eq("user_id", user.id).order('date', { ascending: true });
       
       setStats(streak);

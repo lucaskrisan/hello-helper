@@ -151,6 +151,13 @@
   "welcome_tip": "El secreto de una mente afilada es la constancia. 5 minutos al día lo cambian todo.",
   "welcome_start": "EMPEZAR AHORA",
 
+  "onboarding_age_title": "¿Cuál es tu rango de edad?",
+  "onboarding_goal_title": "¿Cuál es tu objetivo principal?",
+  "onboarding_goal_1": "Mejorar mi memoria",
+  "onboarding_goal_2": "Mejorar mi concentración",
+  "onboarding_goal_3": "Mantener mi mente activa",
+  "onboarding_goal_4": "Crear una rutina diaria",
+
   "country_BR": "Brasil",
   "country_MX": "México",
   "country_AR": "Argentina",

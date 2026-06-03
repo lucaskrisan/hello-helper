@@ -39,7 +39,7 @@ function Dashboard() {
 
       const [{ data: str }, { data: challs }] = await Promise.all([
         supabase.from("streaks").select("*").eq("user_id", user.id).maybeSingle(),
-        supabase.from("daily_challenges").select("*").eq("user_id", user.id).order('created_at', { ascending: false })
+        supabase.from("daily_challenges").select("*").eq("user_id", user.id).order('date', { ascending: false })
       ]);
 
       const currentProfile = { ...prof, email: user.email };

@@ -4,14 +4,15 @@ import type { ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { 
-  Users, CreditCard, BookOpen, Brain, Activity, ShieldCheck, 
-  TrendingUp, BarChart3, Users2, DollarSign, List, History, AlertCircle,
-  Clock, CheckCircle2, XCircle, ArrowRight
+import { Input } from "@/components/ui/input";
+import {
+  Users, CreditCard, Brain, Activity, ShieldCheck,
+  TrendingUp, BarChart3, DollarSign, List, CheckCircle2,
+  Clock, X, Search, ChevronDown, ChevronUp
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow 
+import {
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow
 } from "@/components/ui/table";
 import { toast } from "sonner";
 import { CONTENT_POOLS } from "@/lib/content-pools";
@@ -36,6 +37,7 @@ interface EnrichedUser {
   name: string;
   user_id: string;
   is_premium: boolean;
+  is_admin: boolean;
   created_at: string;
   last_sign_in_at: string | null;
   challengesCount: number;
@@ -51,6 +53,9 @@ function AdminDashboard() {
   const [payments, setPayments] = useState<any[]>([]);
   const [funnel, setFunnel] = useState<{ name: string; count: number }[]>([]);
   const [exerciseStats, setExerciseStats] = useState<{ name: string; shown: number }[]>([]);
+  const [selectedPayment, setSelectedPayment] = useState<any>(null);
+  const [contentSearch, setContentSearch] = useState("");
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -88,13 +93,12 @@ function AdminDashboard() {
   async function loadAllData() {
     setLoading(true);
     try {
-      // 1. Basic Stats — fetch challenges with user_id for reuse in user enrichment
       const results = await Promise.allSettled([
         supabase.from('profiles').select('*', { count: 'exact', head: true }),
         supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('is_premium', true),
         supabase.from('daily_challenges').select('user_id, score, total_time'),
         supabase.from('payment_events').select('*').order('created_at', { ascending: false }),
-        supabase.from('profiles').select('name, user_id, is_premium, created_at, last_sign_in_at'),
+        supabase.from('profiles').select('name, user_id, is_premium, is_admin, created_at, last_sign_in_at'),
         supabase.from('funnel_events').select('event_name, created_at').order('created_at', { ascending: false }),
         supabase.from('exercise_history').select('category'),
       ]);
@@ -135,24 +139,18 @@ function AdminDashboard() {
         avgTime: Math.floor(avgTime),
       });
 
-      // 2. Users Table — group challenges/payments in memory to avoid N+1 queries
       const challengesByUser: Record<string, { score: number; total_time: number }[]> = {};
       (challengesAll || []).forEach(c => {
         const uid = c.user_id as string;
         if (!challengesByUser[uid]) challengesByUser[uid] = [];
-        challengesByUser[uid].push({
-          score: c.score || 0,
-          total_time: c.total_time || 0
-        });
+        challengesByUser[uid].push({ score: c.score || 0, total_time: c.total_time || 0 });
       });
 
       const paymentsByUser: Record<string, { amount_total: number }[]> = {};
       (paymentsData || []).forEach(p => {
         if (p.user_id) {
           if (!paymentsByUser[p.user_id]) paymentsByUser[p.user_id] = [];
-          paymentsByUser[p.user_id].push({
-            amount_total: p.amount_total || 0
-          });
+          paymentsByUser[p.user_id].push({ amount_total: p.amount_total || 0 });
         }
       });
 
@@ -161,18 +159,18 @@ function AdminDashboard() {
         const userPayments = paymentsByUser[p.user_id] || [];
         const avgUserScore = userChallenges.length ? userChallenges.reduce((acc, c) => acc + c.score, 0) / userChallenges.length : 0;
         const totalPaid = userPayments.reduce((acc, pay) => acc + pay.amount_total, 0) / 100;
-        return { 
-          ...p, 
+        return {
+          ...p,
           name: p.name || 'Sem nome',
           is_premium: !!p.is_premium,
-          challengesCount: userChallenges.length, 
-          avgScore: avgUserScore.toFixed(1), 
-          totalPaid 
+          is_admin: !!p.is_admin,
+          challengesCount: userChallenges.length,
+          avgScore: avgUserScore.toFixed(1),
+          totalPaid
         };
       });
       setUsers(enrichedUsers);
 
-      // 3. Funnel
       const funnelCounts = {
         landing_view: events?.filter(e => e.event_name === 'landing_view').length || 0,
         test_started: events?.filter(e => e.event_name === 'test_started').length || 0,
@@ -184,10 +182,8 @@ function AdminDashboard() {
       };
       setFunnel(Object.entries(funnelCounts).map(([name, count]) => ({ name, count })));
 
-      // 4. Payments
       setPayments(paymentsData || []);
 
-      // 5. Exercise Stats
       const grouped: Record<string, { name: string; shown: number }> = {};
       (history || []).forEach(curr => {
         const key = curr.category || 'unknown';
@@ -204,11 +200,47 @@ function AdminDashboard() {
     }
   }
 
+  const toggleUserFlag = async (userId: string, field: 'is_admin' | 'is_premium', current: boolean) => {
+    const { error } = await supabase.from("profiles").update({ [field]: !current }).eq("user_id", userId);
+    if (error) {
+      toast.error("Erro ao atualizar permissão");
+      return;
+    }
+    setUsers(prev => prev.map(u => u.user_id === userId ? { ...u, [field]: !current } : u));
+    const label = field === 'is_admin' ? 'Admin' : 'Premium';
+    toast.success(!current ? `${label} concedido` : `${label} removido`);
+  };
+
+  const contentEntries = Object.entries(CONTENT_POOLS);
+  const filteredContent = contentSearch.trim()
+    ? contentEntries.map(([key, items]) => ({
+        key,
+        items: items.filter(item =>
+          item.word.toLowerCase().includes(contentSearch.toLowerCase()) ||
+          item.category.toLowerCase().includes(contentSearch.toLowerCase())
+        )
+      })).filter(({ items }) => items.length > 0)
+    : contentEntries.map(([key, items]) => ({ key, items }));
+
   if (loading) return <div className="p-8 text-center">Verificando permissões...</div>;
   if (!isAdmin) return null;
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
+      {selectedPayment && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" onClick={() => setSelectedPayment(null)}>
+          <div className="bg-white rounded-2xl p-6 max-w-2xl w-full max-h-[80vh] overflow-auto" onClick={e => e.stopPropagation()}>
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="font-bold text-lg">Detalhes do Pagamento</h3>
+              <Button variant="ghost" size="sm" onClick={() => setSelectedPayment(null)}><X className="w-4 h-4" /></Button>
+            </div>
+            <pre className="text-xs bg-gray-50 p-4 rounded-xl overflow-auto whitespace-pre-wrap break-all">
+              {JSON.stringify(selectedPayment.raw_payload, null, 2)}
+            </pre>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-7xl mx-auto p-6">
         <header className="flex justify-between items-center mb-8">
           <div>
@@ -219,7 +251,7 @@ function AdminDashboard() {
             <p className="text-gray-500 font-medium">Controle real e métricas de funil</p>
           </div>
           <Button onClick={loadAllData} variant="outline" className="gap-2">
-            <Activity className="w-4 h-4" /> Atualizar Dados
+            <Activity className="w-4 h-4" /> Atualizar
           </Button>
         </header>
 
@@ -236,7 +268,7 @@ function AdminDashboard() {
           <TabsContent value="overview">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
               <StatCard title="Usuários Totais" value={stats.totalUsers} sub={`${stats.premiumUsers} premium / ${stats.freeUsers} free`} icon={<Users className="text-blue-500" />} />
-              <StatCard title="Receita Total" value={`$${stats.totalRevenue}`} sub={`Últimos 30d: $${stats.revenue30d}`} icon={<DollarSign className="text-green-500" />} />
+              <StatCard title="Receita Total" value={`$${stats.totalRevenue?.toFixed(2)}`} sub={`Últimos 30d: $${stats.revenue30d?.toFixed(2)}`} icon={<DollarSign className="text-green-500" />} />
               <StatCard title="Engajamento" value={stats.challengesCompleted} sub="Desafios concluídos" icon={<Activity className="text-purple-500" />} />
               <StatCard title="Score Médio" value={`${stats.avgScore}%`} sub={`Tempo médio: ${stats.avgTime}s`} icon={<Brain className="text-orange-500" />} />
             </div>
@@ -247,11 +279,11 @@ function AdminDashboard() {
                 <div className="space-y-4">
                   <div className="flex justify-between p-3 bg-gray-50 rounded-lg">
                     <span>Receita Últimos 7 dias</span>
-                    <span className="font-bold text-green-600">${stats.revenue7d}</span>
+                    <span className="font-bold text-green-600">${stats.revenue7d?.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between p-3 bg-gray-50 rounded-lg">
                     <span>Receita Últimos 30 dias</span>
-                    <span className="font-bold text-green-600">${stats.revenue30d}</span>
+                    <span className="font-bold text-green-600">${stats.revenue30d?.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between p-3 bg-gray-50 rounded-lg">
                     <span>Ticket Médio</span>
@@ -267,8 +299,8 @@ function AdminDashboard() {
                     <span className="font-bold">{stats.totalUsers > 0 ? ((stats.premiumUsers / stats.totalUsers) * 100).toFixed(1) : 0}%</span>
                   </div>
                   <div className="flex justify-between p-3 bg-gray-50 rounded-lg">
-                    <span>Retorno Diário (Est.)</span>
-                    <span className="font-bold">Em breve</span>
+                    <span>Admins ativos</span>
+                    <span className="font-bold">{users.filter(u => u.is_admin).length}</span>
                   </div>
                 </div>
               </Card>
@@ -285,15 +317,15 @@ function AdminDashboard() {
                   return (
                     <div key={step.name} className="relative">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="font-bold capitalize">{step.name.replace('_', ' ')}</span>
+                        <span className="font-bold capitalize">{step.name.replace(/_/g, ' ')}</span>
                         <div className="text-right">
                           <div className="text-2xl font-black">{step.count}</div>
                           {idx > 0 && <div className="text-xs text-green-600 font-bold">{conv.toFixed(1)}% conv.</div>}
                         </div>
                       </div>
                       <div className="w-full bg-gray-100 h-4 rounded-full overflow-hidden">
-                        <div 
-                          className="bg-primary h-full transition-all duration-1000" 
+                        <div
+                          className="bg-primary h-full transition-all duration-1000"
                           style={{ width: `${funnel[0].count > 0 ? (step.count / funnel[0].count) * 100 : 0}%` }}
                         />
                       </div>
@@ -305,6 +337,9 @@ function AdminDashboard() {
           </TabsContent>
 
           <TabsContent value="users">
+            <div className="mb-4 p-4 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-800">
+              <strong>Permissões:</strong> Alterações em Admin e Premium são salvas imediatamente no banco.
+            </div>
             <Card className="overflow-hidden">
               <Table>
                 <TableHeader>
@@ -313,26 +348,63 @@ function AdminDashboard() {
                     <TableHead>Status</TableHead>
                     <TableHead>Cadastro</TableHead>
                     <TableHead>Último Acesso</TableHead>
-                    <TableHead>Desafios</TableHead>
-                    <TableHead>Score Médio</TableHead>
-                    <TableHead>Pago</TableHead>
+                    <TableHead className="text-center">Desafios</TableHead>
+                    <TableHead className="text-center">Score</TableHead>
+                    <TableHead className="text-center">Pago</TableHead>
+                    <TableHead className="text-center">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {users.length === 0 && <TableRow><TableCell colSpan={7} className="text-center py-10">Nenhum usuário encontrado.</TableCell></TableRow>}
+                  {users.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={8} className="text-center py-10">Nenhum usuário encontrado.</TableCell>
+                    </TableRow>
+                  )}
                   {users.map((u) => (
                     <TableRow key={u.user_id}>
-                      <TableCell className="font-bold">{u.name || "Sem nome"}</TableCell>
                       <TableCell>
-                        <span className={`px-2 py-1 rounded-full text-xs font-bold ${u.is_premium ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
-                          {u.is_premium ? 'PREMIUM' : 'FREE'}
-                        </span>
+                        <div>
+                          <p className="font-bold">{u.name}</p>
+                          <p className="text-xs text-gray-400 font-mono">{u.user_id.slice(0, 8)}…</p>
+                        </div>
                       </TableCell>
-                      <TableCell className="text-xs text-gray-500">{new Date(u.created_at).toLocaleDateString()}</TableCell>
-                      <TableCell className="text-xs text-gray-500">{u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleDateString() : '-'}</TableCell>
-                      <TableCell className="font-medium text-center">{u.challengesCount}</TableCell>
+                      <TableCell>
+                        <div className="flex flex-col gap-1">
+                          <span className={`px-2 py-0.5 rounded-full text-xs font-bold w-fit ${u.is_premium ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
+                            {u.is_premium ? 'PREMIUM' : 'FREE'}
+                          </span>
+                          {u.is_admin && (
+                            <span className="px-2 py-0.5 rounded-full text-xs font-bold w-fit bg-purple-100 text-purple-700">
+                              ADMIN
+                            </span>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-xs text-gray-500">{new Date(u.created_at).toLocaleDateString('pt-BR')}</TableCell>
+                      <TableCell className="text-xs text-gray-500">{u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleDateString('pt-BR') : '-'}</TableCell>
+                      <TableCell className="text-center font-medium">{u.challengesCount}</TableCell>
                       <TableCell className="text-center">{u.avgScore}%</TableCell>
-                      <TableCell className="font-bold text-green-600">${u.totalPaid}</TableCell>
+                      <TableCell className="text-center font-bold text-green-600">${u.totalPaid.toFixed(2)}</TableCell>
+                      <TableCell>
+                        <div className="flex flex-col gap-1">
+                          <Button
+                            size="sm"
+                            variant={u.is_premium ? "destructive" : "outline"}
+                            className="text-xs h-7 px-2"
+                            onClick={() => toggleUserFlag(u.user_id, 'is_premium', u.is_premium)}
+                          >
+                            {u.is_premium ? 'Remover Premium' : 'Dar Premium'}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant={u.is_admin ? "destructive" : "outline"}
+                            className="text-xs h-7 px-2"
+                            onClick={() => toggleUserFlag(u.user_id, 'is_admin', u.is_admin)}
+                          >
+                            {u.is_admin ? 'Remover Admin' : 'Dar Admin'}
+                          </Button>
+                        </div>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -348,26 +420,36 @@ function AdminDashboard() {
                     <TableHead>Evento</TableHead>
                     <TableHead>Valor</TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead>E-mail (Customer)</TableHead>
+                    <TableHead>E-mail</TableHead>
                     <TableHead>Data</TableHead>
-                    <TableHead>Ações</TableHead>
+                    <TableHead>Detalhes</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {payments.length === 0 && <TableRow><TableCell colSpan={6} className="text-center py-10">Nenhum pagamento registrado.</TableCell></TableRow>}
+                  {payments.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={6} className="text-center py-10">Nenhum pagamento registrado.</TableCell>
+                    </TableRow>
+                  )}
                   {payments.map((p) => (
                     <TableRow key={p.id}>
                       <TableCell className="text-xs font-mono">{p.event_type}</TableCell>
-                      <TableCell className="font-bold text-green-600">${p.amount_total / 100}</TableCell>
+                      <TableCell className="font-bold text-green-600">${((p.amount_total || 0) / 100).toFixed(2)}</TableCell>
                       <TableCell>
                         <div className="flex items-center gap-1">
-                          {p.status === 'succeeded' || p.status === 'paid' ? <CheckCircle2 className="w-4 h-4 text-green-500" /> : <Clock className="w-4 h-4 text-orange-500" />}
-                          <span className="capitalize">{p.status}</span>
+                          {p.status === 'succeeded' || p.status === 'paid'
+                            ? <CheckCircle2 className="w-4 h-4 text-green-500" />
+                            : <Clock className="w-4 h-4 text-orange-500" />}
+                          <span className="capitalize text-xs">{p.status}</span>
                         </div>
                       </TableCell>
                       <TableCell className="text-xs">{p.raw_payload?.customer_details?.email || '-'}</TableCell>
-                      <TableCell className="text-xs text-gray-500">{new Date(p.created_at).toLocaleString()}</TableCell>
-                      <TableCell><Button variant="ghost" size="sm" onClick={() => console.log(p.raw_payload)}><List className="w-4 h-4" /></Button></TableCell>
+                      <TableCell className="text-xs text-gray-500">{new Date(p.created_at).toLocaleString('pt-BR')}</TableCell>
+                      <TableCell>
+                        <Button variant="ghost" size="sm" onClick={() => setSelectedPayment(p)}>
+                          <List className="w-4 h-4" />
+                        </Button>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -377,7 +459,9 @@ function AdminDashboard() {
 
           <TabsContent value="exercises">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {exerciseStats.length === 0 && <p className="col-span-full text-center py-20 text-gray-400">Sem dados de exercícios ainda.</p>}
+              {exerciseStats.length === 0 && (
+                <p className="col-span-full text-center py-20 text-gray-400">Sem dados de exercícios ainda.</p>
+              )}
               {exerciseStats.map((ex) => (
                 <Card key={ex.name} className="p-6">
                   <h4 className="font-bold text-lg capitalize mb-4">{ex.name}</h4>
@@ -386,10 +470,6 @@ function AdminDashboard() {
                       <p className="text-xs text-gray-500 uppercase">Exibições</p>
                       <p className="text-2xl font-black">{ex.shown}</p>
                     </div>
-                    <div className="bg-gray-50 p-3 rounded-lg text-center">
-                      <p className="text-xs text-gray-500 uppercase">Eficiência</p>
-                      <p className="text-2xl font-black">-%</p>
-                    </div>
                   </div>
                 </Card>
               ))}
@@ -397,16 +477,59 @@ function AdminDashboard() {
           </TabsContent>
 
           <TabsContent value="content">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {Object.entries(CONTENT_POOLS).map(([key, pool]) => (
-                <Card key={key} className="p-4">
-                  <h4 className="font-bold capitalize flex justify-between">
-                    {key}
-                    <span className="bg-primary/10 text-primary px-2 py-0.5 rounded text-xs">{pool.length} itens</span>
-                  </h4>
-                  <p className="text-xs text-gray-400 mt-1">Status: Ativo</p>
-                </Card>
-              ))}
+            <div className="mb-6">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Input
+                  placeholder="Buscar palavra ou categoria..."
+                  value={contentSearch}
+                  onChange={e => setContentSearch(e.target.value)}
+                  className="pl-9 h-12 rounded-xl"
+                />
+              </div>
+              {contentSearch && (
+                <p className="text-sm text-gray-500 mt-2">
+                  {filteredContent.reduce((acc, { items }) => acc + items.length, 0)} resultado(s) encontrado(s)
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-4">
+              {filteredContent.map(({ key, items }) => {
+                const isExpanded = expandedCategory === key || !!contentSearch;
+                return (
+                  <Card key={key} className="overflow-hidden">
+                    <button
+                      className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+                      onClick={() => setExpandedCategory(isExpanded && !contentSearch ? null : key)}
+                    >
+                      <div className="flex items-center gap-3">
+                        <h4 className="font-bold capitalize text-lg">{key}</h4>
+                        <span className="bg-primary/10 text-primary px-2 py-0.5 rounded text-xs font-bold">
+                          {items.length} itens
+                        </span>
+                      </div>
+                      {!contentSearch && (isExpanded ? <ChevronUp className="w-4 h-4 text-gray-400" /> : <ChevronDown className="w-4 h-4 text-gray-400" />)}
+                    </button>
+
+                    {isExpanded && (
+                      <div className="p-4 pt-0 border-t">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
+                          {items.map(item => (
+                            <div key={item.id} className="bg-gray-50 rounded-lg p-2 text-sm">
+                              <p className="font-medium text-gray-800">{item.word}</p>
+                              <p className="text-xs text-gray-400 mt-0.5 capitalize">{item.level}</p>
+                            </div>
+                          ))}
+                        </div>
+                        <p className="text-xs text-gray-400 mt-4 italic">
+                          Conteúdo estático em src/lib/content-pools.ts — edite o arquivo para adicionar/remover itens.
+                        </p>
+                      </div>
+                    )}
+                  </Card>
+                );
+              })}
             </div>
           </TabsContent>
         </Tabs>

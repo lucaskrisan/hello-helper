@@ -151,6 +151,13 @@
   "welcome_tip": "O segredo para uma mente afiada é a consistência. 5 minutos por dia mudam tudo.",
   "welcome_start": "COMEÇAR AGORA",
 
+  "onboarding_age_title": "Qual sua faixa de idade?",
+  "onboarding_goal_title": "Qual seu principal objetivo?",
+  "onboarding_goal_1": "Melhorar memória",
+  "onboarding_goal_2": "Melhorar concentração",
+  "onboarding_goal_3": "Manter minha mente ativa",
+  "onboarding_goal_4": "Criar uma rotina diária",
+
   "country_BR": "Brasil",
   "country_MX": "México",
   "country_AR": "Argentina",

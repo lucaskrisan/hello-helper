@@ -32,7 +32,7 @@ function Settings() {
         navigate({ to: "/login", replace: true });
         return;
       }
-      const { data } = await supabase.from("profiles").select("*").eq("user_id", user.id).single();
+      const { data } = await supabase.from("profiles").select("*").eq("user_id", user.id).maybeSingle();
       setProfile(data);
       
       const { data: prefs } = await supabase.from("user_preferences").select("language").eq("user_id", user.id).maybeSingle();
