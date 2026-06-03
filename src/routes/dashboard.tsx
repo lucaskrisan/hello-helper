@@ -33,7 +33,12 @@ function Dashboard() {
 
       const { data: prof } = await supabase.from("profiles").select("*").eq("user_id", user.id).maybeSingle();
       if (!prof) {
-        navigate({ to: "/onboarding", replace: true });
+        const ownerEmail = import.meta.env.VITE_ADMIN_EMAIL;
+        if (ownerEmail && user.email === ownerEmail) {
+          navigate({ to: "/admin", replace: true });
+        } else {
+          navigate({ to: "/onboarding", replace: true });
+        }
         return;
       }
 

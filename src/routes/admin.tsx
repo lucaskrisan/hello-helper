@@ -74,27 +74,16 @@ function AdminDashboard() {
           .eq("user_id", user.id)
           .maybeSingle();
 
-        if (profile?.is_admin) {
-          setIsAdmin(true);
-          await loadAllData();
+        const ownerEmail = import.meta.env.VITE_ADMIN_EMAIL;
+        const isOwner = ownerEmail && user.email === ownerEmail;
+
+        if (!profile?.is_admin && !isOwner) {
+          navigate({ to: "/dashboard", replace: true });
           return;
         }
 
-        // Seed seguro: concede admin apenas para o email configurado no .env
-        const adminEmail = import.meta.env.VITE_ADMIN_EMAIL;
-        const { data: { user: freshUser } } = await supabase.auth.getUser();
-        if (adminEmail && freshUser?.email === adminEmail) {
-          const { error } = await supabase
-            .from("profiles")
-            .upsert({ user_id: freshUser.id, is_admin: true }, { onConflict: "user_id" });
-          if (!error) {
-            setIsAdmin(true);
-            await loadAllData();
-            return;
-          }
-        }
-
-        navigate({ to: "/dashboard", replace: true });
+        setIsAdmin(true);
+        await loadAllData();
       } catch (err) {
         console.error("Admin dashboard error:", err);
       } finally {
