@@ -37,7 +37,7 @@ export function LanguageSwitcher() {
         >
           <div className="flex flex-col items-start">
             <span className="text-[10px] md:text-xs font-black text-primary uppercase tracking-tighter leading-none mb-0.5 md:mb-1">
-              {t('language')}
+              {t('common:language')}
             </span>
             <div className="flex items-center gap-1.5 md:gap-2">
               <span className="text-xl md:text-2xl">{currentLanguage.flag}</span>
@@ -49,7 +49,7 @@ export function LanguageSwitcher() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[280px] p-3 rounded-2xl border-2 shadow-2xl z-[100]">
         <div className="text-sm font-black text-gray-400 px-3 py-2 uppercase tracking-widest mb-2 border-b">
-          {t('select_language')}
+          {t('common:select_language')}
         </div>
         <div className="grid gap-2">
           {languages.map((lang) => (
