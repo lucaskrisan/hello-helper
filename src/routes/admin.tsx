@@ -159,6 +159,7 @@ function AdminDashboard() {
         return { 
           ...p, 
           name: p.name || 'Sem nome',
+          is_premium: !!p.is_premium,
           challengesCount: userChallenges.length, 
           avgScore: avgUserScore.toFixed(1), 
           totalPaid 
