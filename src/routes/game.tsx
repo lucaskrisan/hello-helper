@@ -348,9 +348,13 @@ function Game() {
           <div className="text-center">
             <h2 className="text-2xl font-bold mb-4">{t('ex_attention_title')}</h2>
             <p className="text-gray-500 mb-8">{t('ex_attention_subtitle')}</p>
-            <div className="grid gap-3 mx-auto max-w-[300px]" style={{ gridTemplateColumns: `repeat(${currentTask.cols}, 1fr)` }}>
+            <div className="grid gap-2 md:gap-3 mx-auto max-w-full" style={{ gridTemplateColumns: `repeat(${currentTask.cols}, 1fr)` }}>
               {currentTask.grid.map((item: string, i: number) => (
-                <Button key={i} onClick={() => item === currentTask.intruder ? handleCorrect() : handleRetry()} className="h-12 text-xl font-bold bg-gray-50 text-gray-700 border-2">
+                <Button 
+                  key={i} 
+                  onClick={() => item === currentTask.intruder ? handleCorrect() : handleRetry()} 
+                  className="h-10 sm:h-12 md:h-16 text-lg md:text-2xl font-black bg-gray-50 text-gray-700 border-2 hover:bg-white hover:border-primary/30 transition-all active:scale-90"
+                >
                   {item}
                 </Button>
               ))}

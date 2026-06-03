@@ -33,18 +33,18 @@ export function LanguageSwitcher() {
       <DropdownMenuTrigger asChild>
         <Button 
           variant="outline" 
-          className="bg-white border-2 border-primary/20 hover:border-primary/50 rounded-2xl px-4 py-6 h-auto flex items-center gap-3 shadow-md transition-all hover:scale-105 active:scale-95 group"
+          className="bg-white border-2 border-primary/20 hover:border-primary/50 rounded-xl md:rounded-2xl px-3 md:px-4 py-3 md:py-6 h-auto flex items-center gap-2 md:gap-3 shadow-md transition-all hover:scale-105 active:scale-95 group"
         >
           <div className="flex flex-col items-start">
-            <span className="text-xs font-bold text-primary uppercase tracking-tighter leading-none mb-1">
+            <span className="text-[10px] md:text-xs font-black text-primary uppercase tracking-tighter leading-none mb-0.5 md:mb-1">
               {t('language')}
             </span>
-            <div className="flex items-center gap-2">
-              <span className="text-2xl">{currentLanguage.flag}</span>
-              <span className="font-bold text-gray-800 text-lg">{currentLanguage.label}</span>
+            <div className="flex items-center gap-1.5 md:gap-2">
+              <span className="text-xl md:text-2xl">{currentLanguage.flag}</span>
+              <span className="font-bold text-gray-800 text-sm md:text-lg">{currentLanguage.label}</span>
             </div>
           </div>
-          <ChevronDown className="h-5 w-5 text-gray-400 group-hover:text-primary transition-colors ml-1" />
+          <ChevronDown className="h-4 w-4 md:h-5 md:w-5 text-gray-400 group-hover:text-primary transition-colors" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[280px] p-3 rounded-2xl border-2 shadow-2xl z-[100]">
