@@ -74,13 +74,30 @@ function AdminDashboard() {
           .eq("user_id", user.id)
           .maybeSingle();
 
-        if (!profile?.is_admin) {
-          navigate({ to: "/dashboard", replace: true });
+        if (profile?.is_admin) {
+          setIsAdmin(true);
+          await loadAllData();
           return;
         }
 
-        setIsAdmin(true);
-        await loadAllData();
+        // Bootstrap: se nenhum admin existe ainda, o primeiro usuário logado a acessar /admin vira admin
+        const { count: adminCount } = await supabase
+          .from("profiles")
+          .select("*", { count: "exact", head: true })
+          .eq("is_admin", true);
+
+        if ((adminCount ?? 0) === 0) {
+          const { error } = await supabase
+            .from("profiles")
+            .upsert({ user_id: user.id, is_admin: true }, { onConflict: "user_id" });
+          if (!error) {
+            setIsAdmin(true);
+            await loadAllData();
+            return;
+          }
+        }
+
+        navigate({ to: "/dashboard", replace: true });
       } catch (err) {
         console.error("Admin dashboard error:", err);
       } finally {
