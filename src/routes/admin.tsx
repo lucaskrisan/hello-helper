@@ -135,23 +135,34 @@ function AdminDashboard() {
       (challengesAll || []).forEach(c => {
         const uid = c.user_id as string;
         if (!challengesByUser[uid]) challengesByUser[uid] = [];
-        challengesByUser[uid].push(c);
+        challengesByUser[uid].push({
+          score: c.score || 0,
+          total_time: c.total_time || 0
+        });
       });
 
       const paymentsByUser: Record<string, { amount_total: number }[]> = {};
       (paymentsData || []).forEach(p => {
         if (p.user_id) {
           if (!paymentsByUser[p.user_id]) paymentsByUser[p.user_id] = [];
-          paymentsByUser[p.user_id].push(p);
+          paymentsByUser[p.user_id].push({
+            amount_total: p.amount_total || 0
+          });
         }
       });
 
       const enrichedUsers: EnrichedUser[] = (profiles || []).map(p => {
         const userChallenges = challengesByUser[p.user_id] || [];
         const userPayments = paymentsByUser[p.user_id] || [];
-        const avgUserScore = userChallenges.length ? userChallenges.reduce((acc, c) => acc + (c.score || 0), 0) / userChallenges.length : 0;
-        const totalPaid = userPayments.reduce((acc, pay) => acc + (pay.amount_total || 0), 0) / 100;
-        return { ...p, challengesCount: userChallenges.length, avgScore: avgUserScore.toFixed(1), totalPaid };
+        const avgUserScore = userChallenges.length ? userChallenges.reduce((acc, c) => acc + c.score, 0) / userChallenges.length : 0;
+        const totalPaid = userPayments.reduce((acc, pay) => acc + pay.amount_total, 0) / 100;
+        return { 
+          ...p, 
+          name: p.name || 'Sem nome',
+          challengesCount: userChallenges.length, 
+          avgScore: avgUserScore.toFixed(1), 
+          totalPaid 
+        };
       });
       setUsers(enrichedUsers);
 

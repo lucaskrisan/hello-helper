@@ -80,13 +80,13 @@ function Game() {
         .eq("user_id", user.id)
         .maybeSingle();
 
-      const lastDate = existingStreak?.last_challenge_date;
+      const lastDate = existingStreak?.last_completed_date;
       if (lastDate !== todayStr) {
         const currentStreak = existingStreak?.current_streak || 0;
         const newStreak = lastDate === yesterdayStr ? currentStreak + 1 : 1;
         const bestStreak = Math.max(existingStreak?.best_streak || 0, newStreak);
         await supabase.from("streaks").upsert(
-          { user_id: user.id, current_streak: newStreak, best_streak: bestStreak, last_challenge_date: todayStr },
+          { user_id: user.id, current_streak: newStreak, best_streak: bestStreak, last_completed_date: todayStr },
           { onConflict: "user_id" }
         );
       }
