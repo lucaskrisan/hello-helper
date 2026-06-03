@@ -8,6 +8,8 @@ import { toast } from "sonner";
 import { ChevronLeft, Trophy, Brain, Timer, Hourglass, Check, X } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { useTranslation } from "react-i18next";
+import { getCurrencySymbol } from "@/i18n/detect-country";
+
 
 export const Route = createFileRoute("/game")({
   component: Game,
@@ -384,16 +386,23 @@ function Game() {
         {currentTask.type === 'logic-change' && (
           <div className="text-center">
             <h2 className="text-2xl font-bold mb-4">{t('ex_change_title')}</h2>
-            <p className="text-xl text-gray-600 mb-8">{t('ex_change_question', { currency: 'R$', price: currentTask.price, paid: currentTask.paid })}</p>
+            <p className="text-xl text-gray-600 mb-8">
+              {t('ex_change_question', { 
+                currency: getCurrencySymbol(), 
+                price: currentTask.price, 
+                paid: currentTask.paid 
+              })}
+            </p>
             <div className="grid grid-cols-2 gap-4">
               {currentTask.options.map((opt: number) => (
                 <Button key={opt} onClick={() => opt === currentTask.answer ? handleCorrect() : handleRetry()} className="py-8 text-3xl font-bold bg-white text-gray-700 border-2">
-                  R$ {opt}
+                  {getCurrencySymbol()} {opt}
                 </Button>
               ))}
             </div>
           </div>
         )}
+
 
         {currentTask.type === 'alphabetical-order' && (
           <div className="text-center">
