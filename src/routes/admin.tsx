@@ -80,16 +80,13 @@ function AdminDashboard() {
           return;
         }
 
-        // Bootstrap: se nenhum admin existe ainda, o primeiro usuário logado a acessar /admin vira admin
-        const { count: adminCount } = await supabase
-          .from("profiles")
-          .select("*", { count: "exact", head: true })
-          .eq("is_admin", true);
-
-        if ((adminCount ?? 0) === 0) {
+        // Seed seguro: concede admin apenas para o email configurado no .env
+        const adminEmail = import.meta.env.VITE_ADMIN_EMAIL;
+        const { data: { user: freshUser } } = await supabase.auth.getUser();
+        if (adminEmail && freshUser?.email === adminEmail) {
           const { error } = await supabase
             .from("profiles")
-            .upsert({ user_id: user.id, is_admin: true }, { onConflict: "user_id" });
+            .upsert({ user_id: freshUser.id, is_admin: true }, { onConflict: "user_id" });
           if (!error) {
             setIsAdmin(true);
             await loadAllData();
