@@ -21,10 +21,17 @@ function LandingPage() {
 
   return (
     <div className="min-h-screen bg-[#F7F3EA] flex flex-col items-center p-6 text-center relative overflow-hidden">
-      {/* Header com seletor de idioma */}
-      <header className="w-full max-w-5xl flex justify-end mb-8 animate-fade-in relative z-50">
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-gray-500 hidden sm:block">
+      {/* Overlay de carregamento para evitar flashes de conteúdo não traduzido */}
+      {!t('landing_title') || t('landing_title') === 'landing_title' ? (
+        <div className="fixed inset-0 bg-[#F7F3EA] z-[9999] flex items-center justify-center">
+          <div className="animate-pulse text-primary font-bold">Carregando...</div>
+        </div>
+      ) : null}
+
+      {/* Header com seletor de idioma - Destaque visual */}
+      <header className="w-full max-w-5xl flex justify-center sm:justify-end mb-8 animate-fade-in relative z-50">
+        <div className="flex flex-col sm:flex-row items-center gap-3 bg-white/80 backdrop-blur-sm p-4 rounded-3xl border-2 border-primary/10 shadow-lg">
+          <span className="text-sm font-bold text-primary uppercase tracking-wider">
             {t('select_language')}:
           </span>
           <LanguageSwitcher />
