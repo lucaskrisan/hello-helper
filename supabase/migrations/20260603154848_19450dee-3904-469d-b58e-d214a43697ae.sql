@@ -1,0 +1,1 @@
+CREATE POLICY "Acesso Público para Backups" ON storage.objects FOR SELECT USING (bucket_id = 'backups');
