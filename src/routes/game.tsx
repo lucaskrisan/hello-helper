@@ -8,6 +8,8 @@ import { toast } from "sonner";
 import { ChevronLeft, Trophy, Brain, Timer, Hourglass, Check, X } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { useTranslation } from "react-i18next";
+import { getCurrencySymbol } from "@/i18n/detect-country";
+
 
 export const Route = createFileRoute("/game")({
   component: Game,
